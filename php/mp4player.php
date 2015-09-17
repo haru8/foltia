@@ -114,10 +114,10 @@ print "
   <!-- Begin VideoJS -->
   <div class=\"video-js-box\">
     <!-- Using the Video for Everybody Embed Code http://camendesign.com/code/video_for_everybody -->
-    <video class=\"video-js\" width=\"480\" height=\"272\" poster=\"./img/videoplayer.png\" controls preload>
+    <video class=\"video-js\" width=\"640\" height=\"352\" poster=\"./img/videoplayer.png\" controls preload>
 	  <source src=\"$mp4videofileurl\" type='video/mp4; codecs=\"avc1.42E01E, mp4a.40.2\"'>
       <!-- Flash Fallback. Use any flash video player here. Make sure to keep the vjs-flash-fallback class. -->
-      <object class=\"vjs-flash-fallback\" width=\"480\" height=\"272\" type=\"application/x-shockwave-flash\"
+      <object class=\"vjs-flash-fallback\" width=\"640\" height=\"352\" type=\"application/x-shockwave-flash\"
         data=\"http://releases.flowplayer.org/swf/flowplayer-3.2.5.swf\">
         <param name=\"movie\" value=\"http://releases.flowplayer.org/swf/flowplayer-3.2.5.swf\" />
         <param name=\"allowfullscreen\" value=\"true\" />
