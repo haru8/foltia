@@ -1,0 +1,7 @@
+bin/
+foltia.sqlite
+debuglog.txt
+
+tags
+.*.sw?
+
