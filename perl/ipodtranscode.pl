@@ -26,10 +26,10 @@ require "foltialib.pl";
 # 二重起動の確認!
 $processes = &processfind("ipodtranscode.pl");
 if ($processes > 1 ) {
-	&writelog("ipodtranscode processes exist. exit: $processes");
+	&writelog("processes exist. exit: $processes");
 	exit;
 } else {
-	&writelog("ipodtranscode.pl Normal launch.");
+	&writelog("Normal launch.");
 }
 
 #DB初期化
@@ -43,11 +43,11 @@ $dbh = DBI->connect($DSN,$DBUser,$DBPass) ||die $DBI::error;;
 #$sth = $dbh->prepare($DBQuery);
 #$sth->execute();
 #@titlecount= $sth->fetchrow_array;
-&writelog("ipodtranscode starting up.");
+&writelog("starting up.");
 
 $counttranscodefiles = &counttranscodefiles();
 if ($counttranscodefiles == 0) {
-	&writelog("ipodtranscode No MPEG2 files to transcode.");
+	&writelog("No MPEG2 files to transcode.");
 	exit;
 }
 sleep 30;
@@ -56,8 +56,8 @@ while ($counttranscodefiles >= 1) {
 	$sth = $dbh->prepare($stmt{'ipodtranscode.1'});
 	$sth->execute($FILESTATUSRECEND, $FILESTATUSTRANSCODECOMPLETE, );
 	@dbparam = $sth->fetchrow_array;
-	&writelog("ipodtranscode DEBUG $DBQuery");
-	&writelog("ipodtranscode DEBUG $dbparam[0], $dbparam[1], $dbparam[2], $dbparam[3], $dbparam[4], $dbparam[5]");
+	&writelog("DEBUG $DBQuery");
+	&writelog("DEBUG $dbparam[0], $dbparam[1], $dbparam[2], $dbparam[3], $dbparam[4], $dbparam[5]");
 	$pid               = $dbparam[0];
 	$tid               = $dbparam[1];
 	$inputmpeg2        = $recfolderpath."/".$dbparam[2]; # path付き
@@ -69,7 +69,7 @@ while ($counttranscodefiles >= 1) {
 
 	if (-e $inputmpeg2) { #MPEG2ファイルが存在していれば
 
-		&writelog("ipodtranscode DEBUG mp3filenamestring $mp4filenamestring");
+		&writelog("DEBUG mp3filenamestring $mp4filenamestring");
 		#展開ディレクトリ作成
 		$pspdirname = &makemp4dir($tid);
 		$mp4outdir = $pspdirname ;
@@ -117,7 +117,7 @@ while ($counttranscodefiles >= 1) {
 			# unlink
 			# Starlight breaker向けキャプチャ画像作成
 			if (-e "$toolpath/perl/captureimagemaker.pl") {
-				&writelog("ipodtranscode Call captureimagemaker $mpeg2filename");
+				&writelog("Call captureimagemaker $mpeg2filename");
 				&changefilestatus($pid, $FILESTATUSCAPTURE);
 				system ("$toolpath/perl/captureimagemaker.pl $mpeg2filename");
 				&changefilestatus($pid, $FILESTATUSCAPEND);
@@ -152,27 +152,32 @@ while ($counttranscodefiles >= 1) {
 
 				# アスペクト比
 				if ($aspect == 1) { #超額縁
-					$cropopt = " -croptop 150 -cropbottom 150 -cropleft 200 -cropright 200 ";
+					#$cropopt = " -croptop 150 -cropbottom 150 -cropleft 200 -cropright 200 ";
+					$cropopt = " -vf crop=in_w-400:in_h-300:200:150 ";
 				} elsif($aspect == 4) { #SD 
-					$cropopt = " -croptop 6 -cropbottom 6 -cropleft 8 -cropright 8 ";
+					#$cropopt = " -croptop 6 -cropbottom 6 -cropleft 8 -cropright 8 ";
+					$cropopt = " -vf crop=in_w-16:in_h-12:8:6 ";
 				} else { #16:9
-					$cropopt = " -croptop 6 -cropbottom 6 -cropleft 8 -cropright 8 ";
+					#$cropopt = " -croptop 6 -cropbottom 6 -cropleft 8 -cropright 8 ";
+					$cropopt = " -vf crop=in_w-16:in_h-12:8:6 ";
 				}
 
 				# クオリティごとに
 				if (($trconqty eq "")||($trconqty == 1)) {
-					$ffmpegencopt = " -ss 00:00:02.000 -threads 0 -s 360x202 -deinterlace -r 24.00 -vcodec libx264 -preset fast -g 300 -b 330000 -level 13 -sc_threshold 60 -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
+					$ffmpegencopt = " -threads 0 -s 360x202 -deinterlace -r 24.00 -vcodec libx264 -preset fast -g 300 -b 330000 -level 13 -sc_threshold 60 -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
 
 				} elsif($trconqty == 2) {
-					$ffmpegencopt = " -ss 00:00:02.000 -threads 0 -s 480x272 -deinterlace -r 29.97 -vcodec libx264 -preset fast -g 300 -b 400000 -level 13 -sc_threshold 60 -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
+					$ffmpegencopt = " -threads 0 -s 480x272 -deinterlace -r 29.97 -vcodec libx264 -preset fast -g 300 -b 400000 -level 13 -sc_threshold 60 -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
 
 				} elsif($trconqty == 3) {
-					$ffmpegencopt = " -ss 00:00:02.000 -threads 0 -s 640x352 -deinterlace -r 29.97 -vcodec libx264 -preset fast -g 100 -b 600000 -level 13 -sc_threshold 60 -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
+					$ffmpegencopt = " -threads 0 -s 640x352 -deinterlace -r 29.97 -vcodec libx264 -preset fast -g 100 -b 600000 -level 13 -sc_threshold 60 -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
 
 				}
+				# 不安定なので頭2秒は捨てる
+				$sstime = " -ss 00:00:02.000 ";
 
 				&changefilestatus($pid, $FILESTATUSTRANSCODEFFMPEG);
-				#	&writelog("ipodtranscode ffmpeg $filenamebody.264");
+				#	&writelog("ffmpeg $filenamebody.264");
 				#	system ("/usr/local/bin/ffmpeg -y -i $trcnmpegfile $cropopt $ffmpegencopt");
 				# まずTsSplitする →ワンセグをソースにしてしまわないように
 				if (! -e "$filenamebody.264") {
@@ -180,70 +185,117 @@ while ($counttranscodefiles >= 1) {
 					unlink("${filenamebody}_tss.m2t");
 					unlink("${filenamebody}_HD.m2t");
 					if (-e "$toolpath/perl/tool/tss.py") {
-						&writelog("ipodtranscode $toolpath/perl/tool/tss.py $inputmpeg2");
+						&writelog("$toolpath/perl/tool/tss.py $inputmpeg2  :start.");
 						system("$toolpath/perl/tool/tss.py $inputmpeg2");
+                        $exit_value  = $? >> 8;
+                        $signal_num  = $? & 127;
+                        $dumped_core = $? & 128;
+                        &writelog("tss.py   :$exit_value:$signal_num:$dumped_core:end.");
+
 					} else {
 					# TsSplit
-					#		&writelog("ipodtranscode TsSplitter $inputmpeg2");
+					#		&writelog("TsSplitter $inputmpeg2");
 					#		system("wine $toolpath/perl/tool/TsSplitter.exe  -EIT -ECM  -EMM -SD -1SEG -WAIT2 $inputmpeg2");
 					}
 
 					if(-e "${filenamebody}_tss.m2t") {
 						$trcnmpegfile = "${filenamebody}_tss.m2t";
+						&writelog("trcnmpegfile = $trcnmpegfile");
 					} elsif (-e "${filenamebody}_HD.m2t") {
 						$trcnmpegfile = "${filenamebody}_HD.m2t";
+						&writelog("trcnmpegfile = $trcnmpegfile");
 					} else {
-						&writelog("ipodtranscode ERR NOT Exist ${filenamebody}_tss.m2t or ${filenamebody}_HD.m2t");
+						&writelog("ERR NOT Exist ${filenamebody}_tss.m2t or ${filenamebody}_HD.m2t");
 						$trcnmpegfile = $inputmpeg2 ;
 					}
 
 					# Splitファイルの確認
 					$trcnmpegfile = &validationsplitfile($inputmpeg2, $trcnmpegfile);
+					&writelog("trcnmpegfile = $trcnmpegfile");
 
-					# tss.pyに失敗してたなら強制的にWINEでTsSplit.exe
+					# tss.py に失敗してたなら強制的にWINEでTsSplit.exe
 					if($trcnmpegfile eq $inputmpeg2) {
 						# TsSplit
-						&writelog("ipodtranscode WINE TsSplitter.exe -EIT -ECM  -EMM -SD -1SEG $inputmpeg2");
+						&writelog("WINE TsSplitter.exe -EIT -ECM  -EMM -SD -1SEG $inputmpeg2  :start.");
 						system("wine $toolpath/perl/tool/TsSplitter.exe -EIT -ECM  -EMM -SD -1SEG $inputmpeg2");
+                        $exit_value  = $? >> 8;
+                        $signal_num  = $? & 127;
+                        $dumped_core = $? & 128;
+                        &writelog("TsSplitter.exe  :$exit_value:$signal_num:$dumped_core:end.");
+
 						if (-e "${filenamebody}_HD.m2t") {
 							$trcnmpegfile = "${filenamebody}_HD.m2t";
+							&writelog("trcnmpegfile = $trcnmpegfile");
 
-							# Starlight breaker向けキャプチャ画像作成
-							if (-e "$toolpath/perl/captureimagemaker.pl") {
-								&writelog("ipodtranscode Call captureimagemaker(TsSplit) $trcnmpegfile");
-								system ("$toolpath/perl/captureimagemaker.pl $trcnmpegfile");
-							}
+							# ストリームの最初からのはずなので捨てない。
+							$sstime = "";
 
 							# Splitファイルの確認
 							$trcnmpegfile = &validationsplitfile($inputmpeg2, $trcnmpegfile);
+							&writelog("trcnmpegfile = $trcnmpegfile");
+
+							# Starlight breaker向けキャプチャ画像作成
+							if (-e "$toolpath/perl/captureimagemaker.pl") {
+								&writelog("Call captureimagemaker(TsSplit) $trcnmpegfile");
+								system ("$toolpath/perl/captureimagemaker.pl $trcnmpegfile");
+							}
+
 				#			if($trcnmpegfile ne $inputmpeg2) {
 				#				&changefilestatus($pid,$FILESTATUSTRANSCODEFFMPEG);
-				#				&writelog("ipodtranscode ffmpeg retry ; WINE TsSplitter.exe $trcnmpegfile");
+				#				&writelog("ffmpeg retry ; WINE TsSplitter.exe $trcnmpegfile");
 				#				system ("/usr/local/bin/ffmpeg -y -i $trcnmpegfile $cropopt $ffmpegencopt");
 				#			} else {
-				#				&writelog("ipodtranscode WINE TsSplit.exe fail");
+				#				&writelog("WINE TsSplit.exe fail");
 				#			}
 						} else {
-							&writelog("ipodtranscode WINE TsSplitter.exe; Not exist ${filenamebody}_HD.m2t");
+							&writelog("WINE TsSplitter.exe; Not exist ${filenamebody}_HD.m2t");
 						} #endif -e ${filenamebody}_HD.m2t
 
 					} #endif $trcnmpegfile eq $inputmpeg2
 
+					# TsSplitter.exeでも失敗してたならSDファイルを抽出してみる。
+					if($trcnmpegfile eq $inputmpeg2) {
+						# TsSplit
+						&writelog("WINE TsSplitter.exe -EIT -ECM -EMM -1SEG $inputmpeg2  :start.");
+						system("wine $toolpath/perl/tool/TsSplitter.exe -EIT -ECM  -EMM -1SEG $inputmpeg2");
+                        $exit_value  = $? >> 8;
+                        $signal_num  = $? & 127;
+                        $dumped_core = $? & 128;
+                        &writelog("TsSplitter.exe  :$exit_value:$signal_num:$dumped_core:end.");
+
+						if (-e "${filenamebody}_SD1.m2t" || -e "${filenamebody}_SD2.m2t" || -e "${filenamebody}_SD3.m2t") {
+							# Splitファイルの確認
+							$trcnmpegfile = &validationsplitfilesd($inputmpeg2, "${filenamebody}_SD1.m2t", "${filenamebody}_SD2.m2t", "${filenamebody}_SD3.m2t");
+							&writelog("trcnmpegfile = $trcnmpegfile");
+
+							# ストリームの最初からのはずなので捨てない。
+							$sstime = "";
+						}
+					}
 
 					# 再ffmpeg
 					&changefilestatus($pid, $FILESTATUSTRANSCODEFFMPEG);
-					&writelog("ipodtranscode /usr/local/bin/ffmpeg retry $filenamebody.264");
-					&writelog("ipodtranscode CMD: /usr/local/bin/ffmpeg -y -i $trcnmpegfile $cropopt $ffmpegencopt");
-					system ("/usr/local/bin/ffmpeg -y -i $trcnmpegfile $cropopt $ffmpegencopt");
+					&writelog("ffmpeg retry $filenamebody.264");
+					&writelog("CMD: /usr/local/bin/ffmpeg -y -i $trcnmpegfile $cropopt $sstime $ffmpegencopt  :start.");
+					system ("/usr/local/bin/ffmpeg -y -i $trcnmpegfile $cropopt $sstime $ffmpegencopt");
+                    $exit_value  = $? >> 8;
+                    $signal_num  = $? & 127;
+                    $dumped_core = $? & 128;
+                    &writelog("ffmpeg retry  :$exit_value:$signal_num:$dumped_core:end.");
+
 				}
 
 				# もしエラーになったらcropやめる
 				if (! -e "$filenamebody.264") {
 					#再ffmpeg
 					&changefilestatus($pid, $FILESTATUSTRANSCODEFFMPEG);
-					&writelog("ipodtranscode /usr/local/bin/ffmpeg retry no crop $filenamebody.264");
-					&writelog("ipodtranscode CMD: /usr/local/bin/ffmpeg -y -i $trcnmpegfile $ffmpegencopt");
-					system ("/usr/local/bin/ffmpeg -y -i $trcnmpegfile $ffmpegencopt");
+					&writelog("ffmpeg retry no crop $filenamebody.264");
+					&writelog("CMD: /usr/local/bin/ffmpeg -y -i $trcnmpegfile $sstime $ffmpegencopt  :start.");
+					system ("/usr/local/bin/ffmpeg -y -i $trcnmpegfile $sstime $ffmpegencopt");
+                    $exit_value  = $? >> 8;
+                    $signal_num  = $? & 127;
+                    $dumped_core = $? & 128;
+                    &writelog("ffmpeg retry no crop  :$exit_value:$signal_num:$dumped_core:end.");
 				}
 
 				#強制的にWINEでTsSplit.exe
@@ -252,24 +304,36 @@ while ($counttranscodefiles >= 1) {
 
 				#それでもエラーならsplitしてないファイルをターゲットに
 				if (! -e "$filenamebody.264") {
+					# 不安定なので頭2秒は捨てる
+					$sstime = " -ss 00:00:02.000 ";
+
 					#再ffmpeg
 					&changefilestatus($pid, $FILESTATUSTRANSCODEFFMPEG);
-					&writelog("ipodtranscode /usr/local/bin/ffmpeg retry No splited originalTS file $filenamebody.264");
-					&writelog("ipodtranscode CMD: /usr/local/bin/ffmpeg -y -i $inputmpeg2 $ffmpegencopt");
-					system ("/usr/local/bin/ffmpeg -y -i $inputmpeg2 $ffmpegencopt");
+					&writelog("ffmpeg retry No splited originalTS file $filenamebody.264");
+					&writelog("CMD: /usr/local/bin/ffmpeg -y -i $inputmpeg2 $sstime $ffmpegencopt  :start.");
+					system ("/usr/local/bin/ffmpeg -y -i $inputmpeg2 $sstime $ffmpegencopt");
+                    $exit_value  = $? >> 8;
+                    $signal_num  = $? & 127;
+                    $dumped_core = $? & 128;
+                    &writelog("ffmpeg retry No splited  :$exit_value:$signal_num:$dumped_core:end.");
 				}
 			}
+
 			if ($filestatus <= $FILESTATUSTRANSCODEWAVE) {
 				# AAC出力
 				unlink("${filenamebody}.aac");
 				&changefilestatus($pid, $FILESTATUSTRANSCODEWAVE);
-				#&writelog("ipodtranscode mplayer $filenamebody.wav");
-				#&writelog("ipodtranscode CMD: mplayer $trcnmpegfile -vc null -vo null -ao pcm:file=$filenamebody.wav:fast");
+				#&writelog("mplayer $filenamebody.wav");
+				#&writelog("CMD: mplayer $trcnmpegfile -vc null -vo null -ao pcm:file=$filenamebody.wav:fast  :start.");
 				#system ("mplayer $trcnmpegfile -vc null -vo null -ao pcm:file=$filenamebody.wav:fast");
-				&writelog("ipodtranscode ffmpeg $filenamebody.aac");
-				&writelog("ipodtranscode CMD: ffmpeg -i $trcnmpegfile -ss 00:00:02.000 -map 0:1 -vn -acodec copy $filenamebody.aac");
-				system ("ffmpeg -i $trcnmpegfile -ss 00:00:02.000 -map 0:1 -vn -acodec copy $filenamebody.aac");
-
+				#&writelog("CMD: mplayer $trcnmpegfile -vc null -vo null -ao pcm:file=$filenamebody.wav:fast  :end.");
+				&writelog("ffmpeg aac");
+				&writelog("CMD: ffmpeg -i $trcnmpegfile $sstime -map 0:1 -vn -acodec copy $filenamebody.aac  :start.");
+				system ("ffmpeg -i $trcnmpegfile $sstime -map 0:1 -vn -acodec copy $filenamebody.aac");
+                $exit_value  = $? >> 8;
+                $signal_num  = $? & 127;
+                $dumped_core = $? & 128;
+                &writelog("ffmpeg aac  :$exit_value:$signal_num:$dumped_core:end.");
 			}
 
 			if ($filestatus <= $FILESTATUSTRANSCODEAAC) {
@@ -278,17 +342,19 @@ while ($counttranscodefiles >= 1) {
 				&changefilestatus($pid, $FILESTATUSTRANSCODEAAC);
 				#if (-e "$toolpath/perl/tool/neroAacEnc") {
 				#	if (-e "$filenamebody.wav") {
-				#		&writelog("ipodtranscode neroAacEnc $filenamebody.wav");
-				#		&writelog("ipodtranscode CMD: $toolpath/perl/tool/neroAacEnc -br 128000  -if $filenamebody.wav  -of $filenamebody.aac");
+				#		&writelog("neroAacEnc $filenamebody.wav");
+				#		&writelog("CMD: $toolpath/perl/tool/neroAacEnc -br 128000  -if $filenamebody.wav  -of $filenamebody.aac  :start.");
 				#		system ("$toolpath/perl/tool/neroAacEnc -br 128000  -if $filenamebody.wav  -of $filenamebody.aac");
+				#		&writelog("CMD: $toolpath/perl/tool/neroAacEnc -br 128000  -if $filenamebody.wav  -of $filenamebody.aac  :end.");
 				#	} else {
-				#		&writelog("ipodtranscode ERR Not Found $filenamebody.wav");
+				#		&writelog("ERR Not Found $filenamebody.wav");
 				#	}
 				#} else {
 				#	#print "DEBUG $to
-				#	&writelog("ipodtranscode faac $filenamebody.wav");
-				#	&writelog("ipodtranscode CMD: faac -b 128  -o $filenamebody.aac $filenamebody.wav");
+				#	&writelog("faac $filenamebody.wav");
+				#	&writelog("CMD: faac -b 128  -o $filenamebody.aac $filenamebody.wav  :start.");
 				#	system ("faac -b 128  -o $filenamebody.aac $filenamebody.wav ");
+				#	&writelog("CMD: faac -b 128  -o $filenamebody.aac $filenamebody.wav  :end.");
 				#}
 			}
 
@@ -299,42 +365,43 @@ while ($counttranscodefiles >= 1) {
 				# デジタルラジオなら
 				if ($inputmpeg2 =~ /aac$/i) {
 					if (-e "$toolpath/perl/tool/MP4Box") {
-						&writelog("ipodtranscode MP4Box $filenamebody");
-						&writelog("ipodtranscode CMD: cd $recfolderpath ;$toolpath/perl/tool/MP4Box -add $filenamebody.aac  -new $filenamebody.base.mp4");
+						&writelog("MP4Box $filenamebody");
+						&writelog("CMD: cd $recfolderpath ;$toolpath/perl/tool/MP4Box -add $filenamebody.aac  -new $filenamebody.base.mp4  :start.");
 						system ("cd $recfolderpath ;$toolpath/perl/tool/MP4Box -add $filenamebody.aac  -new $filenamebody.base.mp4");
 						$exit_value  = $? >> 8;
 						$signal_num  = $? & 127;
 						$dumped_core = $? & 128;
-						&writelog("ipodtranscode DEBUG MP4Box -add $filenamebody.aac  -new $filenamebody.base.mp4:$exit_value:$signal_num:$dumped_core");
-					}else{
-						&writelog("ipodtranscode WARN; Pls. install $toolpath/perl/tool/MP4Box");
+						&writelog("MP4Box  :$exit_value:$signal_num:$dumped_core:end.");
+					} else {
+						&writelog("WARN; Pls. install $toolpath/perl/tool/MP4Box");
 					}
 				} else {
 					# MP4ビルド
-					if (-e "$toolpath/perl/tool/MP4Box"){
+					if (-e "$toolpath/perl/tool/MP4Box") {
 						&changefilestatus($pid, $FILESTATUSTRANSCODEMP4BOX);
-						&writelog("ipodtranscode MP4Box $filenamebody");
-						&writelog("ipodtranscode CMD: cd $recfolderpath ;$toolpath/perl/tool/MP4Box -fps 29.97 -add $filenamebody.264 -new $filenamebody.base.mp4");
+						&writelog("MP4Box $filenamebody");
+						&writelog("CMD: cd $recfolderpath ;$toolpath/perl/tool/MP4Box -fps 29.97 -add $filenamebody.264 -new $filenamebody.base.mp4  :start.");
 						system ("cd $recfolderpath ;$toolpath/perl/tool/MP4Box -fps 29.97 -add $filenamebody.264 -new $filenamebody.base.mp4");
 						$exit_value  = $? >> 8;
 						$signal_num  = $? & 127;
 						$dumped_core = $? & 128;
-						&writelog("ipodtranscode DEBUG MP4Box -fps 29.97 -add $filenamebody.264 -new $filenamebody.base.mp4:$exit_value:$signal_num:$dumped_core");
+						&writelog("MP4Box -add 264 new $filenamebody.base.mp4  :$exit_value:$signal_num:$dumped_core:end.");
+
 						if (-e "$filenamebody.base.mp4") {
-							&writelog("ipodtranscode CMD: cd $recfolderpath ;$toolpath/perl/tool/MP4Box -add $filenamebody.aac $filenamebody.base.mp4");
+							&writelog("CMD: cd $recfolderpath ;$toolpath/perl/tool/MP4Box -add $filenamebody.aac $filenamebody.base.mp4  :start.");
 							system ("cd $recfolderpath ;$toolpath/perl/tool/MP4Box -add $filenamebody.aac $filenamebody.base.mp4");
 							$exit_value  = $? >> 8;
 							$signal_num  = $? & 127;
 							$dumped_core = $? & 128; 
-							&writelog("ipodtranscode DEBUG MP4Box -add $filenamebody.aac:$exit_value:$signal_num:$dumped_core");
+							&writelog("MP4Box -add aac  :$exit_value:$signal_num:$dumped_core:end.");
 						} else {
 							$filelist = `ls -lhtr $recfolderpath/${filenamebody}*`;
 							$debugenv = `env`;
 							$debugenv =~ s/\n/ /g;
-							&writelog("ipodtranscode ERR File not exist. $debugenv. $filelist; $filenamebody.base.mp4; $filelist; cd $recfolderpath; $toolpath/perl/tool/MP4Box -fps 29.97 -add $filenamebody.264 -new $filenamebody.base.mp4");
+							&writelog("ERR File not exist. $debugenv. $filelist; $filenamebody.base.mp4; $filelist; cd $recfolderpath; $toolpath/perl/tool/MP4Box -fps 29.97 -add $filenamebody.264 -new $filenamebody.base.mp4");
 						}
 					} else {
-						&writelog("ipodtranscode WARN; Pls. install $toolpath/perl/tool/MP4Box");
+						&writelog("WARN; Pls. install $toolpath/perl/tool/MP4Box");
 					}
 					unlink("$filenamebody.aac");
 				} # endif #デジタルラジオなら
@@ -344,26 +411,25 @@ while ($counttranscodefiles >= 1) {
 				if (-e "$toolpath/perl/tool/MP4Box") {
 					# iPodヘッダ付加
 					#&changefilestatus($pid,$FILESTATUSTRANSCODEATOM);
-					&writelog("ipodtranscode ATOM $filenamebody");
+					&writelog("ATOM $filenamebody");
 					#system ("/usr/local/bin/ffmpeg -y -i $filenamebody.base.mp4 -vcodec copy -acodec copy -f ipod ${mp4outdir}MAQ${mp4filenamestring}.MP4");
 					#system ("cd $recfolderpath ; MP4Box -ipod $filenamebody.base.mp4");
-					&writelog("ipodtranscode CMD: cd $recfolderpath ; $toolpath/perl/tool/MP4Box -ipod $filenamebody.base.mp4");
+					&writelog("CMD: cd $recfolderpath ; $toolpath/perl/tool/MP4Box -ipod $filenamebody.base.mp4  :start.");
 					system ("cd $recfolderpath ; $toolpath/perl/tool/MP4Box -ipod $filenamebody.base.mp4");
 					$exit_value = $? >> 8;
 					$signal_num = $? & 127;
 					$dumped_core = $? & 128;
-					&writelog("ipodtranscode DEBUG MP4Box -ipod $filenamebody.base.mp4:$exit_value:$signal_num:$dumped_core");
+					&writelog("MP4Box -ipod $filenamebody.base.mp4  :$exit_value:$signal_num:$dumped_core:end.");
 					if (-e "$filenamebody.base.mp4") {
 						unlink("${mp4outdir}MAQ${mp4filenamestring}.MP4");
-						&writelog("ipodtranscode CMD: mv $filenamebody.base.mp4 ${mp4outdir}MAQ${mp4filenamestring}.MP4");
+						&writelog("CMD: mv $filenamebody.base.mp4 ${mp4outdir}MAQ${mp4filenamestring}.MP4");
 						system("mv $filenamebody.base.mp4 ${mp4outdir}MAQ${mp4filenamestring}.MP4");
-						&writelog("ipodtranscode mv $filenamebody.base.mp4 ${mp4outdir}MAQ${mp4filenamestring}.MP4");
 					} else {
-						&writelog("ipodtranscode ERR $filenamebody.base.mp4 Not found.");
+						&writelog("ERR $filenamebody.base.mp4 Not found.");
 					}
-				# ipodtranscode mv /home/foltia/php/tv/1329-21-20080829-0017.base.mp4 /home/foltia/php/tv/1329.localized/mp4/MAQ-/home/foltia/php/tv/1329-21-20080829-0017.MP4
+				# mv /home/foltia/php/tv/1329-21-20080829-0017.base.mp4 /home/foltia/php/tv/1329.localized/mp4/MAQ-/home/foltia/php/tv/1329-21-20080829-0017.MP4
 				} else {
-					&writelog("ipodtranscode WARN; Pls. install $toolpath/perl/tool/MP4Box");
+					&writelog("WARN; Pls. install $toolpath/perl/tool/MP4Box");
 				}
 			}
 
@@ -373,9 +439,12 @@ while ($counttranscodefiles >= 1) {
 					&changefilestatus($pid, $FILESTATUSTRANSCODECOMPLETE);
 					&updatemp4file();
 				} else {
-					&writelog("ipodtranscode ERR ; Fail.Giving up!  MAQ${mp4filenamestring}.MP4");
+					&writelog("ERR ; Fail.Giving up!  MAQ${mp4filenamestring}.MP4");
 					&changefilestatus($pid, 999);
 				}
+				unlink("${filenamebody}_SD1.m2t");
+				unlink("${filenamebody}_SD2.m2t");
+				unlink("${filenamebody}_SD3.m2t");
 				unlink("${filenamebody}_HD.m2t");
 				# ConfigによってTSファイルは常にsplitした状態にするかどうか選択
 				# B25失敗したときにここが走るとファイルぶっ壊れるので検証を入れる
@@ -383,7 +452,7 @@ while ($counttranscodefiles >= 1) {
 				#	if (-e "${filenamebody}_tss.m2t") {
 				#		unlink("${filenamebody}.m2t");
 				#		unless (rename "${filenamebody}_tss.m2t", "${filenamebody}.m2t") {
-				#		&writelog("ipodtranscode WARNING RENAME FAILED ${filenamebody}_tss.m2t ${filenamebody}.m2t");
+				#		&writelog("WARNING RENAME FAILED ${filenamebody}_tss.m2t ${filenamebody}.m2t");
 				#		} else {
 				#		
 				#		}
@@ -435,16 +504,16 @@ while ($counttranscodefiles >= 1) {
 			$encodeoptionlog = $encodeoption;
 			Jcode::convert(\$encodeoptionlog,'euc');
 		
-			&writelog("ipodtranscode START QTY=$trconqty $encodeoptionlog");
+			&writelog("START QTY=$trconqty $encodeoptionlog");
 			#print "ffmpeg $encodeoptionlog \n";
 			&changefilestatus($pid, $FILESTATUSTRANSCODEFFMPEG);
 			system ("/usr/local/bin/ffmpeg  $encodeoption ");
-			&writelog("ipodtranscode FFEND $inputmpeg2");
+			&writelog("FFEND $inputmpeg2");
 			&changefilestatus($pid, $FILESTATUSTRANSCODECOMPLETE);
 			#もう要らなくなった #2008/11/14 
-			#&writelog("ipodtranscode mp4psp -p $mp4file $movietitleeuc");
+			#&writelog("mp4psp -p $mp4file $movietitleeuc");
 			#system("/usr/local/bin/mp4psp -p $mp4file '$movietitleeuc' ");
-			#&writelog("ipodtranscode mp4psp COMPLETE  $mp4file ");
+			#&writelog("mp4psp COMPLETE  $mp4file ");
 		
 			&updatemp4file();
 		} #endif #デジタルかアナログか
@@ -455,14 +524,14 @@ while ($counttranscodefiles >= 1) {
 		#exit;
 		
 		
-	} else {#ファイルがなければ
-		&writelog("ipodtranscode NO $inputmpeg2 file.Skip.");
+	} else { #ファイルがなければ
+		&writelog("NO $inputmpeg2 file.Skip.");
 	} #end if
 
 } # end while
 
 #残りファイルがゼロなら
-&writelog("ipodtranscode ALL COMPLETE");
+&writelog("ALL COMPLETE");
 exit;
 
 
@@ -480,19 +549,19 @@ sub makethumbnail() {
 	#サムネール
 	my $outputfilename = $inputmpeg2 ;#フルパス
 	my $thmfilename    = "MAQ${mp4filenamestring}.THM";
-	&writelog("ipodtranscode DEBUG thmfilename $thmfilename");
+	&writelog("DEBUG thmfilename $thmfilename");
 
 	#system ("mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -ao null -sstep 1 -frames 3  -v 3 $outputfilename");
 	#
-	#&writelog("ipodtranscode DEBUG mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -ao null -sstep 1 -frames 3  -v 3 $outputfilename");
+	#&writelog("DEBUG mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -ao null -sstep 1 -frames 3  -v 3 $outputfilename");
 	if($outputfilename =~ /.m2t$/) {
 		#ハイビジョンTS
 		system ("mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -nosound -vf framestep=300step,scale=160:90,expand=160:120 -frames 1 $outputfilename");
-		&writelog("ipodtranscode DEBUG mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -nosound -vf framestep=300step,scale=160:90,expand=160:120 -frames 1 $outputfilename");
+		&writelog("DEBUG mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -nosound -vf framestep=300step,scale=160:90,expand=160:120 -frames 1 $outputfilename");
 	} else {
 		#アナログ
 		system ("mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -nosound -vf framestep=300step,scale=165:126,crop=160:120 -frames 1 $outputfilename");
-		&writelog("ipodtranscode DEBUG mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -nosound -vf framestep=300step,scale=165:126,crop=160:120 -frames 1 $outputfilename");
+		&writelog("DEBUG mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -nosound -vf framestep=300step,scale=165:126,crop=160:120 -frames 1 $outputfilename");
 	}
 	#if (-e "$pspdirname/$thmfilename"){
 	#	$timestamp = strftime("%Y%m%d-%H%M%S", localtime);
@@ -501,10 +570,10 @@ sub makethumbnail() {
 	#}else{
 	#	system("convert -crop 160x120+1+3 -resize 165x126\! $pspdirname/00000002.jpg $pspdirname/$thmfilename");
 	#}
-	#&writelog("ipodtranscode DEBUG convert -crop 160x120+1+3 -resize 165x126\! $pspdirname/00000002.jpg $pspdirname/$thmfilename");
+	#&writelog(" DEBUG convert -crop 160x120+1+3 -resize 165x126\! $pspdirname/00000002.jpg $pspdirname/$thmfilename");
 	
 	#system("rm -rf $pspdirname/0000000*.jpg ");
-	#&writelog("ipodtranscode DEBUG rm -rf $pspdirname/0000000*.jpg");
+	#&writelog("DEBUG rm -rf $pspdirname/0000000*.jpg");
 	system("mv $pspdirname/00000001.jpg $pspdirname/$thmfilename");
 
 } #endsub makethumbnail
@@ -516,16 +585,16 @@ sub updatemp4file() {
 		# MP4ファイル名をPIDレコードに書き込み
 		$sth = $dbh->prepare($stmt{'ipodtranscode.updatemp4file.1'});
 		$sth->execute($mp4filename, $pid);
-		&writelog("ipodtranscode UPDATEsubtitleDB $stmt{'ipodtranscode.updatemp4file.1'}");
+		&writelog("UPDATEsubtitleDB $stmt{'ipodtranscode.updatemp4file.1'}");
 
 		# MP4ファイル名をfoltia_mp4files挿入
 		$sth = $dbh->prepare($stmt{'ipodtranscode.updatemp4file.2'});
 		$sth->execute($tid, $mp4filename);
-		&writelog("ipodtranscode UPDATEmp4DB $stmt{'ipodtranscode.updatemp4file.2'}");
+		&writelog("UPDATEmp4DB $stmt{'ipodtranscode.updatemp4file.2'}");
 
 		&changefilestatus($pid, $FILESTATUSALLCOMPLETE);
 	} else {
-		&writelog("ipodtranscode ERR MP4 NOT EXIST $pid/$mp4filename");
+		&writelog("ERR MP4 NOT EXIST $pid/$mp4filename");
 	}
 
 } #updatemp4file
@@ -552,10 +621,10 @@ sub validationsplitfile {
 		$validation = $filesizeoriginal / $filesizesplit   ;
 		if ($validation > 2 ) {
 			#print "Fail split may be fail.\n";
-			&writelog("ipodtranscode ERR File split may be fail: $filesizeoriginal:$filesizesplit");
+			&writelog("ERR File split may be fail: $filesizeoriginal:$filesizesplit");
 			$trcnmpegfile = $inputmpeg2 ;
 			unlink("${filenamebody}_tss.m2t");
-			unlink("${filenamebody}_HD.m2tt");
+			unlink("${filenamebody}_HD.m2t");
 			return ($trcnmpegfile);
 		} else {
 			#print "Fail split may be good.\n";
@@ -563,11 +632,78 @@ sub validationsplitfile {
 		}
 	} else {
 		#Fail
-		&writelog("ipodtranscode ERR File split may be fail: $filesizeoriginal:$filesizesplit");
+		&writelog("ERR File split may be fail: $filesizeoriginal:$filesizesplit");
 		$trcnmpegfile = $inputmpeg2 ;
 		unlink("${filenamebody}_tss.m2t");
-		unlink("${filenamebody}_HD.m2tt");
+		unlink("${filenamebody}_HD.m2t");
 		return ($trcnmpegfile);
 	}
 } #end sub validationsplitfile
+
+sub validationsplitfilesd {
+	my $inputmpeg2   = $_[0];
+	my $sdfile1      = $_[1];
+	my $sdfile2      = $_[2];
+	my $sdfile3      = $_[3];
+	my $trcnmpegfile = $inputmpeg2;
+
+	#Split結果確認
+	my $filesizeoriginal = -s $inputmpeg2 ;
+	my $filesizesplit;
+
+	# ファイルサイズ取得
+	if (-e $sdfile1) {
+		$sdfile1size = -s $sdfile1;
+	} else {
+		$sdfile1size = 0;
+	}
+	if (-e $sdfile2) {
+		$sdfile2size = -s $sdfile2;
+	} else {
+		$sdfile2size = 0;
+	}
+	if (-e $sdfile3) {
+		$sdfile3size = -s $sdfile3;
+	} else {
+		$sdfile3size = 0;
+	}
+
+	# SD1 と SD2 を比較
+	if ($sdfile1size > $sdfile2size) {
+		$trcnmpegfile = $sdfile1;
+	} else {
+		$trcnmpegfile = $sdfile2;
+	}
+	# SD3 と比較
+	if (-s $trcnmpegfile > $sdfile3size) {
+		$trcnmpegfile = $trcnmpegfile;
+	} else {
+		$trcnmpegfile = $sdfile3;
+	}
+	$filesizesplit = -s $trcnmpegfile;
+	
+	my $validation       = 0;
+	if ($filesizesplit  > 0) {
+		$validation = $filesizeoriginal / $filesizesplit   ;
+		if ($validation > 2.5 ) {
+			&writelog("ERR File split may be fail: $filesizeoriginal:$filesizesplit");
+			$trcnmpegfile = $inputmpeg2 ;
+			unlink("${filenamebody}_SD1.m2t");
+			unlink("${filenamebody}_SD2.m2t");
+			unlink("${filenamebody}_SD3.m2t");
+			unlink("${filenamebody}_HD.m2t");
+			return ($trcnmpegfile);
+		} else {
+			return ($trcnmpegfile);
+		}
+	} else {
+		&writelog("ERR File split may be fail: $filesizeoriginal:$filesizesplit");
+		$trcnmpegfile = $inputmpeg2 ;
+		unlink("${filenamebody}_SD1.m2t");
+		unlink("${filenamebody}_SD2.m2t");
+		unlink("${filenamebody}_SD3.m2t");
+		unlink("${filenamebody}_HD.m2t");
+		return ($trcnmpegfile);
+	}
+} #end sub validationsplitfilesd
 
