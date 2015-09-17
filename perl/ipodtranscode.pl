@@ -172,7 +172,7 @@ while ($counttranscodefiles >= 1) {
 
 				} elsif($trconqty == 3) {
 					#$ffmpegencopt = " -threads 0 -s 640x352 -deinterlace -r 29.97 -vcodec libx264 -preset medium -g 100 -b 600k -bufsize 768k -maxrate 700k -level 13 -qmin 10 -qmax 35 -sc_threshold 60 -refs 3 -async 50 -f h264 $filenamebody.264";
-					$ffmpegencopt = " -threads 0 -s 640x352 -r 29.97 -vcodec libx264 -preset fast -g 100 -crf 21 -bufsize 768k -maxrate 700k -level 30 -sc_threshold 60 -refs 3 -async 50 -f h264 $filenamebody.264";
+					$ffmpegencopt = " -threads 0 -s 640x352 -r 29.97 -vcodec libx264 -preset fast -g 100 -crf 21 -bufsize 768k -maxrate 768K -level 30 -sc_threshold 60 -refs 3 -async 50 -f h264 $filenamebody.264";
 
 				}
 				# 不安定なので頭2秒は捨てる
@@ -326,11 +326,13 @@ while ($counttranscodefiles >= 1) {
                     $dumped_core = $? & 128;
                     &writelog("ffmpeg retry No splited.  $inputmpeg2 :$exit_value:$signal_num:$dumped_core:end.");
 				}
+				$enc264size = -s "$filenamebody.264";
+				&writelog("ffmpeg encode 264 file size: $enc264size/1024/1024 MB");
 			}
 
 			if ($filestatus <= $FILESTATUSTRANSCODEWAVE) {
-				# AAC出力
-				unlink("${filenamebody}.aac");
+				# WAV出力
+				unlink("${filenamebody}.wav");
 				&changefilestatus($pid, $FILESTATUSTRANSCODEWAVE);
 
 				# mplayer	
@@ -339,36 +341,45 @@ while ($counttranscodefiles >= 1) {
 				#system ("mplayer $trcnmpegfile -vc null -vo null -ao pcm:file=$filenamebody.wav:fast");
 				#&writelog("CMD: mplayer $trcnmpegfile -vc null -vo null -ao pcm:file=$filenamebody.wav:fast  :end.");
 
-				# ffmpeg
-				&writelog("ffmpeg aac  $trcnmpegfile :start.");
-				&writelog("CMD: ffmpeg -i $trcnmpegfile $sstime -map 0:1 -vn -acodec copy $filenamebody.aac");
-				system ("ffmpeg -i $trcnmpegfile $sstime -map 0:1 -vn -acodec copy $filenamebody.aac");
+				# ffmpeg aac
+				#&writelog("ffmpeg aac  $trcnmpegfile :start.");
+				#&writelog("CMD: ffmpeg -i $trcnmpegfile $sstime -map 0:1 -vn -acodec copy $filenamebody.aac");
+				#system ("ffmpeg -i $trcnmpegfile $sstime -map 0:1 -vn -acodec copy $filenamebody.aac");
+
+				# ffmpeg aac -> wav
+				&writelog("ffmpeg aac -> wav  $trcnmpegfile :start.");
+				&writelog("CMD: ffmpeg -i $trcnmpegfile $sstime -map 0:1 -vn -acodec pcm_s16le -ac 2 $filenamebody.wav");
+				system ("ffmpeg -i $trcnmpegfile $sstime -map 0:1 -vn -acodec pcm_s16le -ac 2 $filenamebody.wav");
+				
                 $exit_value  = $? >> 8;
                 $signal_num  = $? & 127;
                 $dumped_core = $? & 128;
-                &writelog("ffmpeg aac.  $trcnmpegfile :$exit_value:$signal_num:$dumped_core:end.");
+                &writelog("ffmpeg aac -> wav.  $trcnmpegfile :$exit_value:$signal_num:$dumped_core:end.");
 			}
 
 			if ($filestatus <= $FILESTATUSTRANSCODEAAC) {
 				# AAC変換
-				#unlink("${filenamebody}.aac");
+				unlink("${filenamebody}.aac");
 				&changefilestatus($pid, $FILESTATUSTRANSCODEAAC);
-				#if (-e "$toolpath/perl/tool/neroAacEnc") {
-				#	if (-e "$filenamebody.wav") {
-				#		&writelog("neroAacEnc $filenamebody.wav");
-				#		&writelog("CMD: $toolpath/perl/tool/neroAacEnc -br 128000  -if $filenamebody.wav  -of $filenamebody.aac  :start.");
-				#		system ("$toolpath/perl/tool/neroAacEnc -br 128000  -if $filenamebody.wav  -of $filenamebody.aac");
-				#		&writelog("CMD: $toolpath/perl/tool/neroAacEnc -br 128000  -if $filenamebody.wav  -of $filenamebody.aac  :end.");
-				#	} else {
-				#		&writelog("ERR Not Found $filenamebody.wav");
-				#	}
-				#} else {
-				#	#print "DEBUG $to
-				#	&writelog("faac $filenamebody.wav");
-				#	&writelog("CMD: faac -b 128  -o $filenamebody.aac $filenamebody.wav  :start.");
-				#	system ("faac -b 128  -o $filenamebody.aac $filenamebody.wav ");
-				#	&writelog("CMD: faac -b 128  -o $filenamebody.aac $filenamebody.wav  :end.");
-				#}
+				if (-e "$toolpath/perl/tool/neroAacEnc") {
+					if (-e "$filenamebody.wav") {
+						&writelog("neroAacEnc $filenamebody.wav");
+						&writelog("CMD: $toolpath/perl/tool/neroAacEnc -br 128000  -if $filenamebody.wav  -of $filenamebody.aac  :start.");
+						system ("$toolpath/perl/tool/neroAacEnc -br 128000  -if $filenamebody.wav  -of $filenamebody.aac");
+						&writelog("CMD: $toolpath/perl/tool/neroAacEnc -br 128000  -if $filenamebody.wav  -of $filenamebody.aac  :end.");
+
+						$encaacsize = -s "$filenamebody.aac";
+						&writelog("encode aac file size: $encaacsize/1024/1024 MB");
+					} else {
+						&writelog("ERR Not Found $filenamebody.wav");
+					}
+				} else {
+					#print "DEBUG $to
+					&writelog("faac $filenamebody.wav");
+					&writelog("CMD: faac -b 128  -o $filenamebody.aac $filenamebody.wav  :start.");
+					system ("faac -b 128  -o $filenamebody.aac $filenamebody.wav ");
+					&writelog("CMD: faac -b 128  -o $filenamebody.aac $filenamebody.wav  :end.");
+				}
 			}
 
 			if ($filestatus <= $FILESTATUSTRANSCODEMP4BOX) {
@@ -598,12 +609,12 @@ sub updatemp4file() {
 		# MP4ファイル名をPIDレコードに書き込み
 		$sth = $dbh->prepare($stmt{'ipodtranscode.updatemp4file.1'});
 		$sth->execute($mp4filename, $pid);
-		&writelog("UPDATEsubtitleDB $stmt{'ipodtranscode.updatemp4file.1'}");
+		&writelog("UPDATEsubtitleDB $stmt{'ipodtranscode.updatemp4file.1'} $mp4filename, $pid");
 
 		# MP4ファイル名をfoltia_mp4files挿入
 		$sth = $dbh->prepare($stmt{'ipodtranscode.updatemp4file.2'});
 		$sth->execute($tid, $mp4filename);
-		&writelog("UPDATEmp4DB $stmt{'ipodtranscode.updatemp4file.2'}");
+		&writelog("UPDATEmp4DB $stmt{'ipodtranscode.updatemp4file.2'} $tid, $mp4filename");
 
 		&changefilestatus($pid, $FILESTATUSALLCOMPLETE);
 	} else {
