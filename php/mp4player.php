@@ -31,29 +31,45 @@ if ($useenvironmentpolicy == 1){
 	}
 }//end if login
 
-$pid = getgetnumform(p);
+$pid  = getgetnumform(p);
+$file = getgetform(f);
 
-if ($pid != ""){
+if ($pid != "") {
 $query = "
-SELECT title,countno,subtitle,foltia_subtitle.tid,PSPfilename  
-FROM foltia_subtitle,foltia_program 
+SELECT 
+  title,
+  countno,
+  subtitle,
+  foltia_subtitle.tid,
+  PSPfilename  
+FROM foltia_subtitle, foltia_program 
 WHERE pid = ? AND foltia_subtitle.tid = foltia_program.tid";
-$rs = sql_query($con, $query, "DBクエリに失敗しました",array($pid));
+$rs = sql_query($con, $query, "DBクエリに失敗しました", array($pid));
 $rowdata = $rs->fetch();
 
 //$title = htmlspecialchars(mb_convert_encoding($rowdata[0],"UTF-8", "EUC-JP"));
 $title = htmlspecialchars($rowdata[0]);
-	if ($rowdata[1] == ""){
-	$countno = "";
-	}else{
-	$countno = "第".htmlspecialchars($rowdata[1])."話";
-	}
+if ($rowdata[1] == "") {
+  $countno = "";
+} else {
+  $countno = "第".htmlspecialchars($rowdata[1])."話";
+}
 //$subtitle = htmlspecialchars(mb_convert_encoding($rowdata[2],"UTF-8", "EUC-JP"));
 $subtitle = htmlspecialchars($rowdata[2]);
-$tid =  htmlspecialchars($rowdata[3]);
+$tid      = htmlspecialchars($rowdata[3]);
 $filename = htmlspecialchars($rowdata[4]);
 
-}else{//引数なしエラー処理
+} else if ($file != "") {
+  $filesplit = split('-', htmlspecialchars($file));
+  $title     = '';
+  $subtitle  = '';
+  $countno   = "第".htmlspecialchars($filesplit[2])."話";
+  $tid       = htmlspecialchars($filesplit[1]);
+  $filename  = htmlspecialchars($file);
+  //echo "<pre>";
+  //var_dump($filesplit);
+  //echo "</pre>";
+} else {//引数なしエラー処理
 
 header("Status: 404 Not Found",TRUE,404);
 print "<!DOCTYPE html>
@@ -114,10 +130,10 @@ print "
   <!-- Begin VideoJS -->
   <div class=\"video-js-box\">
     <!-- Using the Video for Everybody Embed Code http://camendesign.com/code/video_for_everybody -->
-    <video class=\"video-js\" width=\"640\" height=\"352\" poster=\"./img/videoplayer.png\" controls preload>
+    <video class=\"video-js\" width=\"640\" height=\"360\" poster=\"./img/videoplayer.png\" controls preload>
 	  <source src=\"$mp4videofileurl\" type='video/mp4; codecs=\"avc1.42E01E, mp4a.40.2\"'>
       <!-- Flash Fallback. Use any flash video player here. Make sure to keep the vjs-flash-fallback class. -->
-      <object class=\"vjs-flash-fallback\" width=\"640\" height=\"352\" type=\"application/x-shockwave-flash\"
+      <object class=\"vjs-flash-fallback\" width=\"640\" height=\"360\" type=\"application/x-shockwave-flash\"
         data=\"http://releases.flowplayer.org/swf/flowplayer-3.2.5.swf\">
         <param name=\"movie\" value=\"http://releases.flowplayer.org/swf/flowplayer-3.2.5.swf\" />
         <param name=\"allowfullscreen\" value=\"true\" />
