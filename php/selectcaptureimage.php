@@ -102,7 +102,12 @@ $rowdata[1] = "";
   $tid       = $filesplit[1];
   $num       = $filesplit[2];
   $date      = $filesplit[3];
-  list($time, $ext) = split('\.', $filesplit[4]);
+  if ($tid != '0') {
+    list($time, $ext) = split('\.', $filesplit[4]);
+  } else {
+    list($time, $ext) = split('\.', $filesplit[4]);
+    list($ch, $ext) = split('\.', $filesplit[5]);
+  }
   $rowdata   = array();
   $rowdata[0]= $tid;
   $rowdata[1]= '';
@@ -111,7 +116,11 @@ $rowdata[1] = "";
   $rowdata[4]= 'subtitle';
   $rowdata[5]= 'start';
   $rowdata[6]= 'min';
-  $rowdata[8]= $filesplit[1] . '-' . $num . '-' . $date . '-' . $time . '.m2t';
+  if ($tid != '0') {
+    $rowdata[8]= $filesplit[1] . '-' . $num . '-' . $date . '-' . $time . '.m2t';
+  } else {
+    $rowdata[8]= $filesplit[1] . '-' . $num . '-' . $date . '-' . $time . '-' . $ch . '.m2t';
+  }
   $rowdata[9]= htmlspecialchars($file);
 
 } else {
@@ -133,11 +142,11 @@ print "<a href = \"http://cal.syoboi.jp/tid/$rowdata[0]/\" target=\"_blank\">";
 print htmlspecialchars($rowdata[2]) . "</a> " ;
 print htmlspecialchars($rowdata[3]) . " ";
 $tid = $rowdata[0];
-if ($tid > 0){
-print "<a href = \"http://cal.syoboi.jp/tid/$tid/time#$pid\" target=\"_blank\">";
-print htmlspecialchars($rowdata[4]) . "</a> ";
-}else{
-print htmlspecialchars($rowdata[4]) . " ";
+if ($tid > 0) {
+  print "<a href = \"http://cal.syoboi.jp/tid/$tid/time#$pid\" target=\"_blank\">";
+  print htmlspecialchars($rowdata[4]) . "</a> ";
+} else {
+  print htmlspecialchars($rowdata[4]) . " ";
 }
 print htmlspecialchars($rowdata[1]) . " ";
 print htmlspecialchars($rowdata[6]) . "分 ";
@@ -156,28 +165,28 @@ if ($pid) {
 
 $m2pfilename = $rowdata[8];
 
-list($tid,$countno,$date,$time)= split ("-", $m2pfilename );
+list($tid, $countno, $date, $time)= split ("-", $m2pfilename );
 //	$tid = ereg_replace("[^0-9]", "", $tid);
-$tid = $rowdata[0];
-$countno = $rowdata[3] ;
-$path = ereg_replace("\.m2p$|\.m2t$", "", $m2pfilename);
+$tid       = $rowdata[0];
+$countno   = $rowdata[3] ;
+$path      = ereg_replace("\.m2p$|\.m2t$", "", $m2pfilename);
 $serveruri = getserverfqdn ();
 
 exec ("ls -1F $recfolderpath/$tid.localized/img/$path/", $tids);
 //$timecount = 1;
 foreach($tids as $filetid) {
-if (strpos($filetid, '/') !== false) {
-  continue;
-}
-if (file_exists("./sb-edit.php") ) {
-print "<a href=\"./sb-edit.php?pid=$pid&f=$filetid\"><img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid' alt='$tid:$countno:$filetid'></a>\n";
-}else{
-if (file_exists("$recfolderpath/$tid.localized/img/$path/l/$filetid")) {
-print "<a href='http://$serveruri$httpmediamappath/$tid.localized/img/$path/l/$filetid' target='_blank'><img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid'  alt='$tid:$countno:$filetid'></a>\n";
-} else {
-print "<img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid'  alt='$tid:$countno:$filetid'>\n";
-}
-}
+  if (strpos($filetid, '/') !== false) {
+    continue;
+  }
+  if (file_exists("./sb-edit.php") ) {
+    print "<a href=\"./sb-edit.php?pid=$pid&f=$filetid\"><img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid' alt='$tid:$countno:$filetid'></a>\n";
+  } else {
+    if (file_exists("$recfolderpath/$tid.localized/img/$path/l/$filetid")) {
+      print "<a href='http://$serveruri$httpmediamappath/$tid.localized/img/$path/l/$filetid' target='_blank'><img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid'  alt='$tid:$countno:$filetid'></a>\n";
+    } else {
+      print "<img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid'  alt='$tid:$countno:$filetid'>\n";
+    }
+  }
 }//foreach
 // タイトル一覧　ここまで
 
