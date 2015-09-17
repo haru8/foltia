@@ -14,6 +14,7 @@ use DBI;
 use DBD::Pg;
 use DBD::SQLite;
 use Jcode;
+use File::Basename;
 
 $path = $0;
 $path =~ s/ipodtranscode.pl$//i;
@@ -170,7 +171,8 @@ while ($counttranscodefiles >= 1) {
 					$ffmpegencopt = " -threads 0 -s 480x272 -deinterlace -r 29.97 -vcodec libx264 -preset fast -g 300 -b 400000 -level 13 -sc_threshold 60 -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
 
 				} elsif($trconqty == 3) {
-					$ffmpegencopt = " -threads 0 -s 640x352 -deinterlace -r 29.97 -vcodec libx264 -preset fast -g 100 -b 600000 -level 13 -sc_threshold 60 -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
+					#$ffmpegencopt = " -threads 0 -s 640x352 -deinterlace -r 29.97 -vcodec libx264 -preset medium -g 100 -b 600k -bufsize 768k -maxrate 700k -level 13 -qmin 10 -qmax 35 -sc_threshold 60 -refs 3 -async 50 -f h264 $filenamebody.264";
+					$ffmpegencopt = " -threads 0 -s 640x352 -r 29.97 -vcodec libx264 -preset fast -g 100 -crf 21 -bufsize 768k -maxrate 700k -level 30 -sc_threshold 60 -refs 3 -async 50 -f h264 $filenamebody.264";
 
 				}
 				# 不安定なので頭2秒は捨てる
@@ -190,7 +192,7 @@ while ($counttranscodefiles >= 1) {
                         $exit_value  = $? >> 8;
                         $signal_num  = $? & 127;
                         $dumped_core = $? & 128;
-                        &writelog("tss.py   :$exit_value:$signal_num:$dumped_core:end.");
+                        &writelog("tss.py $inputmpeg2 :$exit_value:$signal_num:$dumped_core:end.");
 
 					} else {
 					# TsSplit
@@ -236,8 +238,9 @@ while ($counttranscodefiles >= 1) {
 
 							# Starlight breaker向けキャプチャ画像作成
 							if (-e "$toolpath/perl/captureimagemaker.pl") {
-								&writelog("Call captureimagemaker(TsSplit) $trcnmpegfile");
-								system ("$toolpath/perl/captureimagemaker.pl $trcnmpegfile");
+								$trcnmpegfilename = basename($trcnmpegfile);
+								&writelog("Call captureimagemaker(TsSplit) $trcnmpegfilename");
+								system ("$toolpath/perl/captureimagemaker.pl $trcnmpegfilename");
 							}
 
 				#			if($trcnmpegfile ne $inputmpeg2) {
@@ -271,17 +274,23 @@ while ($counttranscodefiles >= 1) {
 							# ストリームの最初からのはずなので捨てない。
 							$sstime = "";
 						}
+						# Starlight breaker向けキャプチャ画像作成
+						if (-e "$toolpath/perl/captureimagemaker.pl") {
+							$trcnmpegfilename = basename($trcnmpegfile);
+							&writelog("Call captureimagemaker(TsSplit) $trcnmpegfilename");
+							system ("$toolpath/perl/captureimagemaker.pl $trcnmpegfilename");
+						}
 					}
 
 					# 再ffmpeg
 					&changefilestatus($pid, $FILESTATUSTRANSCODEFFMPEG);
-					&writelog("ffmpeg retry $filenamebody.264");
-					&writelog("CMD: /usr/local/bin/ffmpeg -y -i $trcnmpegfile $cropopt $sstime $ffmpegencopt  :start.");
+					&writelog("ffmpeg $filenamebody.264  :start.");
+					&writelog("CMD: /usr/local/bin/ffmpeg -y -i $trcnmpegfile $cropopt $sstime $ffmpegencopt");
 					system ("/usr/local/bin/ffmpeg -y -i $trcnmpegfile $cropopt $sstime $ffmpegencopt");
                     $exit_value  = $? >> 8;
                     $signal_num  = $? & 127;
                     $dumped_core = $? & 128;
-                    &writelog("ffmpeg retry  :$exit_value:$signal_num:$dumped_core:end.");
+                    &writelog("ffmpeg retry.  $trcnmpegfile :$exit_value:$signal_num:$dumped_core:end.");
 
 				}
 
@@ -289,13 +298,13 @@ while ($counttranscodefiles >= 1) {
 				if (! -e "$filenamebody.264") {
 					#再ffmpeg
 					&changefilestatus($pid, $FILESTATUSTRANSCODEFFMPEG);
-					&writelog("ffmpeg retry no crop $filenamebody.264");
-					&writelog("CMD: /usr/local/bin/ffmpeg -y -i $trcnmpegfile $sstime $ffmpegencopt  :start.");
+					&writelog("ffmpeg retry no crop $filenamebody.264  :start.");
+					&writelog("CMD: /usr/local/bin/ffmpeg -y -i $trcnmpegfile $sstime $ffmpegencopt");
 					system ("/usr/local/bin/ffmpeg -y -i $trcnmpegfile $sstime $ffmpegencopt");
                     $exit_value  = $? >> 8;
                     $signal_num  = $? & 127;
                     $dumped_core = $? & 128;
-                    &writelog("ffmpeg retry no crop  :$exit_value:$signal_num:$dumped_core:end.");
+                    &writelog("ffmpeg retry no crop.  $trcnmpegfile :$exit_value:$signal_num:$dumped_core:end.");
 				}
 
 				#強制的にWINEでTsSplit.exe
@@ -309,13 +318,13 @@ while ($counttranscodefiles >= 1) {
 
 					#再ffmpeg
 					&changefilestatus($pid, $FILESTATUSTRANSCODEFFMPEG);
-					&writelog("ffmpeg retry No splited originalTS file $filenamebody.264");
-					&writelog("CMD: /usr/local/bin/ffmpeg -y -i $inputmpeg2 $sstime $ffmpegencopt  :start.");
+					&writelog("ffmpeg retry No splited originalTS file $filenamebody.264  :start.");
+					&writelog("CMD: /usr/local/bin/ffmpeg -y -i $inputmpeg2 $sstime $ffmpegencopt");
 					system ("/usr/local/bin/ffmpeg -y -i $inputmpeg2 $sstime $ffmpegencopt");
                     $exit_value  = $? >> 8;
                     $signal_num  = $? & 127;
                     $dumped_core = $? & 128;
-                    &writelog("ffmpeg retry No splited  :$exit_value:$signal_num:$dumped_core:end.");
+                    &writelog("ffmpeg retry No splited.  $inputmpeg2 :$exit_value:$signal_num:$dumped_core:end.");
 				}
 			}
 
@@ -323,17 +332,21 @@ while ($counttranscodefiles >= 1) {
 				# AAC出力
 				unlink("${filenamebody}.aac");
 				&changefilestatus($pid, $FILESTATUSTRANSCODEWAVE);
+
+				# mplayer	
 				#&writelog("mplayer $filenamebody.wav");
 				#&writelog("CMD: mplayer $trcnmpegfile -vc null -vo null -ao pcm:file=$filenamebody.wav:fast  :start.");
 				#system ("mplayer $trcnmpegfile -vc null -vo null -ao pcm:file=$filenamebody.wav:fast");
 				#&writelog("CMD: mplayer $trcnmpegfile -vc null -vo null -ao pcm:file=$filenamebody.wav:fast  :end.");
-				&writelog("ffmpeg aac");
-				&writelog("CMD: ffmpeg -i $trcnmpegfile $sstime -map 0:1 -vn -acodec copy $filenamebody.aac  :start.");
+
+				# ffmpeg
+				&writelog("ffmpeg aac  $trcnmpegfile :start.");
+				&writelog("CMD: ffmpeg -i $trcnmpegfile $sstime -map 0:1 -vn -acodec copy $filenamebody.aac");
 				system ("ffmpeg -i $trcnmpegfile $sstime -map 0:1 -vn -acodec copy $filenamebody.aac");
                 $exit_value  = $? >> 8;
                 $signal_num  = $? & 127;
                 $dumped_core = $? & 128;
-                &writelog("ffmpeg aac  :$exit_value:$signal_num:$dumped_core:end.");
+                &writelog("ffmpeg aac.  $trcnmpegfile :$exit_value:$signal_num:$dumped_core:end.");
 			}
 
 			if ($filestatus <= $FILESTATUSTRANSCODEAAC) {
@@ -365,8 +378,8 @@ while ($counttranscodefiles >= 1) {
 				# デジタルラジオなら
 				if ($inputmpeg2 =~ /aac$/i) {
 					if (-e "$toolpath/perl/tool/MP4Box") {
-						&writelog("MP4Box $filenamebody");
-						&writelog("CMD: cd $recfolderpath ;$toolpath/perl/tool/MP4Box -add $filenamebody.aac  -new $filenamebody.base.mp4  :start.");
+						&writelog("MP4Box $filenamebody  :start.");
+						&writelog("CMD: cd $recfolderpath ;$toolpath/perl/tool/MP4Box -add $filenamebody.aac  -new $filenamebody.base.mp4");
 						system ("cd $recfolderpath ;$toolpath/perl/tool/MP4Box -add $filenamebody.aac  -new $filenamebody.base.mp4");
 						$exit_value  = $? >> 8;
 						$signal_num  = $? & 127;
@@ -379,8 +392,8 @@ while ($counttranscodefiles >= 1) {
 					# MP4ビルド
 					if (-e "$toolpath/perl/tool/MP4Box") {
 						&changefilestatus($pid, $FILESTATUSTRANSCODEMP4BOX);
-						&writelog("MP4Box $filenamebody");
-						&writelog("CMD: cd $recfolderpath ;$toolpath/perl/tool/MP4Box -fps 29.97 -add $filenamebody.264 -new $filenamebody.base.mp4  :start.");
+						&writelog("MP4Box $filenamebody  :start.");
+						&writelog("CMD: cd $recfolderpath ;$toolpath/perl/tool/MP4Box -fps 29.97 -add $filenamebody.264 -new $filenamebody.base.mp4");
 						system ("cd $recfolderpath ;$toolpath/perl/tool/MP4Box -fps 29.97 -add $filenamebody.264 -new $filenamebody.base.mp4");
 						$exit_value  = $? >> 8;
 						$signal_num  = $? & 127;
