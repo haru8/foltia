@@ -72,7 +72,7 @@ $mp4filenamestring = &mp4filenamestringbuild($pid);
 
 if (-e $inputmpeg2){#MPEG2ファイルが存在していれば
 
-&writelog("ipodtranscode DEBUG mp4filenamestring $mp4filenamestring");
+&writelog("ipodtranscode DEBUG mp3filenamestring $mp4filenamestring");
 #展開ディレクトリ作成
 $pspdirname = &makemp4dir($tid);
 $mp4outdir = $pspdirname ;
@@ -159,15 +159,15 @@ if ($filestatus <= $FILESTATUSTRANSCODEFFMPEG){
 	}
 	# クオリティごとに
 	if (($trconqty eq "")||($trconqty == 1)){
-	$ffmpegencopt = " -threads 0 -s 360x202 -deinterlace -r 24.00 -vcodec libx264 -g 300 -b 330000 -level 13 -loop 1 -sc_threshold 60 -partp4x4 1 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
+	$ffmpegencopt = " -threads 0 -s 360x202 -deinterlace -r 24.00 -vcodec libx264 -g 300 -b 330000 -level 13 -sc_threshold 60 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
 	}elsif($trconqty == 2){
-#	$ffmpegencopt = " -s 480x272 -deinterlace -r 29.97 -vcodec libx264 -g 300 -b 400000 -level 13 -loop 1 -sc_threshold 60 -partp4x4 1 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
+#	$ffmpegencopt = " -s 480x272 -deinterlace -r 29.97 -vcodec libx264 -g 300 -b 400000 -level 13 -sc_threshold 60 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
 # for ffmpeg 0.5 or later
-	$ffmpegencopt = " -threads 0  -s 480x272 -deinterlace -r 29.97 -vcodec libx264 -vpre default   -g 300 -b 400000 -level 13 -sc_threshold 60 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
+	$ffmpegencopt = " -threads 0 -s 480x272 -deinterlace -r 29.97 -vcodec libx264 -vpre default -g 300 -b 400000 -level 13 -sc_threshold 60 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
 	}elsif($trconqty == 3){#640x352
-#	$ffmpegencopt = " -s 640x352 -deinterlace -r 29.97 -vcodec libx264 -g 100 -b 600000 -level 13 -loop 1 -sc_threshold 60 -partp4x4 1 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
+#	$ffmpegencopt = " -s 640x352 -deinterlace -r 29.97 -vcodec libx264 -g 100 -b 600000 -level 13 -sc_threshold 60 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
 # for ffmpeg 0.5 or later
-	$ffmpegencopt = " -threads 0  -s 640x352 -deinterlace -r 29.97 -vcodec libx264 -vpre default   -g 100 -b 600000 -level 13 -sc_threshold 60 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
+	$ffmpegencopt = " -threads 0 -s 640x352 -deinterlace -r 29.97 -vcodec libx264 -vpre default -g 100 -b 600000 -level 13 -sc_threshold 60 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
 	}
 	&changefilestatus($pid,$FILESTATUSTRANSCODEFFMPEG);
 #	&writelog("ipodtranscode ffmpeg $filenamebody.264");
@@ -222,6 +222,7 @@ if ($filestatus <= $FILESTATUSTRANSCODEFFMPEG){
 		#再ffmpeg
 		&changefilestatus($pid,$FILESTATUSTRANSCODEFFMPEG);
 		&writelog("ipodtranscode ffmpeg retry $filenamebody.264");
+		&writelog("ipodtranscode CMD: ffmpeg -y -i $trcnmpegfile $cropopt $ffmpegencopt");
 		system ("ffmpeg -y -i $trcnmpegfile $cropopt $ffmpegencopt");
 	}
 	#もしエラーになったらcropやめる
@@ -229,6 +230,7 @@ if ($filestatus <= $FILESTATUSTRANSCODEFFMPEG){
 		#再ffmpeg
 		&changefilestatus($pid,$FILESTATUSTRANSCODEFFMPEG);
 		&writelog("ipodtranscode ffmpeg retry no crop $filenamebody.264");
+		&writelog("ipodtranscode CMD: ffmpeg -y -i $trcnmpegfile $ffmpegencopt");
 		system ("ffmpeg -y -i $trcnmpegfile $ffmpegencopt");
 	}
 	#強制的にWINEでTsSplit.exe
@@ -239,6 +241,7 @@ if ($filestatus <= $FILESTATUSTRANSCODEFFMPEG){
 		#再ffmpeg
 		&changefilestatus($pid,$FILESTATUSTRANSCODEFFMPEG);
 		&writelog("ipodtranscode ffmpeg retry No splited originalTS file $filenamebody.264");
+		&writelog("ipodtranscode CMD: ffmpeg -y -i $inputmpeg2 $ffmpegencopt");
 		system ("ffmpeg -y -i $inputmpeg2 $ffmpegencopt");
 	}
 }
@@ -247,6 +250,7 @@ if ($filestatus <= $FILESTATUSTRANSCODEWAVE){
 	unlink("${filenamebody}.wav");
 	&changefilestatus($pid,$FILESTATUSTRANSCODEWAVE);
 	&writelog("ipodtranscode mplayer $filenamebody.wav");
+	&writelog("ipodtranscode CMD: mplayer $trcnmpegfile -vc null -vo null -ao pcm:file=$filenamebody.wav:fast");
 	system ("mplayer $trcnmpegfile -vc null -vo null -ao pcm:file=$filenamebody.wav:fast");
 
 }
@@ -257,6 +261,7 @@ if ($filestatus <= $FILESTATUSTRANSCODEAAC){
 	if (-e "$toolpath/perl/tool/neroAacEnc"){
 		if (-e "$filenamebody.wav"){
 	&writelog("ipodtranscode neroAacEnc $filenamebody.wav");
+	&writelog("ipodtranscode CMD: $toolpath/perl/tool/neroAacEnc -br 128000  -if $filenamebody.wav  -of $filenamebody.aac");
 	system ("$toolpath/perl/tool/neroAacEnc -br 128000  -if $filenamebody.wav  -of $filenamebody.aac");
 		}else{
 		&writelog("ipodtranscode ERR Not Found $filenamebody.wav");
@@ -264,6 +269,7 @@ if ($filestatus <= $FILESTATUSTRANSCODEAAC){
 	}else{
 	#print "DEBUG $toolpath/perl/tool/neroAacEnc\n\n";
 	&writelog("ipodtranscode faac $filenamebody.wav");
+	&writelog("ipodtranscode CMD: faac -b 128  -o $filenamebody.aac $filenamebody.wav");
 	system ("faac -b 128  -o $filenamebody.aac $filenamebody.wav ");
 	}
 
@@ -276,6 +282,7 @@ unlink("${filenamebody}.base.mp4");
 if ($inputmpeg2 =~ /aac$/i){
 	if (-e "$toolpath/perl/tool/MP4Box"){
 		&writelog("ipodtranscode MP4Box $filenamebody");
+		&writelog("ipodtranscode CMD: cd $recfolderpath ;$toolpath/perl/tool/MP4Box -add $filenamebody.aac  -new $filenamebody.base.mp4");
 		system ("cd $recfolderpath ;$toolpath/perl/tool/MP4Box -add $filenamebody.aac  -new $filenamebody.base.mp4");
 	$exit_value = $? >> 8;
 	$signal_num = $? & 127;
@@ -289,12 +296,14 @@ if ($inputmpeg2 =~ /aac$/i){
 	if (-e "$toolpath/perl/tool/MP4Box"){
 		&changefilestatus($pid,$FILESTATUSTRANSCODEMP4BOX);
 		&writelog("ipodtranscode MP4Box $filenamebody");
+		&writelog("ipodtranscode CMD: cd $recfolderpath ;$toolpath/perl/tool/MP4Box -fps 29.97 -add $filenamebody.264 -new $filenamebody.base.mp4");
 		system ("cd $recfolderpath ;$toolpath/perl/tool/MP4Box -fps 29.97 -add $filenamebody.264 -new $filenamebody.base.mp4");
 	$exit_value = $? >> 8;
 	$signal_num = $? & 127;
 	$dumped_core = $? & 128;
 	&writelog("ipodtranscode DEBUG MP4Box -fps 29.97 -add $filenamebody.264 -new $filenamebody.base.mp4:$exit_value:$signal_num:$dumped_core");
 		if (-e "$filenamebody.base.mp4"){
+	    &writelog("ipodtranscode CMD: cd $recfolderpath ;$toolpath/perl/tool/MP4Box -add $filenamebody.aac $filenamebody.base.mp4");
 		system ("cd $recfolderpath ;$toolpath/perl/tool/MP4Box -add $filenamebody.aac $filenamebody.base.mp4");
 	$exit_value = $? >> 8;
 	$signal_num = $? & 127;
@@ -320,6 +329,7 @@ unlink("$filenamebody.aac");
 		&writelog("ipodtranscode ATOM $filenamebody");
 		#system ("/usr/local/bin/ffmpeg -y -i $filenamebody.base.mp4 -vcodec copy -acodec copy -f ipod ${mp4outdir}MAQ${mp4filenamestring}.MP4");
 #		system ("cd $recfolderpath ; MP4Box -ipod $filenamebody.base.mp4");
+		&writelog("ipodtranscode CMD: cd $recfolderpath ; $toolpath/perl/tool/MP4Box -ipod $filenamebody.base.mp4");
 		system ("cd $recfolderpath ; $toolpath/perl/tool/MP4Box -ipod $filenamebody.base.mp4");
 	$exit_value = $? >> 8;
 	$signal_num = $? & 127;
@@ -327,6 +337,7 @@ unlink("$filenamebody.aac");
 	&writelog("ipodtranscode DEBUG MP4Box -ipod $filenamebody.base.mp4:$exit_value:$signal_num:$dumped_core");
 		if (-e "$filenamebody.base.mp4"){
 		unlink("${mp4outdir}MAQ${mp4filenamestring}.MP4");
+		&writelog("ipodtranscode CMD: mv $filenamebody.base.mp4 ${mp4outdir}MAQ${mp4filenamestring}.MP4");
 		system("mv $filenamebody.base.mp4 ${mp4outdir}MAQ${mp4filenamestring}.MP4");
 		&writelog("ipodtranscode mv $filenamebody.base.mp4 ${mp4outdir}MAQ${mp4filenamestring}.MP4");
 		}else{
@@ -465,12 +476,12 @@ my $thmfilename = "MAQ${mp4filenamestring}.THM";
 #&writelog("ipodtranscode DEBUG mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -ao null -sstep 1 -frames 3  -v 3 $outputfilename");
 if($outputfilename =~ /.m2t$/){
 #ハイビジョンTS
-system ("mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -ao null -vf framestep=300step,scale=160:90,expand=160:120 -frames 1 $outputfilename");
-&writelog("ipodtranscode DEBUG mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -ao null -vf framestep=300step,scale=160:90,expand=160:120 -frames 1 $outputfilename");
+system ("mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -nosound -vf framestep=300step,scale=160:90,expand=160:120 -frames 1 $outputfilename");
+&writelog("ipodtranscode DEBUG mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -nosound -vf framestep=300step,scale=160:90,expand=160:120 -frames 1 $outputfilename");
 }else{
 #アナログ
-system ("mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -ao null -vf framestep=300step,scale=165:126,crop=160:120 -frames 1 $outputfilename");
-&writelog("ipodtranscode DEBUG mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -ao null -vf framestep=300step,scale=165:126,crop=160:120 -frames 1 $outputfilename");
+system ("mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -nosound -vf framestep=300step,scale=165:126,crop=160:120 -frames 1 $outputfilename");
+&writelog("ipodtranscode DEBUG mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -nosound -vf framestep=300step,scale=165:126,crop=160:120 -frames 1 $outputfilename");
 }
 #if (-e "$pspdirname/$thmfilename"){
 #	$timestamp = strftime("%Y%m%d-%H%M%S", localtime);
