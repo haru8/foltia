@@ -122,8 +122,29 @@ if(-e "$capimgdirname/$captureimgdir/00000005.jpg" ) {
 	&writelog("captureimagemaker Already created. $capimgdirname/$captureimgdir/");
 } else {
 	if ($filename =~ /m2t$/) {
-		&writelog("captureimagemaker DEBUG mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf scale=384:216 -ao null -sstep 9  $recfolderpath/$filename");
-		system ("mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf scale=384:216 -ao null -sstep 9  $recfolderpath/$filename");
+		#&writelog("captureimagemaker DEBUG mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf scale=384:216 -ao null -sstep 9  $recfolderpath/$filename");
+		#system ("mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf scale=384:216 -ao null -sstep 9  $recfolderpath/$filename");
+
+		$num = 0;
+		$sec = 0;
+		$retval = 0;
+		while ($retval == 0) {
+			$num_s = sprintf('%08d', $num);
+			$time  = sprintf("%02d:%02d:%02d", int($sec/3600), int($sec/60), $sec%60);
+			system ("/usr/local/bin/ffmpeg -loglevel quiet -ss $sec -i $recfolderpath/$filename -vframes 1 -s 384x216 -f image2 ${capimgdirname}/${captureimgdir}/${num_s}.jpg");
+			$retval  = $? >> 8;
+			$signal_num  = $? & 127;
+			$dumped_core = $? & 128;
+
+			if (! -e "${capimgdirname}/${captureimgdir}/${num_s}.jpg") {
+				&writelog("/usr/local/bin/ffmpeg -loglevel quiet -ss $sec -i $recfolderpath/$filename -vframes 1 -s 384x216 -f image2 ${capimgdirname}/${captureimgdir}/${num_s}.jpg");
+				&writelog("${capimgdirname}/${captureimgdir}/${num_s}.jpg not found.\n");
+				last;
+			}
+			$num = $num + 1;
+			$sec = $sec + 10;
+		}
+
 		if(-e "$capimgdirname/$captureimgdir/00000003.jpg" ) { #$capimgdirname/$captureimgdir/ があったらなにもしない
 	
 		} else { #空っぽなら再試行
