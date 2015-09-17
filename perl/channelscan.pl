@@ -70,10 +70,8 @@ for ($channel = 13; $channel <= 62 ; $channel++){
 		print "\t\t This channel can view :  $channel \n";
 		open(XML, "< $xmloutpath/__$channel-epg.xml");
 		while ( $line = <XML>) {
-			#Jcode::convert(\$line,'euc','utf8');
 			if($line =~ /<display-name/){
 				$line =~ s/<.*?>//g;
-				#Jcode::convert(\$line,'utf8','euc');
 				print "\t\t $channel $line\n";
 			}#end if
 		}#end while
@@ -94,10 +92,8 @@ $channel = 211;
 		print "\t\t BS Digital can view :   \n";
 		open(XML, "< $xmloutpath/__$channel-epg.xml");
 		while ( $line = <XML>) {
-			#Jcode::convert(\$line,'euc','utf8');
 			if($line =~ /<display-name/){
 				$line =~ s/<.*?>//g;
-				#Jcode::convert(\$line,'utf8','euc');
 				print "\t\t $line\n";
 			}#end if
 		}#end while
@@ -161,10 +157,8 @@ $channel = "CS8";
 		print "\t\t CS Digital can view :   \n";
 		open(XML, "< $xmloutpath/__$channel-epg.xml");
 		while ( $line = <XML>) {
-			#Jcode::convert(\$line,'euc','utf8');
 			if($line =~ /<display-name/){
 				$line =~ s/<.*?>//g;
-				#Jcode::convert(\$line,'utf8','euc');
 				print "\t\t $line\n";
 			}#end if
 		}#end while

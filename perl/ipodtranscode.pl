@@ -526,7 +526,7 @@ while ($counttranscodefiles >= 1) {
 			}
 		
 			$encodeoptionlog = $encodeoption;
-			Jcode::convert(\$encodeoptionlog,'euc');
+			Jcode::convert(\$encodeoptionlog,'utf8');
 		
 			&writelog("START QTY=$trconqty $encodeoptionlog");
 			#print "ffmpeg $encodeoptionlog \n";
