@@ -123,151 +123,309 @@ print "			<th align=\"left\">キャプ</th>\n";
 
 //旧仕様
 if($list == "raw"){
-exec ("ls -t  $recfolderpath/*.???", $m2pfiles);
+  exec ("ls -t  $recfolderpath/*.???", $m2pfiles);
+  
+  foreach($m2pfiles as $pathfName) {
+    
+    $fNametmp = split("/",$pathfName);
+    $fName = array_pop($fNametmp);
+    //print "FILENAME:$fName<BR>\n";
+    
+    if(($fName == ".") or ($fName == "..") ){ 
+      continue;
+    }
+    if ((ereg(".m2.+", $fName))|| (ereg(".aac", $fName))){
+      $filesplit = split("-",$fName);
+      
+      if (preg_match("/^\d+$/", $filesplit[0])) {//	print "File is looks like good:preg<br>\n";
+        if ($filesplit[1] == ""){
+          $query = "
+          SELECT 
+            foltia_program.tid,
+            foltia_program.title,
+            foltia_subtitle.subtitle ,
+            foltia_subtitle.pid ,
+            foltia_subtitle.m2pfilename ,
+            foltia_subtitle.pspfilename
+           FROM foltia_subtitle , foltia_program   
+           WHERE foltia_program.tid = foltia_subtitle.tid  
+             AND foltia_subtitle.tid = ? 
+             AND foltia_subtitle.m2pfilename = ?
+          ";
+          //$rs = m_query($con, $query, "DBクエリに失敗しました");
+          $rs = sql_query($con, $query, "DBクエリに失敗しました",array($filesplit[0], $fName));
+          $rall = $rs->fetchAll();
+          $rowdata = $rall[0];
+          //print" $fName./$rowdata[1]//$rowdata[2]<BR>\n";
+          $title = $rowdata[1];
+          $pid  = htmlspecialchars($rowdata[3]);
+          $mp4filename  = htmlspecialchars($rowdata[5]);
+          $subtitle = "";
+          $count = "";
+          
+        } else {
+          
+          $query = "
+          SELECT 
+            foltia_program.tid,
+            foltia_program.title,
+            foltia_subtitle.countno,
+            foltia_subtitle.subtitle ,
+            foltia_subtitle.pid ,
+            foltia_subtitle.m2pfilename ,
+            foltia_subtitle.pspfilename
+           FROM foltia_subtitle , foltia_program   
+           WHERE foltia_program.tid = foltia_subtitle.tid  
+             AND foltia_subtitle.tid = ? 
+             AND foltia_subtitle.countno = ? 
+             AND foltia_subtitle.m2pfilename = ?
+          ";
+          //$rs = m_query($con, $query, "DBクエリに失敗しました");
+          $rs = sql_query($con, $query, "DBクエリに失敗しました",array($filesplit[0], $filesplit[1], $fName));
+          				$rall = $rs->fetchAll();
+          				$rowdata = $rall[0];
+          //print" $fName./$rowdata[1]/$rowdata[2]/$rowdata[3]<BR>\n";
+          $title = $rowdata[1];
+          $count = $rowdata[2];
+          $subtitle = $rowdata[3];
+          $pid  = htmlspecialchars($rowdata[4]);
+          $mp4filename  = htmlspecialchars($rowdata[6]);
+        }//if 話数あるかどうか
+        
+        $tid = htmlspecialchars($rowdata[0]);
+        $title = htmlspecialchars($title);
+        $count = htmlspecialchars($count);
+        $subtitle = htmlspecialchars($subtitle);
+        
+        $mp4path      = "$recfolderpath/$tid.localized/mp4/$mp4filename" ;
+        $mp4Exists = false;
+        if (file_exists($mp4path) && is_file($mp4path)) {
+          $mp4Exists = true;
+          $mp4size = filesize($mp4path);
+          $mp4size = round($mp4size / 1024 / 1024);
+        }
+        
+        //--
+        print "
+        <tr>
+        <td><INPUT TYPE='checkbox' NAME='delete[]' VALUE='$fName'><br></td>
+        <td><A HREF=\"$httpmediamappath/$fName\">$fName</A><br></td>
+        <td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">$title</a></td>
+        <td>$count<br></td>
+        <td>$subtitle<br></td>";
+        
+        print "<td>";
+        if ($mp4Exists) {
+          print "<a href=\"./mp4player.php?p=$pid\" target=\"_blank\">Player</a><br />${mp4size}MB";
+        }
+        print "</td>";
+        
+        if (file_exists("./selectcaptureimage.php") ) {
+          //  $capimgpath = preg_replace("/.m2p/", "", $fName);
+          print "			<td align=\"left\"> N/A </td>\n";
+        }
+        
+        print "</tr>\n
+        ";
+      } else {
+      	//print "File is looks like BAD:preg<br>\n";
+      }//
+       
+    }//ereg 
+  }//foreach
+  print "	</tbody>\n</table>\n</FORM>\n</body>\n</html>\n";
+  exit;
 
+} else if($list== 'mp4') {
+  exec ("ls -t  $recfolderpath/*.localized/mp4/*.MP4", $mp4files);
 
-foreach($m2pfiles as $pathfName) {
+  $datas   = array();
+  $nodata = array();
+  foreach($mp4files as $pathfName) {
+    //echo "<pre>$pathfName</pre>";
+    $fNametmp = split('/', $pathfName);
+    $fName    = array_pop($fNametmp);
+    
+    if(($fName == '.') || ($fName == '..') ){ 
+      continue;
+    }
+    if (ereg('.MP4', $fName)) {
+      $filesplit = split('-', $fName);
+      $tid       = $filesplit[1];
+      $num       = $filesplit[2];
+      //echo "<pre>$fName, $filesplit[1], $filesplit[2]</pre>";
+      if (preg_match("/^\d+$/", $tid)) {
+        if ($num == '') {
+          $query = ' SELECT 
+                       foltia_program.tid,
+                       foltia_program.title,
+                       foltia_subtitle.subtitle,
+                       foltia_subtitle.pid,
+                       foltia_subtitle.m2pfilename,
+                       foltia_subtitle.pspfilename
+                      FROM foltia_subtitle, foltia_program
+                      WHERE foltia_program.tid = foltia_subtitle.tid 
+                       AND foltia_subtitle.tid = ? 
+                       AND foltia_subtitle.PSPfilename = ? ';
+          $rs      = sql_query($con, $query, 'DBクエリに失敗しました', array($tid, $fName));
+          $rall    = $rs->fetchAll();
+          $rowdata = $rall[0];
+          //print" $fName./$rowdata[1]//$rowdata[2]<BR>\n";
+          $title       = $rowdata[1];
+          $pid         = htmlspecialchars($rowdata[3]);
+          //$mp4filename = htmlspecialchars($rowdata[5]);
+          $mp4filename = htmlspecialchars($fName);
+          $subtitle    = "";
+          $count       = $num;
+        } else {
+          $query = ' SELECT 
+                       foltia_program.tid,
+                       foltia_program.title,
+                       foltia_subtitle.countno,
+                       foltia_subtitle.subtitle,
+                       foltia_subtitle.pid,
+                       foltia_subtitle.m2pfilename,
+                       foltia_subtitle.pspfilename
+                      FROM foltia_subtitle, foltia_program
+                      WHERE foltia_program.tid = foltia_subtitle.tid
+                        AND foltia_subtitle.tid = ?
+                        AND foltia_subtitle.countno = ? 
+                        AND foltia_subtitle.PSPfilename = ? ';
+          $rs      = sql_query($con, $query, "DBクエリに失敗しました", array($tid, $num, $fName));
+          $rall    = $rs->fetchAll();
+          $rowdata = $rall[0];
+          //print" $fName./$rowdata[1]/$rowdata[2]/$rowdata[3]<BR>\n";
+          $title       = $rowdata[1];
+          $count       = $rowdata[2];
+          $subtitle    = $rowdata[3];
+          $pid         = htmlspecialchars($rowdata[4]);
+          //$mp4filename = htmlspecialchars($rowdata[6]);
+          $mp4filename = htmlspecialchars($fName);
+        }
 
-$fNametmp = split("/",$pathfName);
-$fName = array_pop($fNametmp);
-//print "FILENAME:$fName<BR>\n";
+        $tid      = htmlspecialchars($tid);
+        $title    = htmlspecialchars($title);
+        $count    = $num;
+        $subtitle = htmlspecialchars($subtitle);
+        
+        $mp4path   = "$recfolderpath/$tid.localized/mp4/$mp4filename" ;
+        $mp4Exists = false;
+        if (file_exists($mp4path) && is_file($mp4path)) {
+          $mp4Exists = true;
+          $mp4size   = filesize($mp4path);
+          $mp4size   = round($mp4size / 1024 / 1024);
+          if ($pid) {
+            $nodata[$tid]   = $tid;
+            $nodata[$tid][$count] = $count;
+          }
+        }
 
-if(($fName == ".") or ($fName == "..") ){ continue; }
-if ((ereg(".m2.+", $fName))|| (ereg(".aac", $fName))){
-	$filesplit = split("-",$fName);
+        $ind   = explode('-', $fName);
+        if (!isset($ind[5])) {
+          $ind[5] = '';
+        }
+        $index = $ind[0] .'-'. sprintf("%05d", $ind[1]) .'-'. sprintf("%04d", $ind[2]) .'-'. $ind[3] .'-'. $ind[4] .'-'. $ind[5];
+//printf("<pre> %s </pre>\n", $index);
 
-if (preg_match("/^\d+$/", $filesplit[0])) {//	print "File is looks like good:preg<br>\n";
-if ($filesplit[1] == ""){
-$query = "
-SELECT 
-  foltia_program.tid,
-  foltia_program.title,
-  foltia_subtitle.subtitle ,
-  foltia_subtitle.pid ,
-  foltia_subtitle.m2pfilename ,
-  foltia_subtitle.pspfilename
- FROM foltia_subtitle , foltia_program   
- WHERE foltia_program.tid = foltia_subtitle.tid  
-   AND foltia_subtitle.tid = ? 
-   AND foltia_subtitle.m2pfilename = ?
-";
-//$rs = m_query($con, $query, "DBクエリに失敗しました");
-$rs = sql_query($con, $query, "DBクエリに失敗しました",array($filesplit[0], $fName));
-				$rall = $rs->fetchAll();
-				$rowdata = $rall[0];
-//print" $fName./$rowdata[1]//$rowdata[2]<BR>\n";
-$title = $rowdata[1];
-$pid  = htmlspecialchars($rowdata[3]);
-$mp4filename  = htmlspecialchars($rowdata[5]);
-$subtitle = "";
-$count = "";
+        $datas[$index]['fName']     = $fName;
+        $datas[$index]['tid']       = $tid;
+        $datas[$index]['title']     = $title;
+        $datas[$index]['count']     = $count;
+        $datas[$index]['subtitle']  = $subtitle;
+        $datas[$index]['mp4Exists'] = $mp4Exists;
+        $datas[$index]['pid']       = $pid;
+        $datas[$index]['mp4size']   = $mp4size;
+      }
+    }
+  }
 
-}else{
+  //$sort = array();
+  //foreach ($datas as $file => $data) {
+  //  //$sort[$data['tid']]   = $data['tid'];
+  //  $sort[$data['tid']][] = $data;
+  //}
 
-$query = "
-SELECT 
+  //natsort($datas);
+  foreach ($datas as $file => $data) {
+    //printf("<pre>%s</pre>", $file);
+    //--
+    print "
+    <tr>
+    <td><INPUT TYPE='checkbox' NAME='delete[]' VALUE='${data['fName']}'><br></td>
+    <td><A HREF=\"$httpmediamappath/${data['tid']}.localized/mp4/${data['fName']}\">${data['fName']}</A><br></td>
+    <td><a href=\"http://cal.syoboi.jp/tid/${data['tid']}\" target=\"_blank\">${data['title']}</a></td>
+    <td>${data['count']}<br></td>
+    <td>${data['subtitle']}<br></td>";
+    
+    print "<td>";
+    if ($data['mp4Exists']) {
+      if ($data['pid']) {
+        print "<a href=\"./mp4player.php?p=${data['pid']}\" target=\"_blank\">Player</a><br />${data[mp4size]}MB";
+      } else {
+        print "<a href=\"./mp4player.php?f=${data['fName']}\" target=\"_blank\">Player</a><br />${data[mp4size]}MB";
+      }
+    }
+    print "</td>";
+    
+	if (file_exists("./selectcaptureimage.php") ) {
+      if ($data['pid']) {
+	    print "<td align=\"left\"><a href=\"./selectcaptureimage.php?pid=${data['pid']}\">キャプ</a></td>\n";
+      } else {
+	    print "<td align=\"left\"><a href=\"./selectcaptureimage.php?f=${data['fName']}\">キャプ</a></td>\n";
+      }
+	}
+    
+    print "</tr>\n
+    ";
+  }
+  print "	</tbody>\n</table>\n</FORM>\n</body>\n</html>\n";
+
+  echo '$datas=' . count($datas) . '  ';
+  echo '$nodata=' . count($nodata) . '<br />';
+  //$cnt = 0;
+  //foreach ($sort as $k => $v) {
+  //  $cnt += count($v);
+  //  echo $k . '<br />';
+  //}
+  //echo $cnt;
+  //echo '<pre>';
+  //echo var_dump($nodata);
+  //echo '</pre>';
+  exit;
+
+} else if ($list== "title"){//新仕様
+  $query = "
+  SELECT 
   foltia_program.tid,
   foltia_program.title,
   foltia_subtitle.countno,
-  foltia_subtitle.subtitle ,
+  foltia_subtitle.subtitle  ,
+  foltia_m2pfiles.m2pfilename  ,
   foltia_subtitle.pid ,
-  foltia_subtitle.m2pfilename ,
   foltia_subtitle.pspfilename
- FROM foltia_subtitle , foltia_program   
- WHERE foltia_program.tid = foltia_subtitle.tid  
-   AND foltia_subtitle.tid = ? 
-   AND foltia_subtitle.countno = ? 
-   AND foltia_subtitle.m2pfilename = ?
-";
-//$rs = m_query($con, $query, "DBクエリに失敗しました");
-$rs = sql_query($con, $query, "DBクエリに失敗しました",array($filesplit[0], $filesplit[1], $fName));
-				$rall = $rs->fetchAll();
-				$rowdata = $rall[0];
-//print" $fName./$rowdata[1]/$rowdata[2]/$rowdata[3]<BR>\n";
-$title = $rowdata[1];
-$count = $rowdata[2];
-$subtitle = $rowdata[3];
-$pid  = htmlspecialchars($rowdata[4]);
-$mp4filename  = htmlspecialchars($rowdata[6]);
-}//if 話数あるかどうか
-
-$tid = htmlspecialchars($rowdata[0]);
-$title = htmlspecialchars($title);
-$count = htmlspecialchars($count);
-$subtitle = htmlspecialchars($subtitle);
-
-$mp4path      = "$recfolderpath/$tid.localized/mp4/$mp4filename" ;
-$mp4Exists = false;
-if (file_exists($mp4path) && is_file($mp4path)) {
-  $mp4Exists = true;
-  $mp4size = filesize($mp4path);
-  $mp4size = round($mp4size / 1024 / 1024);
-}
-
-//--
-print "
-<tr>
-<td><INPUT TYPE='checkbox' NAME='delete[]' VALUE='$fName'><br></td>
-<td><A HREF=\"$httpmediamappath/$fName\">$fName</A><br></td>
-<td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">$title</a></td>
-<td>$count<br></td>
-<td>$subtitle<br></td>";
-
-print "<td>";
-if ($mp4Exists) {
-  print "<a href=\"./mp4player.php?p=$pid\" target=\"_blank\">Player</a><br />${mp4size}MB";
-}
-print "</td>";
-
-	if (file_exists("./selectcaptureimage.php") ) {
-//	$capimgpath = preg_replace("/.m2p/", "", $fName);
-	print "			<td align=\"left\"> N/A </td>\n";
-	}
-
-print "</tr>\n
-";
-}else{
-	//print "File is looks like BAD:preg<br>\n";
-}//
-
-}//ereg 
-}//foreach
-print "	</tbody>\n</table>\n</FORM>\n</body>\n</html>\n";
-exit;
-
-}elseif ($list== "title"){//新仕様
-$query = "
-SELECT 
-foltia_program.tid,
-foltia_program.title,
-foltia_subtitle.countno,
-foltia_subtitle.subtitle  ,
-foltia_m2pfiles.m2pfilename  ,
-foltia_subtitle.pid ,
-foltia_subtitle.pspfilename
-FROM foltia_subtitle , foltia_program , foltia_m2pfiles 
-WHERE foltia_program.tid = foltia_subtitle.tid  
- AND foltia_subtitle.m2pfilename = foltia_m2pfiles.m2pfilename 
-ORDER BY foltia_subtitle.tid  DESC , foltia_subtitle.startdatetime  ASC 
-LIMIT $lim OFFSET $st
-
-";
-}else{
-$query = "
-SELECT 
-foltia_program.tid,
-foltia_program.title,
-foltia_subtitle.countno,
-foltia_subtitle.subtitle  ,
-foltia_m2pfiles.m2pfilename  ,
-foltia_subtitle.pid ,
-foltia_subtitle.pspfilename
-FROM foltia_subtitle , foltia_program , foltia_m2pfiles 
-WHERE foltia_program.tid = foltia_subtitle.tid  
- AND foltia_subtitle.m2pfilename = foltia_m2pfiles.m2pfilename 
-ORDER BY foltia_subtitle.startdatetime DESC 
-LIMIT $lim OFFSET $st
-";
+  FROM foltia_subtitle , foltia_program , foltia_m2pfiles 
+  WHERE foltia_program.tid = foltia_subtitle.tid  
+   AND foltia_subtitle.m2pfilename = foltia_m2pfiles.m2pfilename 
+  ORDER BY foltia_subtitle.tid  DESC , foltia_subtitle.startdatetime  ASC 
+  LIMIT $lim OFFSET $st
+  
+  ";
+} else {
+  $query = "
+  SELECT 
+  foltia_program.tid,
+  foltia_program.title,
+  foltia_subtitle.countno,
+  foltia_subtitle.subtitle  ,
+  foltia_m2pfiles.m2pfilename  ,
+  foltia_subtitle.pid ,
+  foltia_subtitle.pspfilename
+  FROM foltia_subtitle , foltia_program , foltia_m2pfiles 
+  WHERE foltia_program.tid = foltia_subtitle.tid  
+   AND foltia_subtitle.m2pfilename = foltia_m2pfiles.m2pfilename 
+  ORDER BY foltia_subtitle.startdatetime DESC 
+  LIMIT $lim OFFSET $st
+  ";
 }
 
 //$rs = m_query($con, $query, "DBクエリに失敗しました");
@@ -283,9 +441,9 @@ WHERE foltia_program.tid = foltia_subtitle.tid
         ";
 $rs2 = sql_query($con, $query2, "DB\?\ィ\e?E?oCO???T????");
 $rowdata2 = $rs2->fetch();
-          if (! $rowdata2) {
-                die_exit("番組データがありません<BR>");
-          }
+if (! $rowdata2) {
+  die_exit("番組データがありません<BR>");
+}
 //1O?o?eAA
 $dtcnt =  $rowdata2[0];
 
@@ -336,14 +494,13 @@ if ($mp4Exists) {
 print "</td>";
 
 	if (file_exists("./selectcaptureimage.php") ) {
-	$capimgpath = preg_replace("/.m2.+/", "", $fName);
-	print "			<td align=\"left\"><a href=\"./selectcaptureimage.php?pid=$pid\">キャプ</a></td>\n";
+	  $capimgpath = preg_replace("/.m2.+/", "", $fName);
+	  print "			<td align=\"left\"><a href=\"./selectcaptureimage.php?pid=$pid\">キャプ</a></td>\n";
 	}
 
 print "</tr>\n
 ";
 
-//}
 
 
 	} while ($rowdata = $rs->fetch());
