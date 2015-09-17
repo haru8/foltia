@@ -237,7 +237,8 @@ if($list == "raw"){
   exit;
 
 } else if($list== 'mp4') {
-  exec ("ls -t  $recfolderpath/*.localized/mp4/*.MP4", $mp4files);
+  exec ("ls -t  $recfolderpath/*.localized/mp4/*.MP4 | head -2000", $mp4files);
+  //exec ("ls -t  $recfolderpath/*.localized/mp4/*.MP4", $mp4files);
 
   $datas   = array();
   $nodata = array();
@@ -275,7 +276,7 @@ if($list == "raw"){
           $pid         = htmlspecialchars($rowdata[3]);
           //$mp4filename = htmlspecialchars($rowdata[5]);
           $mp4filename = htmlspecialchars($fName);
-          $subtitle    = "";
+          $subtitle    = $rowdata[2];
           $count       = $num;
         } else {
           $query = ' SELECT 
@@ -478,11 +479,11 @@ print "<td><A HREF=\"./view_syabas.php?pid=$pid\" vod=playlist>$fName</td>";
 print "<td><A HREF=\"$httpmediamappath/$fName\">$fName</A><br></td>";
 }
 if ($tid > 0){
-print"<td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">$title</a></td>
+print"<td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">$title</a><br><a href=\"./showlibc.php?tid=$tid\">[ライブラリ]</a></td>
 <td>$count<br></td>
 <td><a href = \"http://cal.syoboi.jp/tid/$tid/time#$pid\" target=\"_blank\">$subtitle</a><br></td>";
 }else{
-print"<td>$title</td>
+print"<td>$title<br><a href=\"./showlibc.php?tid=$tid\">[ライブラリ]</a></td>
 <td>$count<br></td>
 <td>$subtitle<br></td>";
 }
