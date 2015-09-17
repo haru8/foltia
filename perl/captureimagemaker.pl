@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-#usage captureimagemaker.pl  MPEG2filename
+# usage captureimagemaker.pl  MPEG2filename
 #
 # Anime recording system foltia
 # http://www.dcc-jpl.com/soft/foltia/
@@ -13,8 +13,8 @@
 
 $path = $0;
 $path =~ s/captureimagemaker.pl$//i;
-if ($path ne "./"){
-push( @INC, "$path");
+if ($path ne "./") {
+	push( @INC, "$path");
 }
 
 require "foltialib.pl";
@@ -24,22 +24,22 @@ $filename = $ARGV[0] ;
 
 # filenameの妥当性をチェック
 @filenametmp = split(/\./,$filename);
-@filename = split(/-/,$filenametmp[0]);
-$tid = $filename[0];
+@filename    = split(/-/,$filenametmp[0]);
+$tid         = $filename[0];
 
 # tidが数字のみかチェック
 $tid =~ s/[^0-9]//ig;
 #print "$tid\n";
 
-if ($tid eq "" ){
+if ($tid eq "" ) {
 	#引き数なし出実行されたら、終了
 	print "usage captureimagemaker.pl  MPEG2filename\n";
 	exit;
 }
 
-if ($tid >= 0){
+if ($tid >= 0) {
 #	print "TID is valid\n";
-}else{
+} else {
 	&writelog("captureimagemaker TID invalid");
 	exit;
 }
@@ -54,7 +54,7 @@ $countno =~ s/[^0-9]//ig;
 
 $date = $filename[2];
 $date =~ s/[^0-9]//ig;
-if ($date eq "" ){
+if ($date eq "" ) {
     $date = strftime("%Y%m%d", localtime);
 }
 #	print "DATE:$date\n";
@@ -63,15 +63,15 @@ if ($date eq "" ){
 $time = $filename[3];
 $time = substr($time, 0, 4);
 $time =~ s/[^0-9]//ig;
-if ($time eq "" ){
-    $time =  strftime("%H%M", localtime);
+if ($time eq "" ) {
+    $time = strftime("%H%M", localtime);
 }
 #	print "TIME:$time\n";
 
-#　録画ファイルがアルかチェック
-if (-e "$recfolderpath/$filename"){
+# ファイルがアルかチェック
+if (-e "$recfolderpath/$filename") {
 #	print "EXIST $recfolderpath/$filename\n";
-}else{
+} else {
 #	print "NO $recfolderpath/$filename\n";
 	&writelog("captureimagemaker notexist $recfolderpath/$filename");
 
@@ -79,18 +79,20 @@ if (-e "$recfolderpath/$filename"){
 }
 
 # 展開先ディレクトリがあるか確認
-
 $capimgdirname = "$tid.localized/";
 $capimgdirname = $recfolderpath."/".$capimgdirname;
+
 #なければ作る
-unless (-e $capimgdirname ){
+unless (-e $capimgdirname ) {
 	system("$toolpath/perl/mklocalizeddir.pl $tid");
 	&writelog("captureimagemaker mkdir $capimgdirname");
 }
+
 $capimgdirname = "$tid.localized/img";
 $capimgdirname = $recfolderpath."/".$capimgdirname;
+
 #なければ作る
-unless (-e $capimgdirname ){
+unless (-e $capimgdirname ) {
 	mkdir $capimgdirname ,0777;
 	&writelog("captureimagemaker mkdir $capimgdirname");
 }
@@ -100,38 +102,43 @@ unless (-e $capimgdirname ){
 # $captureimgdir = "$tid"."-"."$countno"."-"."$date"."-"."$time";
 $captureimgdir = $filename;
 $captureimgdir =~ s/\.m2p$|\.m2t$//; 
+$captureimgdir =~ s/_HD$|_SD[123]$//;
 
-unless (-e "$capimgdirname/$captureimgdir"){
+unless (-e "$capimgdirname/$captureimgdir") {
 	mkdir "$capimgdirname/$captureimgdir" ,0777;
 	&writelog("captureimagemaker mkdir $capimgdirname/$captureimgdir");
-
 }
 
 # 変換
 #system ("mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf crop=702:468:6:6,scale=160:120,pp=lb -ao null -sstep 14 -v 3 $recfolderpath/$filename");
-
 #system ("mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf crop=702:468:6:6,scale=160:120 -ao null -sstep 14 -v 3 $recfolderpath/$filename");
 
 
-#　ETVとか黒線入るから左右、もうすこしづつ切ろう。
+# とか黒線入るから左右、もうすこしづつ切ろう。
 #system ("mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf crop=690:460:12:10,scale=160:120 -ao null -sstep 14 -v 3 $recfolderpath/$filename");
 
-#　10秒ごとに
-if ($filename =~ /m2t$/){
-	&writelog("captureimagemaker DEBUG mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf scale=192:108 -ao null -sstep 9  $recfolderpath/$filename");
-	system ("mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf scale=192:108 -ao null -sstep 9  $recfolderpath/$filename");
-	if(-e "$capimgdirname/$captureimgdir/00000001.jpg" ){ #$capimgdirname/$captureimgdir/があったらなにもしない	
-	}else{ #空っぽなら再試行
-		&writelog("captureimagemaker DEBUG RETRY mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf framestep=300step,scale=192:108 -ao null $recfolderpath/$filename");
-		system ("mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf framestep=300step,scale=192:108 -ao null $recfolderpath/$filename");
-	}
+# 秒ごとに
+if(-e "$capimgdirname/$captureimgdir/00000005.jpg" ) {
+	&writelog("captureimagemaker Already created. $capimgdirname/$captureimgdir/");
+} else {
+	if ($filename =~ /m2t$/) {
+		&writelog("captureimagemaker DEBUG mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf scale=384:216 -ao null -sstep 9  $recfolderpath/$filename");
+		system ("mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf scale=384:216 -ao null -sstep 9  $recfolderpath/$filename");
+		if(-e "$capimgdirname/$captureimgdir/00000003.jpg" ) { #$capimgdirname/$captureimgdir/ があったらなにもしない
 	
-}else{
-	&writelog("captureimagemaker DEBUG mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf crop=690:460:12:10,scale=160:120 -ao null -sstep 9 -v 3 $recfolderpath/$filename");
-	system ("mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf crop=690:460:12:10,scale=160:120 -ao null -sstep 9 $recfolderpath/$filename");
-	if(-e "$capimgdirname/$captureimgdir/00000001.jpg" ){ #$capimgdirname/
-	}else{
-		system ("mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf framestep=300step,crop=690:460:12:10,scale=160:120 -ao null $recfolderpath/$filename");
+		} else { #空っぽなら再試行
+			&writelog("captureimagemaker DEBUG RETRY mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf framestep=300step,scale=384:216 -ao null $recfolderpath/$filename");
+			system ("mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf framestep=300step,scale=384:216 -ao null $recfolderpath/$filename");
+		}
+		
+	} else {
+		&writelog("captureimagemaker DEBUG mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf crop=690:460:12:10,scale=160:120 -ao null -sstep 9 -v 3 $recfolderpath/$filename");
+		system ("mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf crop=690:460:12:10,scale=160:120 -ao null -sstep 9 $recfolderpath/$filename");
+		if(-e "$capimgdirname/$captureimgdir/00000003.jpg" ) { #$capimgdirname/
+
+		} else {
+			system ("mplayer -ss 00:00:10 -vo jpeg:outdir=$capimgdirname/$captureimgdir/ -vf framestep=300step,crop=690:460:12:10,scale=160:120 -ao null $recfolderpath/$filename");
+		}
 	}
 }
 
