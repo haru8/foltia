@@ -1,19 +1,20 @@
 
-#config load
+# config load
 
 $path = $0;
 $path =~ s/foltialib.pl$//i;
-if ($path ne "./"){
-push( @INC, "$path");
+if ($path ne "./") {
+	push( @INC, "$path");
 }
 require "foltia_conf1.pl";
 
 
-#  foltia lib
+# foltia lib
 use DBI;
 use DBD::Pg;
 use DBD::SQLite;
 use POSIX qw(strftime);
+use File::Basename;
 
 $DSN=$main::DSN;
 	 $DBUser=$main::DBUser;
@@ -42,19 +43,25 @@ $DSN=$main::DSN;
 
 
 #------------------------------
-sub writelog{
-my $messages = $_[0];
-    my $timestump = strftime("%Y/%m/%d_%H:%M:%S", localtime);
-chomp($timestump);
-if ($debugmode == 1){
-	open (DEBUGLOG , ">>$toolpath/debuglog.txt") || die "Cant write log file.$! \n ";
-}else{
-	open (DEBUGLOG , '>-') || die "Cant write log file.$! \n ";
-}
-$messages =~ s/\n//gio;
-print DEBUGLOG "$timestump $messages\n";
-close (DEBUGLOG);
-}#end writelog
+sub writelog {
+	my $messages  = $_[0];
+	my $timestump = strftime("%Y/%m/%d_%H:%M:%S", localtime);
+	chomp($timestump);
+	my ($pkg, $file, $line) = caller;
+	$file = basename($file);
+	
+	if ($debugmode == 1) {
+		open (DEBUGLOG , ">>$toolpath/debuglog.txt") || die "Cant write log file.$! \n ";
+	} else {
+		open (DEBUGLOG , '>-') || die "Cant write log file.$! \n ";
+	}
+	$messages =~ s/\n//gio;
+	$pid  = sprintf("%06d", $$);
+	$line = sprintf("%-4d", $line);
+	$file = sprintf("%-21s", $file);
+	print DEBUGLOG "$timestump $pid: $file:$line $messages\n";
+	close (DEBUGLOG);
+} #end writelog
 
 sub syobocaldate2foltiadate{
 #20041114213000 -> 200411142130
@@ -138,48 +145,47 @@ $foltime = &epoch2foldate($epoch);
 return $foltime ;
 }
 
-sub getstationid{
-#引き数:局文字列(NHK総合)
-#戻り値:1
-my $stationname =  $_[0] ;
-my $stationid ;
+sub getstationid {
+	#引き数:局文字列(NHK総合)
+	#戻り値:1
+	my $stationname =  $_[0] ;
+	my $stationid ;
+	my $sth;
 
-my $sth;
-    $sth = $dbh->prepare($stmt{'foltialib.getstationid.1'});
-    $sth->execute($item{'ChName'});
- my  @stationcount;
- @stationcount= $sth->fetchrow_array;
-
-if ($stationcount[0] == 1){
-#チャンネルID取得
-	$sth = $dbh->prepare($stmt{'foltialib.getstationid.2'});
+	$sth = $dbh->prepare($stmt{'foltialib.getstationid.1'});
 	$sth->execute($item{'ChName'});
- @stationinfo= $sth->fetchrow_array;
-#局ID
-$stationid  = $stationinfo[0];
-#print "StationID:$stationid \n";
+	my @stationcount;
+	@stationcount = $sth->fetchrow_array;
 
-}elsif($stationcount[0] == 0){
-#新規登録
-	$sth = $dbh->prepare($stmt{'foltialib.getstationid.3'});
-	$sth->execute();
- @stationinfo= $sth->fetchrow_array;
-my $stationid = $stationinfo[0] ;
-$stationid  ++;
-##$DBQuery =  "insert into  foltia_station values ('$stationid'  ,'$item{ChName}','0','','','','','','')";
-#新規局追加時は非受信局をデフォルトに
-	$sth = $dbh->prepare($stmt{'foltialib.getstationid.4'});
-	$sth->execute($stationid, $item{'ChName'}, -10);
-#print "Add station;$DBQuery\n";
-	&writelog("foltialib Add station;$stmt{'foltialib.getstationid.4'}");
-}else{
+	if ($stationcount[0] == 1) {
+		#チャンネルID取得
+		$sth = $dbh->prepare($stmt{'foltialib.getstationid.2'});
+		$sth->execute($item{'ChName'});
+		@stationinfo= $sth->fetchrow_array;
+		#局ID
+		$stationid  = $stationinfo[0];
+		#print "StationID:$stationid \n";
 
-#print "Error  getstationid $stationcount[0] stations found. $DBQuery\n";
-&writelog("foltialib [ERR]  getstationid $stationcount[0] stations found. $DBQuery");
-}
+	} elsif($stationcount[0] == 0) {
+		#新規登録
+		$sth = $dbh->prepare($stmt{'foltialib.getstationid.3'});
+		$sth->execute();
+		@stationinfo= $sth->fetchrow_array;
+		my $stationid = $stationinfo[0] ;
+		$stationid  ++;
+		##$DBQuery =  "insert into  foltia_station values ('$stationid'  ,'$item{ChName}','0','','','','','','')";
+		#新規局追加時は非受信局をデフォルトに
+		$sth = $dbh->prepare($stmt{'foltialib.getstationid.4'});
+		$sth->execute($stationid, $item{'ChName'}, -10);
+		#print "Add station;$DBQuery\n";
+		&writelog("foltialib Add station;$stmt{'foltialib.getstationid.4'}");
+	} else {
 
+		#print "Error  getstationid $stationcount[0] stations found. $DBQuery\n";
+		&writelog("foltialib [ERR]  getstationid $stationcount[0] stations found. $DBQuery stationname = $stationname, $item{'ChName'}");
+	}
 
-return $stationid ;
+	return $stationid ;
 }
 
 sub calcatqparam{
@@ -206,27 +212,27 @@ return  $atdateparam ;
 }
 
 
+sub processfind {
+	my $findprocess = $_[0];
+	my @processes ;
+	#@processes = `ps ax | grep -i $findprocess | grep -Ev "vim|sudo"`;
+	@processes  = `ps h -C $findprocess `;
+	my $chkflag = 0;
 
-sub processfind{
-my $findprocess = $_[0];
-
-my @processes ;
-@processes = `ps ax | grep -i $findprocess `;
-my $chkflag = 0;
-
-foreach (@processes ){
-if (/$findprocess/i){
-	unless (/grep/){
-		#print "process found:$_\n";
-		$chkflag++ ;
-		}else{
-		#print "process NOT found:$_\n";
+	foreach (@processes) {
+		if (/$findprocess/i) {
+			unless (/grep/) {
+				#print "process found:$_\n";
+				$chkflag++ ;
+				&writelog("$_")
+			} else {
+				#print "process NOT found:$_\n";
+			}
 		}
 	}
 
-}
-return ($chkflag);
-}#endsub
+	return ($chkflag);
+} #endsub
 
 
 sub filenameinjectioncheck{
