@@ -64,10 +64,10 @@ while ($counttranscodefiles >= 1) {
 	$pid = $dbparam[0];
 	$tid = $dbparam[1];
 	$inputmpeg2 = $recfolderpath."/".$dbparam[2]; # path付き
-		$mpeg2filename = $dbparam[2]; # pathなし
-		$filestatus = $dbparam[3];
+	$mpeg2filename = $dbparam[2]; # pathなし
+	$filestatus = $dbparam[3];
 	$aspect = $dbparam[4];# 16,1 (超額縁),4,3
-		$countno = $dbparam[5];
+	$countno = $dbparam[5];
 	$mp4filenamestring = &mp4filenamestringbuild($pid);
 
 	if (-e $inputmpeg2) { #MPEG2ファイルが存在していれば
@@ -161,12 +161,10 @@ while ($counttranscodefiles >= 1) {
 				if (($trconqty eq "")||($trconqty == 1)) {
 					$ffmpegencopt = " -threads 0 -s 360x202 -deinterlace -r 24.00 -vcodec libx264 -g 300 -b 330000 -level 13 -sc_threshold 60 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
 				} elsif($trconqty == 2) {
-					#	$ffmpegencopt = " -s 480x272 -deinterlace -r 29.97 -vcodec libx264 -g 300 -b 400000 -level 13 -sc_threshold 60 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
-# for ffmpeg 0.5 or later
+				#	$ffmpegencopt = " -s 480x272 -deinterlace -r 29.97 -vcodec libx264 -g 300 -b 400000 -level 13 -sc_threshold 60 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
 					$ffmpegencopt = " -threads 0 -s 480x272 -deinterlace -r 29.97 -vcodec libx264 -vpre default -g 300 -b 400000 -level 13 -sc_threshold 60 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
 				} elsif($trconqty == 3) { #640x352
-					#	$ffmpegencopt = " -s 640x352 -deinterlace -r 29.97 -vcodec libx264 -g 100 -b 600000 -level 13 -sc_threshold 60 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
-# for ffmpeg 0.5 or later
+				#	$ffmpegencopt = " -s 640x352 -deinterlace -r 29.97 -vcodec libx264 -g 100 -b 600000 -level 13 -sc_threshold 60 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
 					$ffmpegencopt = " -threads 0 -s 640x352 -deinterlace -r 29.97 -vcodec libx264 -vpre default -g 100 -b 600000 -level 13 -sc_threshold 60 -rc_eq 'blurCplx^(1-qComp)' -refs 3 -maxrate 700000 -async 50 -f h264 $filenamebody.264";
 				}
 				&changefilestatus($pid,$FILESTATUSTRANSCODEFFMPEG);
