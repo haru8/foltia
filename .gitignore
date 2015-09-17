@@ -2,8 +2,12 @@ tags
 .*.sw?
 
 bin/
-foltia.sqlite
+foltia.sqlite*
 debuglog.txt
+foltia_station_memo.txt
+memo.txt
+mktable.txt
+mktable_haru.sqlite.txt
 
 perl/tool/MP4Box
 perl/tool/TsSplitter.exe
@@ -19,6 +23,11 @@ perl/tool/neroAacTag
 perl/tool/recpt1
 perl/tool/recpt1ctl
 perl/tool/rtmpdump
+perl/tool/BonTsDemuxC.exe
+perl/tool/MSVCP90.dll
+perl/tool/faac
+perl/tool/ffmpeg
+perl/tool/mfc90u.dll
 
 php/tv
 
