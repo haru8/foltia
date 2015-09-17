@@ -2,6 +2,21 @@ bin/
 foltia.sqlite
 debuglog.txt
 
+perl/tool/MP4Box
+perl/tool/TsSplitter.exe
+perl/tool/TsSplitter123.exe
+perl/tool/TsSplitter126.exe
+perl/tool/TsSplitter128.exe
+perl/tool/b25
+perl/tool/epgdump
+perl/tool/hdusrec
+perl/tool/neroAacDec
+perl/tool/neroAacEnc
+perl/tool/neroAacTag
+perl/tool/recpt1
+perl/tool/recpt1ctl
+perl/tool/rtmpdump
+
 tags
 .*.sw?
 
