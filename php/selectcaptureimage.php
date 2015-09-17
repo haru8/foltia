@@ -31,7 +31,8 @@ if ($useenvironmentpolicy == 1){
 }//end if login
 
 
-$pid = getgetnumform(pid);
+$pid  = getgetnumform(pid);
+$file = getgetform(f);
 
 if ($pid == "") {
 	header("Status: 404 Not Found",TRUE,404);
@@ -53,11 +54,7 @@ if ($pid == "") {
 <?php
 printhtmlpageheader();
 
-if ($pid == "") {
-	print "画像がありません。<br></body></html>";
-	exit;
-}
-
+if ($pid != "") {
 $query = "
 SELECT 
 foltia_program.tid,
@@ -97,16 +94,38 @@ AND foltia_subtitle.pid = ?
 
 $rs = sql_query($con, $query, "DBクエリに失敗しました",array($pid));
 $rowdata = $rs->fetch();
-	if (! $rowdata) {
-		print "  <p align=\"left\"><font color=\"#494949\" size=\"6\">キャプチャ画像</font></p>
-	  <hr size=\"4\">
-	<p align=\"left\">
-	録画記録がありません。<br></body></html>";
-	exit ;
-	}
+}
+
 $rowdata[1] = "";
+} else if ($file != "") {
+  $filesplit = split('-', htmlspecialchars($file));
+  $tid       = $filesplit[1];
+  $num       = $filesplit[2];
+  $date      = $filesplit[3];
+  list($time, $ext) = split('\.', $filesplit[4]);
+  $rowdata   = array();
+  $rowdata[0]= $tid;
+  $rowdata[1]= '';
+  $rowdata[2]= 'title';
+  $rowdata[3]= 'num';
+  $rowdata[4]= 'subtitle';
+  $rowdata[5]= 'start';
+  $rowdata[6]= 'min';
+  $rowdata[8]= $filesplit[1] . '-' . $num . '-' . $date . '-' . $time . '.m2t';
+  $rowdata[9]= htmlspecialchars($file);
+
+} else {
+  print "画像がありません。<br></body></html>";
+  exit;
 }//end if (! $rowdata) 
 
+//if (! $rowdata) {
+//	print "  <p align=\"left\"><font color=\"#494949\" size=\"6\">キャプチャ画像</font></p>
+//  <hr size=\"4\">
+//<p align=\"left\">
+//録画記録がありません。<br></body></html>";
+//exit ;
+//}
 print "  <p align=\"left\"><font color=\"#494949\" size=\"6\">キャプチャ画像</font></p>
   <hr size=\"4\">
 <p align=\"left\">";
@@ -127,7 +146,13 @@ print htmlspecialchars(foldate2print($rowdata[5]));
 $mp4filename = $rowdata[9];
 $serverfqdn = getserverfqdn();
 
-print "　　再生:<A HREF=\"$httpmediamappath/$tid.localized/mp4/$mp4filename\" target=\"_blank\">$mp4filename</A> / <script language=\"JavaScript\" type=\"text/javascript\">QT_WriteOBJECT_XHTML('http://g.hatena.ne.jp/images/podcasting.gif','16','16','','controller','FALSE','href','http://$serverfqdn/$httpmediamappath/$tid.localized/mp4/$mp4filename','target','QuickTimePlayer','type','video/mp4');</script> / <a href=\"./mp4player.php?p=$pid\" target=\"_blank\">Player</a><br>";
+print "　　再生:<A HREF=\"$httpmediamappath/$tid.localized/mp4/$mp4filename\" target=\"_blank\">$mp4filename</A> / <script language=\"JavaScript\" type=\"text/javascript\">QT_WriteOBJECT_XHTML('http://g.hatena.ne.jp/images/podcasting.gif','16','16','','controller','FALSE','href','http://$serverfqdn/$httpmediamappath/$tid.localized/mp4/$mp4filename','target','QuickTimePlayer','type','video/mp4');</script> / ";
+
+if ($pid) {
+  print "<a href=\"./mp4player.php?p=$pid\" target=\"_blank\">Player</a><br>";
+} else {
+  print "<a href=\"./mp4player.php?f=$file\" target=\"_blank\">Player</a><br>";
+}
 
 $m2pfilename = $rowdata[8];
 
