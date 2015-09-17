@@ -1,3 +1,6 @@
+tags
+.*.sw?
+
 bin/
 foltia.sqlite
 debuglog.txt
@@ -17,6 +20,5 @@ perl/tool/recpt1
 perl/tool/recpt1ctl
 perl/tool/rtmpdump
 
-tags
-.*.sw?
+php/tv
 
