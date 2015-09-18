@@ -23,7 +23,7 @@ use Time::Local;
 $path = $0;
 $path =~ s/folprep.pl$//i;
 if ($path ne "./"){
-push( @INC, "$path");
+	push( @INC, "$path");
 }
 
 require "foltialib.pl";
@@ -40,13 +40,13 @@ if ($pid eq "" ){
 }
 
 my $stationid = "";
-if ($pid <= 0){#EPG録画/キーワード録画
+if ($pid <= 0){ #EPG録画/キーワード録画
 	#EPG更新 & DB更新
-	$dbh = DBI->connect($DSN,$DBUser,$DBPass) ||die $DBI::error;;
+	$dbh = DBI->connect($DSN, $DBUser, $DBPass) ||die $DBI::error;;
 	$stationid = &pid2sid($pid);
 	&writelog("folprep DEBUG epgimport.pl $stationid");
 	system("$toolpath/perl/epgimport.pl $stationid");
-}else{#しょぼかる録画
+} else { #しょぼかる録画
 	#XMLゲット & DB更新
 	&writelog("folprep DEBUG getxml2db.pl");
 	system("$toolpath/perl/getxml2db.pl");

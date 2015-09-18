@@ -248,10 +248,10 @@ $sth->execute($outputfilename);
 
 # Starlight breaker向けキャプチャ画像作成
 if (-e "$toolpath/perl/captureimagemaker.pl"){
-	&writelog("recwrap Call captureimagemaker $outputfilename");
-&changefilestatus($pid,$FILESTATUSCAPTURE);
-	system ("$toolpath/perl/captureimagemaker.pl $outputfilename");
-&changefilestatus($pid,$FILESTATUSCAPEND);
+	# &writelog("recwrap Call captureimagemaker $outputfilename");
+	# &changefilestatus($pid,$FILESTATUSCAPTURE);
+	# system ("$toolpath/perl/captureimagemaker.pl $outputfilename");
+	&changefilestatus($pid,$FILESTATUSCAPEND);
 }
 }#非ラジオ局
 

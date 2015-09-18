@@ -49,6 +49,9 @@ pids = []
 # PAT差し替えデータを初期化
 z = ""
 
+# PMTパケットデータを初期化
+w = ""
+
 ### 残すPIDを捜索
 while True:
     x = fi.read(188)
@@ -87,18 +90,21 @@ while True:
     
     # PMT
     if pid == pmt :
-        Nall = ((ord(x[6])&0x0F)<<4) + ord(x[7])
-        
-        # PCR
-        pcr = "0x%02x%02x" % ( ord(x[13])&0x1F, ord(x[14]) )
-        pids.append( pcr )
-        N = ((ord(x[15])&0x0F)<<4) + ord(x[16]) + 16 +1
-        
-        # EPID
-        while N < Nall +8 -4 :
-            if  ord(x[N]) != 0x0d :
-                pids.append( "0x%02x%02x" % ( ord(x[N+1])&0x1F, ord(x[N+2]) ) )
-            N += 4 + ((ord(x[N+3])&0x0F)<<4) + ord(x[N+4]) + 1
+        w += x if w == "" else x[4:]
+        Nall = ((ord(w[6])&0x0F)<<4) + ord(w[7])
+       
+        if len(w) >= Nall + 8 :
+            # PCR
+            pcr = "0x%02x%02x" % ( ord(w[13])&0x1F, ord(w[14]) )
+            pids.append( pcr )
+            N = ((ord(w[15])&0x0F)<<4) + ord(w[16]) + 16 +1
+            
+            # EPID
+            while N < Nall +8 -4 :
+                if  ord(w[N]) != 0x0d :
+                    pids.append( "0x%02x%02x" % ( ord(w[N+1])&0x1F, ord(w[N+2]) ) )
+                N += 4 + ((ord(w[N+3])&0x0F)<<4) + ord(w[N+4]) + 1
+ 
             
         print pids
         break

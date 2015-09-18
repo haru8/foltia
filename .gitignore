@@ -28,6 +28,7 @@ perl/tool/MSVCP90.dll
 perl/tool/faac
 perl/tool/ffmpeg
 perl/tool/mfc90u.dll
+perl/tool/tssplitter_lite
 
 php/tv
 
