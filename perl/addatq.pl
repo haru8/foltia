@@ -141,7 +141,7 @@ $reclength = $lengthmin * 60;
 if ( $ARGV[2] eq "DELETE"){
 	&writelog("addatq remove  only $pid");
 }else{
-	Schedule::At::add (TIME => "$atdateparam", COMMAND => "$toolpath/perl/folprep.pl $pid" , TAG => "$pid"."_X");
+	Schedule::At::add (TIME => "$atdateparam", COMMAND => "$toolpath/perl/folprep.pl $pid\n\n" , TAG => "$pid"."_X");
 	&writelog("addatq TIME $atdateparam   COMMAND $toolpath/perl/folprep.pl $pid ");
 }
 ##processcheckdate 

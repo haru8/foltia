@@ -128,7 +128,7 @@ system("$toolpath/perl/tool/rtmpdump  -r \"rtmpe://radiko.smartstream.ne.jp:1935
 
 &writelog("digitalradiorecording :DEBUG :ffmpeg -y -i ${outputfile}.flv -vn -acodec copy $outputfile");
 
-system("ffmpeg -y -i ${outputfile}.flv -vn -acodec copy $outputfile");
+system("$toolpath/perl/tool/ffmpeg -y -i ${outputfile}.flv -vn -acodec copy $outputfile");
 
 unlink("${outputfile}.flv");
 }else{
