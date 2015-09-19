@@ -3,11 +3,7 @@ tags
 
 bin/
 foltia.sqlite*
-debuglog.txt
-foltia_station_memo.txt
-memo.txt
-mktable.txt
-mktable_haru.sqlite.txt
+*.txt
 
 perl/tool/MP4Box
 perl/tool/TsSplitter.exe
