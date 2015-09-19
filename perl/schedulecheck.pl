@@ -19,7 +19,7 @@ use Time::Local;
 
 $path = $0;
 $path =~ s/schedulecheck.pl$//i;
-if ($path ne "./"){
+if ($path ne "./") {
 	push( @INC, "$path");
 }
 

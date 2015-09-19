@@ -3,6 +3,7 @@
 'addatq.1' => "SELECT count(*) FROM foltia_tvrecord WHERE tid = ?",
 'addatq.2' => "SELECT count(*) FROM foltia_tvrecord WHERE tid = ? AND stationid = ?",
 'addatq.3' => "SELECT count(*) FROM foltia_tvrecord WHERE tid = ? AND stationid = '0'",
+
 'addatq.addcue.1' => "SELECT * FROM foltia_tvrecord WHERE tid = ?",
 'addatq.addcue.2' => "SELECT * FROM foltia_tvrecord WHERE tid = ? AND stationid = ?",
 'addatq.addcue.3' => "SELECT * from foltia_subtitle WHERE tid = ? AND startdatetime > ? AND startdatetime < ?",
@@ -15,19 +16,19 @@
 'addpidatq.3' => "SELECT stationrecch, digitalch, digitalstationband ,foltia_station.stationid FROM foltia_station,foltia_subtitle WHERE foltia_subtitle.pid = ? AND foltia_subtitle.stationid = foltia_station.stationid",
 'addpidatq.4' => "SELECT * FROM foltia_subtitle WHERE pid = ?",
 
-'changestbch.1' => "SELECT foltia_station.tunertype, foltia_station.tunerch, foltia_station.stationrecch, foltia_station.stationid FROM foltia_subtitle, foltia_station WHERE foltia_subtitle.stationid = foltia_station.stationid AND foltia_subtitle.pid = ?",
+'changestbch.1'     => "SELECT foltia_station.tunertype, foltia_station.tunerch, foltia_station.stationrecch, foltia_station.stationid FROM foltia_subtitle, foltia_station WHERE foltia_subtitle.stationid = foltia_station.stationid AND foltia_subtitle.pid = ?",
 
 'envpolicyupdate.1' => "SELECT userclass,name,passwd1 FROM foltia_envpolicy",
 
-'foltialib.getstationid.1' => "SELECT count(*) FROM foltia_station WHERE stationname = ?",
-'foltialib.getstationid.2' => "SELECT stationid,stationname FROM foltia_station WHERE stationname = ?",
-'foltialib.getstationid.3' => "SELECT max(stationid) FROM foltia_station",
-'foltialib.getstationid.4' => "INSERT INTO foltia_station (stationid, stationname, stationrecch) VALUES (?, ?, ?)",
+'foltialib.getstationid.1'         => "SELECT count(*) FROM foltia_station WHERE stationname = ?",
+'foltialib.getstationid.2'         => "SELECT stationid,stationname FROM foltia_station WHERE stationname = ?",
+'foltialib.getstationid.3'         => "SELECT max(stationid) FROM foltia_station",
+'foltialib.getstationid.4'         => "INSERT INTO foltia_station (stationid, stationname, stationrecch) VALUES (?, ?, ?)",
 'foltialib.getpidbympegfilename.1' => "SELECT pid FROM foltia_subtitle WHERE m2pfilename = ? LIMIT 1",
-'foltialib.changefilestatus.1' => "UPDATE foltia_subtitle SET filestatus = ?, lastupdate = now() WHERE pid = ?",
-'foltialib.getfilestatus.1' => "SELECT filestatus FROM foltia_subtitle WHERE pid = ?",
-'foltialib.pid2sid.1' => "SELECT stationid FROM foltia_subtitle WHERE pid = ?",
-'foltialib.mp4filename2tid.1' => "SELECT tid FROM foltia_subtitle WHERE PSPfilename = ?",
+'foltialib.changefilestatus.1'     => "UPDATE foltia_subtitle SET filestatus = ?, lastupdate = now() WHERE pid = ?",
+'foltialib.getfilestatus.1'        => "SELECT filestatus FROM foltia_subtitle WHERE pid = ?",
+'foltialib.pid2sid.1'              => "SELECT stationid FROM foltia_subtitle WHERE pid = ?",
+'foltialib.mp4filename2tid.1'      => "SELECT tid FROM foltia_subtitle WHERE PSPfilename = ?",
 
 'getxml2db.1' => "SELECT count(*) FROM foltia_program WHERE tid = ?",
 'getxml2db.2' => "INSERT into foltia_program VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?)",
@@ -39,8 +40,8 @@
 'getxml2db.8' => "INSERT into foltia_subtitle (pid, tid, stationid, countno, subtitle, startdatetime, enddatetime, startoffset, lengthmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 'getxml2db.9' => "INSERT into foltia_subtitle (pid, tid, stationid, countno, subtitle, startdatetime, enddatetime, startoffset, lengthmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 
-'ipodtranscode.1' => "SELECT foltia_subtitle.pid,foltia_subtitle.tid,foltia_subtitle.m2pfilename,filestatus,foltia_program.aspect,foltia_subtitle.countno FROM foltia_subtitle, foltia_program, foltia_m2pfiles WHERE filestatus >= ? AND filestatus < ? AND foltia_program.tid = foltia_subtitle.TID AND foltia_program.PSP = 1 AND foltia_m2pfiles.m2pfilename = foltia_subtitle.m2pfilename ORDER BY enddatetime ASC LIMIT 1",
-'ipodtranscode.2' => "SELECT title, countno, subtitle FROM foltia_program, foltia_subtitle WHERE foltia_program.tid = foltia_subtitle.tid AND foltia_subtitle.pid = ?",
+'ipodtranscode.1'               => "SELECT foltia_subtitle.pid,foltia_subtitle.tid,foltia_subtitle.m2pfilename,filestatus,foltia_program.aspect,foltia_subtitle.countno FROM foltia_subtitle, foltia_program, foltia_m2pfiles WHERE filestatus >= ? AND filestatus < ? AND foltia_program.tid = foltia_subtitle.TID AND foltia_program.PSP = 1 AND foltia_m2pfiles.m2pfilename = foltia_subtitle.m2pfilename ORDER BY enddatetime ASC LIMIT 1",
+'ipodtranscode.2'               => "SELECT title, countno, subtitle FROM foltia_program, foltia_subtitle WHERE foltia_program.tid = foltia_subtitle.tid AND foltia_subtitle.pid = ?",
 'ipodtranscode.updatemp4file.1' => "UPDATE foltia_subtitle SET PSPfilename = ? WHERE pid = ?",
 'ipodtranscode.updatemp4file.2' => "INSERT INTO foltia_mp4files VALUES (?, ?)",
 
@@ -75,8 +76,9 @@
 
 'xmltv2foltia.replaceepg.1' => "SELECT * FROM foltia_epg WHERE enddatetime > ? AND startdatetime < ? AND ontvchannel = ?",
 'xmltv2foltia.replaceepg.2' => "SELECT * FROM foltia_epg WHERE startdatetime = ? AND enddatetime = ? AND ontvchannel = ? ",
-'xmltv2foltia.commitdb.1' => "DELETE FROM foltia_epg WHERE epgid = ?",
-'xmltv2foltia.commitdb.2' => "INSERT INTO foltia_epg VALUES ( nextval('foltia_epg_epgid_seq'), ?, ?, ?, ?, ?, ?, ?)" ,
+'xmltv2foltia.commitdb.1'   => "DELETE FROM foltia_epg WHERE epgid = ?",
+'xmltv2foltia.commitdb.2'   => "INSERT INTO foltia_epg VALUES ( nextval('foltia_epg_epgid_seq'), ?, ?, ?, ?, ?, ?, ?)" ,
+
 'epgimport.1' => "SELECT count(*) FROM foltia_station WHERE stationid = ?" ,
 'epgimport.2' => "SELECT digitalch,ontvcode FROM foltia_station WHERE stationid = ?" ,
 'epgimport.3' => "SELECT digitalch,ontvcode FROM foltia_station WHERE ontvcode is not NULL AND digitalch >= 13 AND digitalch <= 62 ORDER BY digitalch ASC" ,
