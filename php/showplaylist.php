@@ -80,6 +80,7 @@ if ($demomode){
 }else{
 	printdiskusage();
 	printtrcnprocesses();
+	printrecpt1processes();
 }
 
 

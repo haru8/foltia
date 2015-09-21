@@ -389,42 +389,49 @@ return ($serveruri );
 
 
 function printdiskusage(){//戻り値　なし
-list (, $all, $use , $free, $usepercent) =  getdiskusage();
-
-print "
-<div style=\"width:100%;border:1px solid black;text-align:left;\"><span style=\"float:right;\">$free</span>
-<div style=\"width:$usepercent;border:1px solid black;background:white;\">$use/$all($usepercent)</div>
-</div>
-";
-//exec('ps ax | grep ffmpeg |grep MP4 ' ,$ffmpegprocesses);
-}//end sub
+	list (, $all, $use , $free, $usepercent) =  getdiskusage();
+	
+	print "
+	<div style=\"width:100%;border:1px solid black;text-align:left;\"><span style=\"float:right;\">$free</span>
+	<div style=\"width:$usepercent;border:1px solid black;background:white;\">$use/$all($usepercent)</div>
+	</div>
+	";
+	//exec('ps ax | grep ffmpeg |grep MP4 ' ,$ffmpegprocesses);
+} //end sub
 
 
 function getdiskusage(){//戻り値　配列　[,全体容量, 使用容量 , 空き容量, 利用割合]
 
-global $recfolderpath,$recfolderpath;
-
-//	exec ( "df -h  $recfolderpath | grep $recfolderpath", $hdfreearea);
-//	$freearea = preg_split ("/[\s,]+/", $hdfreearea[0]);
+	global $recfolderpath,$recfolderpath;
+	
+	//	exec ( "df -h  $recfolderpath | grep $recfolderpath", $hdfreearea);
+	//	$freearea = preg_split ("/[\s,]+/", $hdfreearea[0]);
 	exec ( "df -hP  $recfolderpath", $hdfreearea);
 	$freearea = preg_split ("/[\s,]+/", $hdfreearea[count($hdfreearea)-1]);
 
     return $freearea;
 	
-}//endsub
+} //endsub
 
 
-function printtrcnprocesses(){
+function printtrcnprocesses() {
+	$ffmpegprocesses = `ps ax | grep ffmpeg | grep -v grep |  wc -l`;
+	$uptime = exec('uptime');
 
-$ffmpegprocesses = `ps ax | grep ffmpeg | grep -v grep |  wc -l `;
-$uptime = exec('uptime');
+	print "<div style=\"text-align:left;\">";
+	print "$uptime<br>\n";
+	print "トラコン稼働数 : $ffmpegprocesses<br>\n";
+	print "</div>";
 
-print "<div style=\"text-align:left;\">";
-print "$uptime<br>\n";
-print "トラコン稼働数:$ffmpegprocesses<br>\n";
-print "</div>";
+} //endsub
 
-}//endsub
+function printrecpt1processes() {
+	$recpt1processes = `ps ax | grep recpt1 | grep -v grep |  wc -l`;
+
+	print "<div style=\"text-align:left;\">";
+	print "録画稼働数 : $recpt1processes<br>\n";
+	print "</div>";
+}
 
 
 function warndiskfreearea(){
