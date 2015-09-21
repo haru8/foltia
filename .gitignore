@@ -25,6 +25,7 @@ perl/tool/faac
 perl/tool/ffmpeg
 perl/tool/mfc90u.dll
 perl/tool/tssplitter_lite
+perl/tool/mplayer
 
 php/tv
 
