@@ -128,7 +128,7 @@ if($list == "raw"){
   
   foreach($m2pfiles as $pathfName) {
     
-    $fNametmp = split("/",$pathfName);
+    $fNametmp = explode("/", $pathfName);
     $fName = array_pop($fNametmp);
     //print "FILENAME:$fName<BR>\n";
     
@@ -136,7 +136,7 @@ if($list == "raw"){
       continue;
     }
     if ((ereg(".m2.+", $fName))|| (ereg(".aac", $fName))){
-      $filesplit = split("-",$fName);
+      $filesplit = explode("-", $fName);
       
       if (preg_match("/^\d+$/", $filesplit[0])) {//	print "File is looks like good:preg<br>\n";
         if ($filesplit[1] == ""){
@@ -238,21 +238,21 @@ if($list == "raw"){
   exit;
 
 } else if($list== 'mp4') {
-  exec ("ls -t  $recfolderpath/*.localized/mp4/*.MP4 | head -2000", $mp4files);
-  //exec ("ls -t  $recfolderpath/*.localized/mp4/*.MP4", $mp4files);
+  exec ("ls -t $recfolderpath/*.localized/mp4/*.MP4 | head -2000", $mp4files);
 
-  $datas   = array();
-  $nodata = array();
+  $datas      = array();
+  $nodata     = array();
+  $mp4_exists = array();
   foreach($mp4files as $pathfName) {
     //echo "<pre>$pathfName</pre>";
-    $fNametmp = split('/', $pathfName);
+    $fNametmp = explode('/', $pathfName);
     $fName    = array_pop($fNametmp);
     
     if(($fName == '.') || ($fName == '..') ){ 
       continue;
     }
     if (ereg('.MP4', $fName)) {
-      $filesplit = split('-', $fName);
+      $filesplit = explode('-', $fName);
       $tid       = $filesplit[1];
       $num       = $filesplit[2];
       //echo "<pre>$fName, $filesplit[1], $filesplit[2]</pre>";
@@ -317,8 +317,8 @@ if($list == "raw"){
           $mp4size   = filesize($mp4path);
           $mp4size   = round($mp4size / 1024 / 1024);
           if ($pid) {
-            $nodata[$tid]   = $tid;
-            $nodata[$tid][$count] = $count;
+            $nodata[$tid][] = $count;
+            $mp4_exists[]   = $mp4path;
           }
         }
 
@@ -326,8 +326,10 @@ if($list == "raw"){
         if (!isset($ind[5])) {
           $ind[5] = '';
         }
-        $index = $ind[0] .'-'. sprintf("%05d", $ind[1]) .'-'. sprintf("%04d", $ind[2]) .'-'. $ind[3] .'-'. $ind[4] .'-'. $ind[5];
-//printf("<pre> %s </pre>\n", $index);
+        $index = $ind[0] .'-'. sprintf("%05d", $ind[1]) .'-'. sprintf("%04d", $ind[2]) .'-'. $ind[3] .'-'. $ind[4];
+        if ($ind[5] != '') {
+          $index .= '-' . $ind[5];
+        }
 
         $datas[$index]['fName']     = $fName;
         $datas[$index]['tid']       = $tid;
@@ -383,7 +385,8 @@ if($list == "raw"){
   print "	</tbody>\n</table>\n</FORM>\n</body>\n</html>\n";
 
   echo '$datas=' . count($datas) . '  ';
-  echo '$nodata=' . count($nodata) . '<br />';
+  echo '$nodata=' . count($nodata, COUNT_RECURSIVE) . '  ';
+  echo '$mp4_exists=' . count($mp4_exists) .  '<br />';
   //$cnt = 0;
   //foreach ($sort as $k => $v) {
   //  $cnt += count($v);
