@@ -163,7 +163,7 @@ while ($counttranscodefiles >= 1) {
 				} else { #16:9
 					$cropopt = " -vf crop=in_w-16:in_h-12:8:6 ";
 				}
-                $cropopt = "";
+				$cropopt = "";
 
 				# クオリティごとに
 				if (($trconqty eq "")||($trconqty == 1)) {
@@ -173,8 +173,7 @@ while ($counttranscodefiles >= 1) {
 					$ffmpegencopt = " -threads 0 -s 480x272 -r 29.97 -vcodec libx264 -preset fast -g 100 -crf 22 -bufsize 1536k -maxrate 768K -level 13 -sc_threshold 60 -refs 3 -async 50 -f h264 $filenamebody.264";
 
 				} elsif($trconqty == 3) {
-					$ffmpegencopt = " -threads 0 -s 640x360 -r 29.97 -vcodec libx264 -preset fast -g 100 -crf 21 -bufsize 768K -maxrate 768k -level 30 -sc_threshold 60 -refs 3 -async 50 -f h264 $filenamebody.264";
-					#$ffmpegencopt = "-threads 0 -s 640x360 -r 29.97 -vcodec libx264 -preset medium -g 250 -crf 21 -bufsize 768k -maxrate 768k -level 30 -sc_threshold 50 -refs 5 -direct-pred auto -async 50 -qcomp 0.7 -x264opts me=umh:rc-lookahead=50:bframes=5 -f h264 $filenamebody.264";
+					$ffmpegencopt = " -threads 0 -s 640x360 -r 30000/1001 -vcodec libx264 -preset veryslow -crf 22 -bufsize 768K -maxrate 768k -refs 13 -tune animation -x264opts merange=32:no-dct-decimate -async 50 -vsync 1 -f h264 $filenamebody.264";
 
 				}
 				# 不安定なので頭2秒は捨てる
@@ -192,10 +191,10 @@ while ($counttranscodefiles >= 1) {
 						&writelog("$toolpath/perl/tool/tss.py $inputmpeg2  :start.");
 						$tm_start = time();
 						system("nice -n 15 $toolpath/perl/tool/tss.py $inputmpeg2");
-                        $exit_value  = $? >> 8;
-                        $signal_num  = $? & 127;
-                        $dumped_core = $? & 128;
-                        &writelog("tss.py $inputmpeg2 :$exit_value:$signal_num:$dumped_core:end.");
+						$exit_value  = $? >> 8;
+						$signal_num  = $? & 127;
+						$dumped_core = $? & 128;
+						&writelog("tss.py $inputmpeg2 :$exit_value:$signal_num:$dumped_core:end.");
 						$tm_end   = time();
 						$tm_process = $tm_end - $tm_start;
 						$ftm_process = sprintf("%00d:%02d:%02d", int($tm_process / 3600), int($tm_process % 3600 / 60), $tm_process % 60);
@@ -228,10 +227,10 @@ while ($counttranscodefiles >= 1) {
 						&writelog("WINE TsSplitter.exe -EIT -ECM  -EMM -SD -1SEG $inputmpeg2  :start.");
 						$tm_start = time();
 						system("nice -n 15 wine $toolpath/perl/tool/TsSplitter.exe -EIT -ECM  -EMM -SD -1SEG $inputmpeg2");
-                        $exit_value  = $? >> 8;
-                        $signal_num  = $? & 127;
-                        $dumped_core = $? & 128;
-                        &writelog("TsSplitter.exe  :$exit_value:$signal_num:$dumped_core:end.");
+						$exit_value  = $? >> 8;
+						$signal_num  = $? & 127;
+						$dumped_core = $? & 128;
+						&writelog("TsSplitter.exe  :$exit_value:$signal_num:$dumped_core:end.");
 						$tm_end   = time();
 						$tm_process  = $tm_end - $tm_start;
 						$ftm_process = sprintf("%00d:%02d:%02d", int($tm_process / 3600), int($tm_process % 3600 / 60), $tm_process % 60);
@@ -267,10 +266,10 @@ while ($counttranscodefiles >= 1) {
 						&writelog("WINE TsSplitter.exe -EIT -ECM -EMM -1SEG $inputmpeg2  :start.");
 						$tm_start = time();
 						system("nice -n 15 wine $toolpath/perl/tool/TsSplitter.exe -EIT -ECM  -EMM -1SEG $inputmpeg2");
-                        $exit_value  = $? >> 8;
-                        $signal_num  = $? & 127;
-                        $dumped_core = $? & 128;
-                        &writelog("TsSplitter.exe  :$exit_value:$signal_num:$dumped_core:end.");
+						$exit_value  = $? >> 8;
+						$signal_num  = $? & 127;
+						$dumped_core = $? & 128;
+						&writelog("TsSplitter.exe  :$exit_value:$signal_num:$dumped_core:end.");
 						$tm_end   = time();
 						$tm_process  = $tm_end - $tm_start;
 						$ftm_process = sprintf("%00d:%02d:%02d", int($tm_process / 3600), int($tm_process % 3600 / 60), $tm_process % 60);
@@ -310,10 +309,10 @@ while ($counttranscodefiles >= 1) {
 					&writelog("CMD: $toolpath/perl/tool/ffmpeg -y -i $trcnmpegfile $cropopt $sstime $ffmpegencopt");
 					$tm_start = time();
 					system ("nice -n 15 $toolpath/perl/tool/ffmpeg -y -i $trcnmpegfile $cropopt $sstime $ffmpegencopt");
-                    $exit_value  = $? >> 8;
-                    $signal_num  = $? & 127;
-                    $dumped_core = $? & 128;
-                    &writelog("ffmpeg retry.  $trcnmpegfile :$exit_value:$signal_num:$dumped_core:end.");
+					$exit_value  = $? >> 8;
+					$signal_num  = $? & 127;
+					$dumped_core = $? & 128;
+					&writelog("ffmpeg retry.  $trcnmpegfile :$exit_value:$signal_num:$dumped_core:end.");
 					$tm_end   = time();
 					$tm_process  = $tm_end - $tm_start;
 					$ftm_process = sprintf("%00d:%02d:%02d", int($tm_process / 3600), int($tm_process % 3600 / 60), $tm_process % 60);
@@ -365,10 +364,10 @@ while ($counttranscodefiles >= 1) {
 					&writelog("CMD: $toolpath/perl/tool/ffmpeg -y -i $inputmpeg2 $sstime $ffmpegencopt");
 					$tm_start = time();
 					system ("nice -n 15 $toolpath/perl/tool/ffmpeg -y -i $inputmpeg2 $sstime $ffmpegencopt");
-                    $exit_value  = $? >> 8;
-                    $signal_num  = $? & 127;
-                    $dumped_core = $? & 128;
-                    &writelog("ffmpeg retry No splited.  $inputmpeg2 :$exit_value:$signal_num:$dumped_core:end.");
+					$exit_value  = $? >> 8;
+					$signal_num  = $? & 127;
+					$dumped_core = $? & 128;
+					&writelog("ffmpeg retry No splited.  $inputmpeg2 :$exit_value:$signal_num:$dumped_core:end.");
 					$tm_end   = time();
 					$tm_process  = $tm_end - $tm_start;
 					$ftm_process = sprintf("%00d:%02d:%02d", int($tm_process / 3600), int($tm_process % 3600 / 60), $tm_process % 60);
@@ -401,10 +400,10 @@ while ($counttranscodefiles >= 1) {
 				$tm_start = time();
 				system ("$toolpath/perl/tool/ffmpeg -i $trcnmpegfile $sstime -map 0:1 -vn -acodec pcm_s16le -ac 2 $filenamebody.wav");
 				
-                $exit_value  = $? >> 8;
-                $signal_num  = $? & 127;
-                $dumped_core = $? & 128;
-                &writelog("ffmpeg TS -> wav.  $trcnmpegfile :$exit_value:$signal_num:$dumped_core:end.");
+				$exit_value  = $? >> 8;
+				$signal_num  = $? & 127;
+				$dumped_core = $? & 128;
+				&writelog("ffmpeg TS -> wav.  $trcnmpegfile :$exit_value:$signal_num:$dumped_core:end.");
 				$tm_end   = time();
 				$tm_process  = $tm_end - $tm_start;
 				$ftm_process = sprintf("%00d:%02d:%02d", int($tm_process / 3600), int($tm_process % 3600 / 60), $tm_process % 60);
