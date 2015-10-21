@@ -76,12 +76,14 @@ $startday	= substr($start,6,2);
 $starthour	= substr($start,8,2);
 $startmin	= substr($start,10,2);
 $day_of_the_week = date ("(D)",mktime($starthour , 0 , 0, $startmonth , $startday  , $startyear));
+$day_of_the_week = weekDaysRep($day_of_the_week);
 
 print "($startyear/$startmonth/$startday $day_of_the_week $starthour:$startmin-)<BR>\n";
 
 
 $yesterday		= date("YmdHi", mktime($starthour , 0 , 0, $startmonth, $startday -1, $startyear));
 $dayyesterday	= date("m/d(D)", mktime($starthour , 0 , 0, $startmonth, $startday -1, $startyear));
+$dayyesterday   = weekDaysRep($dayyesterday);
 
 /////////////////////////////////////////////////////////// 
 //時刻の隣の【翌日】の変数
@@ -89,6 +91,7 @@ $tomorrow  = date ("YmdHi",mktime($starthour , 0 , 0, $startmonth , $startday +1
 /////////////////////////////////////////////////////////// 
 //EPG番組表を取得しますのとなりの日付の【曜日】の変数
 $daytomorrow  = date ("m/d(D)",mktime($starthour , 0 , 0, $startmonth , $startday +1 , $startyear));
+$daytomorrow = weekDaysRep($daytomorrow);
 ///////////////////////////////////////////////////////////
 
 
