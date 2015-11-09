@@ -59,7 +59,7 @@ while ($counttranscodefiles >= 1) {
 	$sth = $dbh->prepare($stmt{'ipodtranscode.1'});
 	$sth->execute($FILESTATUSRECEND, $FILESTATUSTRANSCODECOMPLETE, );
 	@dbparam = $sth->fetchrow_array;
-	&writelog("DEBUG $DBQuery");
+	&writelog("DEBUG $stmt{'ipodtranscode.1'}");
 	&writelog("DEBUG $dbparam[0], $dbparam[1], $dbparam[2], $dbparam[3], $dbparam[4], $dbparam[5]");
 	$pid               = $dbparam[0];
 	$tid               = $dbparam[1];
@@ -173,9 +173,13 @@ while ($counttranscodefiles >= 1) {
 					$ffmpegencopt = " -threads 0 -s 480x272 -r 29.97 -vcodec libx264 -preset fast -g 100 -crf 22 -bufsize 1536k -maxrate 768K -level 13 -sc_threshold 60 -refs 3 -async 50 -f h264 $filenamebody.264";
 
 				} elsif($trconqty == 3) {
-					$ffmpegencopt = " -threads 0 -s 640x360 -r 30000/1001 -vcodec libx264 -preset veryslow -crf 22 -bufsize 768K -maxrate 768k -refs 13 -tune animation -x264opts merange=32:no-dct-decimate -async 50 -vsync 1 -f h264 $filenamebody.264";
-
+                    if ($tid != 0) {
+					  $ffmpegencopt = " -threads 0 -s 640x360 -r 30000/1001 -vcodec libx264 -preset veryslow -crf 21 -bufsize 768K -maxrate 768k -refs 13 -tune animation -x264opts merange=32:no-dct-decimate -async 50 -vsync 1 -f h264 $filenamebody.264";
+                    } else {
+					  $ffmpegencopt = " -threads 0 -s 640x360 -r 30000/1001 -vcodec libx264 -preset veryslow -crf 21 -bufsize 768K -maxrate 768k -refs 13 -tune film -x264opts merange=32:no-dct-decimate -async 50 -vsync 1 -f h264 $filenamebody.264";
+                    }
 				}
+
 				# 不安定なので頭2秒は捨てる
 				$sstime = " -ss 00:00:02.000 ";
 
