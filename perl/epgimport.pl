@@ -251,7 +251,7 @@ sub chkrecordingschedule {
 	
 	$rows = $sth->rows;
 	
-	if ($rows > 0 ) {
+	if ($rows > 2 ) {
 		&writelog("epgimport ABORT The recording schedule had approached. $rows.:$now:$fiveminitsafter");
 		exit ;
 	} else {
