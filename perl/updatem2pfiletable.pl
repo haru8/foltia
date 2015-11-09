@@ -54,17 +54,18 @@ $sth = $dbh->prepare($stmt{'updatem2pfiletable.3'});
 
 
 foreach (@mp4filelist) {
-chomp();
-s/$recfolderpath\///;
-@fileline = split (/\//);
-$filetid = $fileline[0];
-$filetid =~ s/[^0-9]//g;
-if (($filetid ne "" )&& ($fileline[2] ne "" )){
-	$sth = $dbh->prepare($stmt{'updatem2pfiletable.4'});
-	$oserr = $sth->execute($filetid, $fileline[2]);
-#print "$filetid;$fileline[2];$query\n"
-# http://www.atmarkit.co.jp/fnetwork/rensai/sql03/sql1.html
-}#end if
+	chomp();
+	s/$recfolderpath\///;
+	@fileline = split (/\//);
+	$filetid = $fileline[0];
+	$filetid =~ s/[^0-9]//g;
+	if (($filetid ne "" )&& ($fileline[2] ne "" )){
+		$sth = $dbh->prepare($stmt{'updatem2pfiletable.4'});
+		$oserr = $sth->execute($filetid, $fileline[2]);
+	    #printf("updatem2pfiletable.4: $filetid, $fileline[2]\n");
+	    #print "$filetid;$fileline[2];$query\n"
+	# http://www.atmarkit.co.jp/fnetwork/rensai/sql03/sql1.html
+	}#end if
 }# end foreach
 $oserr = $dbh->commit;
 
