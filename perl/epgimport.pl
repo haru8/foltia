@@ -32,6 +32,8 @@ if ($path ne "./") {
 
 require "foltialib.pl";
 
+&writelog("epgimport.pl START.");
+
 my $ontvcode = "";
 my $channel = "";
 my @date = ();
@@ -103,9 +105,9 @@ if ($stationid > 0) {
 		} else {#ラジオ局などの場合
 			&writelog("epgimport ABORT SID $stationid is not Digital TV ch.");
 			exit;
-		}#endif ラジオ局かどうか
-	}#end unless($data[0] == 1
-}#endif $stationid > 0
+		} #endif ラジオ局かどうか
+	} #end unless($data[0] == 1
+} #endif $stationid > 0
 
 #地デジ----------------------------------------
 #受信局確認
@@ -120,7 +122,7 @@ if ($channel >= 13 && $channel <= 62) { #局指定があるなら
 	
 	while (@data = $sth->fetchrow_array()) {
 		$stations{$data[0]} = $data[1];
-	}#end while 
+	} #end while 
 	$uset = 1;
 }#end if
 
@@ -231,6 +233,7 @@ if ($usecs == 1) {
 #	}
 #}#end if long
 
+&writelog("epgimport.pl END.");
 
 sub chkrecordingschedule {
 	#放送予定まで近くなったら、チューナー使いつづけないようにEPG取得中断

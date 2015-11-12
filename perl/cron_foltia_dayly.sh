@@ -9,6 +9,12 @@
 # DCC-JPL Japan/foltia project
 #
 
+date=`date '+%Y-%m-%d %H:%M:%S'`
+LOGHEAD="$date: `printf %06d $$`: "
+echo ""
+echo "[cron_foltia_dayly.sh START.]" | sed "s/^/${LOGHEAD}/g"
+
+
 #デジタル放送から一週間分のEPGを取得
 #/home/foltia/perl/epgimport.pl long
 /usr/local/apps/foltia/perl/epgimport.pl long
@@ -27,4 +33,9 @@
 #2週間先のスケジュールを取得
 #/home/foltia/perl/getxml2db.pl long
 /usr/local/apps/foltia/perl/getxml2db.pl long
+
+date=`date '+%Y-%m-%d %H:%M:%S'`
+LOGHEAD="$date: `printf %06d $$`: "
+echo "[cron_foltia_dayly.sh END.]" | sed "s/^/${LOGHEAD}/g"
+echo ""
 

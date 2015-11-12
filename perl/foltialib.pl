@@ -47,7 +47,7 @@ sub writelog {
 	my $timestump = strftime("%Y/%m/%d_%H:%M:%S", localtime);
 	chomp($timestump);
 	my ($_pkg, $_file, $_line) = caller;
-	$_file = basename($_file);
+	my $_processid  = sprintf("%06d", $$);
 	
 	if ($debugmode == 1) {
 		open (DEBUGLOG , ">>$toolpath/debuglog.txt") || die "Cant write log file.$! \n ";
@@ -55,8 +55,8 @@ sub writelog {
 		open (DEBUGLOG , '>-') || die "Cant write log file.$! \n ";
 	}
 	$messages =~ s/\n//gio;
-	$_processid  = sprintf("%06d", $$);
 	$_line = sprintf("%-4d", $_line);
+	$_file = basename($_file);
 	$_file = sprintf("%-21s", $_file);
 	print DEBUGLOG "$timestump $_processid: $_file:$_line $messages\n";
 	close (DEBUGLOG);
@@ -431,44 +431,6 @@ sub movie_sec {
 
 	return $sec;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 1;

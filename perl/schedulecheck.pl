@@ -25,7 +25,9 @@ if ($path ne "./") {
 
 require "foltialib.pl";
 
-#XMLゲット&更新
+&writelog("schedulecheck START.");
+
+# しょぼかる XMLゲット&更新
 system("$toolpath/perl/getxml2db.pl");
 
 #予約番組探し
@@ -54,4 +56,6 @@ if ($titlecount[0]  == 0 ) {
 	#EPG更新
 	system("$toolpath/perl/epgimport.pl");
 }
+
+&writelog("schedulecheck END.");
 

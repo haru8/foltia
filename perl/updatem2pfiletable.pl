@@ -19,29 +19,33 @@ use DBD::SQLite;
 
 $path = $0;
 $path =~ s/updatem2pfiletable.pl$//i;
-if ($path ne "./"){
-push( @INC, "$path");
+if ($path ne "./")	{
+	push( @INC, "$path");
 }
 
 require "foltialib.pl";
+
+&writelog("updatem2pfiletable.pl START.");
+
+
 $dbh = DBI->connect($DSN,$DBUser,$DBPass) ||die $DBI::error;;
 
 $dbh->{AutoCommit} = 0;
 #　ひとまず消す
 $sth = $dbh->prepare($stmt{'updatem2pfiletable.1'});
-	$sth->execute();
+$sth->execute();
 while ($file = glob("$recfolderpath/*.m2?")) {
-$file =~ s/$recfolderpath\///;
-    $sth = $dbh->prepare($stmt{'updatem2pfiletable.2'});
-    $sth->execute($file);
+	$file =~ s/$recfolderpath\///;
+	$sth = $dbh->prepare($stmt{'updatem2pfiletable.2'});
+	$sth->execute($file);
 # print "$file\n";
-}#while
+} #while
 while ($file = glob("$recfolderpath/*.aac")) {
-$file =~ s/$recfolderpath\///;
-    $sth = $dbh->prepare($stmt{'updatem2pfiletable.2'});
-    $sth->execute($file);
+	$file =~ s/$recfolderpath\///;
+	$sth = $dbh->prepare($stmt{'updatem2pfiletable.2'});
+	$sth->execute($file);
 # print "$file\n";
-}#while
+} #while
 
 $oserr = $dbh->commit;
 
@@ -50,7 +54,7 @@ $oserr = $dbh->commit;
 
 #　ひとまず消す
 $sth = $dbh->prepare($stmt{'updatem2pfiletable.3'});
-	$sth->execute();
+$sth->execute();
 
 
 foreach (@mp4filelist) {
@@ -59,13 +63,15 @@ foreach (@mp4filelist) {
 	@fileline = split (/\//);
 	$filetid = $fileline[0];
 	$filetid =~ s/[^0-9]//g;
-	if (($filetid ne "" )&& ($fileline[2] ne "" )){
+	if (($filetid ne "" )&& ($fileline[2] ne "" )) {
 		$sth = $dbh->prepare($stmt{'updatem2pfiletable.4'});
 		$oserr = $sth->execute($filetid, $fileline[2]);
-	    #printf("updatem2pfiletable.4: $filetid, $fileline[2]\n");
-	    #print "$filetid;$fileline[2];$query\n"
+		#printf("updatem2pfiletable.4: $filetid, $fileline[2]\n");
+		#print "$filetid;$fileline[2];$query\n"
 	# http://www.atmarkit.co.jp/fnetwork/rensai/sql03/sql1.html
-	}#end if
-}# end foreach
+	} #end if
+} # end foreach
 $oserr = $dbh->commit;
+
+&writelog("updatem2pfiletable.pl END.");
 
