@@ -777,4 +777,11 @@ function getnextstationid($con) {
 	return ($sid);
 } //end getnextstationid
 
+// デバッグ用
+function d($var) {
+	echo '<pre style="text-align: left;">';
+	var_dump($var);
+	echo '</pre>';
+} // d()
+
 ?>
