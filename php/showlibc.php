@@ -189,7 +189,7 @@ $query = "
 
 $rs = "";
 $rs = sql_query($con, $query, "DBクエリに失敗しました", array($tid));
-$rowdataAll = $rs->fetchAll();
+$rowdataAll = $rs->fetchAll(PDO::FETCH_ASSOC);
 
 $rowSort = array();
 foreach ($rowdataAll as $key => $row) {
