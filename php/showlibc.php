@@ -255,9 +255,9 @@ if ($rowdataAll) {
 			$capimgpath = htmlspecialchars(preg_replace("/.m2./", "", $rowdata['m2pfilename']));
 		
 			if (($capimgpath != "") && (file_exists("$recfolderpath/$tid.localized/img/$capimgpath") )) {
-				$caplink = " / <a href = \"./selectcaptureimage.php?pid=" . $rowdata[6] . "\">キャプ</a>";
+				$caplink = " / <a href = \"./selectcaptureimage.php?pid=" . $rowdata['pid'] . "\">キャプ</a>";
 			} else {
-				$caplink = " / キャプなし";
+				$caplink = " / <a href = \"./selectcaptureimage.php?f=" . $rowdata['mp4filename'] . "\">キャプ</a>";
 			}
 		} else {
 			$caplink = "";
