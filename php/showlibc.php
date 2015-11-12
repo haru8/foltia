@@ -78,10 +78,10 @@ $now = date("YmdHi");
 
 $query = "
   SELECT foltia_program.title 
-  FROM  foltia_program 
-  WHERE foltia_program.tid = ? 
+    FROM  foltia_program 
+    WHERE foltia_program.tid = ? 
 ";
-//$rs = m_query($con, $query, "DBクエリに失敗しました");
+
 $rs = sql_query($con, $query, "DBクエリに失敗しました", array($tid));
 $rowdata = $rs->fetch();
 if (! $rowdata) {
@@ -113,7 +113,7 @@ if(ereg("iPhone", $useragent)) {
 		<hr size=\"4\">
 		<p align=\"left\">再生可能ムービーを表示します。<br>";
 	if ($tid == 0) {
-	print "$title 【<A HREF = \"./folcast.php?tid=$tid\">この番組のFolcast</A> ［<a href=\"itpc://$serveruri/folcast.php?tid=$tid\">iTunesに登録</a>］】 <br>\n";
+		print "$title 【<A HREF = \"./folcast.php?tid=$tid\">この番組のFolcast</A> ［<a href=\"itpc://$serveruri/folcast.php?tid=$tid\">iTunesに登録</a>］】 <br>\n";
 	} else {
 		print "<a href=\"http://cal.syoboi.jp/tid/" .
 			htmlspecialchars($tid)  . "\" target=\"_blank\">$title</a> 
@@ -145,19 +145,16 @@ echo "<div id=contents class=autopagerize_page_element />";
 <form name="deletemovie" method="POST" action="./deletemovie.php">
 <p align="left"><input type="submit" value="項目削除" ></p>
 
-
 <?php
 
 /////////////////////////////////////////////////////////
 //レコード総数取得
 $query = "
   SELECT
-  COUNT(*) AS cnt
+    COUNT(*) AS cnt
   FROM foltia_mp4files
-  LEFT JOIN foltia_subtitle
-  ON   foltia_mp4files.mp4filename = foltia_subtitle.pspfilename
-  LEFT JOIN foltia_program
-  ON foltia_mp4files.tid = foltia_program.tid
+    LEFT JOIN foltia_subtitle ON   foltia_mp4files.mp4filename = foltia_subtitle.pspfilename
+    LEFT JOIN foltia_program  ON foltia_mp4files.tid = foltia_program.tid
   WHERE foltia_mp4files.tid = ? 
 ";
 
@@ -174,64 +171,69 @@ if (! $rowdata) {
 //レコード表示
 $query = "
   SELECT 
-  foltia_program.tid,
-  foltia_program.title,
-  foltia_subtitle.countno,
-  foltia_subtitle.subtitle,
-  foltia_subtitle.startdatetime ,
-  foltia_subtitle.m2pfilename ,
-  foltia_subtitle.pid ,
-  foltia_mp4files.mp4filename 
-  FROM foltia_mp4files  
-  LEFT JOIN foltia_subtitle 
-  ON   foltia_mp4files.mp4filename = foltia_subtitle.pspfilename   
-  LEFT JOIN foltia_program  
-  ON foltia_mp4files.tid = foltia_program.tid 
+    foltia_program.tid,
+    foltia_program.title,
+    foltia_subtitle.countno,
+    foltia_subtitle.subtitle,
+    foltia_subtitle.startdatetime,
+    foltia_subtitle.m2pfilename,
+    foltia_subtitle.pid,
+    foltia_mp4files.mp4filename
+  FROM foltia_mp4files
+    LEFT JOIN foltia_subtitle ON foltia_mp4files.mp4filename = foltia_subtitle.pspfilename
+    LEFT JOIN foltia_program  ON foltia_mp4files.tid = foltia_program.tid
   WHERE foltia_mp4files.tid = ?  
-  ORDER BY \"startdatetime\" ASC
-  LIMIT $lim OFFSET $st
 ";
+    //ORDER BY \"startdatetime\" DESC
+    //LIMIT $lim OFFSET $st
 
 $rs = "";
-//$rs = m_query($con, $query, "DBクエリに失敗しました");
 $rs = sql_query($con, $query, "DBクエリに失敗しました", array($tid));
-$rowdata = $rs->fetch();
-if ($rowdata) {
-	if(ereg("iPhone", $useragent)){
+$rowdataAll = $rs->fetchAll();
+
+$rowSort = array();
+foreach ($rowdataAll as $key => $row) {
+	$rowSort[$key] = $row['mp4filename'];
+}
+array_multisort($rowSort, SORT_DESC, SORT_NATURAL, $rowdataAll);
+$rowdataAll = array_slice($rowdataAll, $st, $lim);
+
+if ($rowdataAll) {
+	if(ereg("iPhone", $useragent)) {
 		print "<ul id=\"home\" title=\"$title\" selected=\"true\">";
-	}else{
+	} else {
 		print "<table BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"2\" WIDTH=\"100%\"><tbody>";
 	}
 	
-	do {
-		$title = $rowdata[1];
+	foreach ($rowdataAll as $rowdata) {
+		$title = $rowdata['title'];
 		
-		if ($rowdata[2]== "" ) {
+		if ($rowdata['countno'] == "" ) {
 			$count = "[話数]";
 		} else {
-			$count = $rowdata[2];
+			$count = $rowdata['countno'];
 		}
-		if ($rowdata[3]== "" ) {
+		if ($rowdata['subtitle'] == "" ) {
 			$subtitle = "[サブタイトル]";
 		} else {
-			$subtitle = $rowdata[3];
+			$subtitle = $rowdata['subtitle'];
 		}
-		$onairdate =  $rowdata[4];
+		$onairdate =  $rowdata['startdatetime'];
 		
-		$tid = htmlspecialchars($rowdata[0]);
-		$title = htmlspecialchars($title);
-		$count = htmlspecialchars($count);
-		$subtitle = htmlspecialchars($subtitle);
-		$onairdate = htmlspecialchars($onairdate);
-		$pid = htmlspecialchars($rowdata[6]);
-		$fName = htmlspecialchars($rowdata[7]);
+		$tid		= htmlspecialchars($rowdata['tid']);
+		$title		= htmlspecialchars($title);
+		$count		= htmlspecialchars($count);
+		$subtitle	= htmlspecialchars($subtitle);
+		$onairdate	= htmlspecialchars($onairdate);
+		$pid		= htmlspecialchars($rowdata['pid']);
+		$fName		= htmlspecialchars($rowdata['mp4filename']);
 		
 		$mp4path   = "$recfolderpath/$tid.localized/mp4/$fName" ;
 		$mp4Exists = false;
 		if (file_exists($mp4path) && is_file($mp4path)) {
-			$mp4Exists = true;
-			$mp4size = filesize($mp4path);
-			$mp4size = round($mp4size / 1024 / 1024);
+			$mp4Exists	= true;
+			$mp4size	= filesize($mp4path);
+			$mp4size	= round($mp4size / 1024 / 1024);
 		}
 		
 		if (ereg(".MP4", $fName)) {
@@ -239,7 +241,7 @@ if ($rowdata) {
 			$thumbnail = ereg_replace(".MP4", ".THM", $thumbnail);
 		}
 		if ($onairdate == "") {
-		$onairdate = "[放送日]";
+			$onairdate = "[放送日]";
 		} else {
 			$day  = substr($onairdate, 0, 4) . "/" . substr($onairdate, 4, 2) . "/" . substr($onairdate, 6, 2);
 			$time = substr($onairdate, 8, 2). ":" . substr($onairdate, 10, 2);
@@ -250,15 +252,14 @@ if ($rowdata) {
 		$caplink = "";
 		
 		if ($sbpluginexist == 1) {
-			 //$capimgpath = htmlspecialchars(preg_replace("/.m2p/", "", $rowdata[5]));
-			$capimgpath = htmlspecialchars(preg_replace("/.m2./", "", $rowdata[5]));
+			$capimgpath = htmlspecialchars(preg_replace("/.m2./", "", $rowdata['m2pfilename']));
 		
 			if (($capimgpath != "") && (file_exists("$recfolderpath/$tid.localized/img/$capimgpath") )) {
-			$caplink = " / <a href = \"./selectcaptureimage.php?pid=$rowdata[6]\">キャプ</a>";
+				$caplink = " / <a href = \"./selectcaptureimage.php?pid=" . $rowdata[6] . "\">キャプ</a>";
 			} else {
 				$caplink = " / キャプなし";
 			}
-		}else{
+		} else {
 			$caplink = "";
 		} //end if sb
 		
@@ -306,9 +307,9 @@ if ($rowdata) {
 				</tr>";
 			
 			
-		}//endif iPhone
+		} //endif iPhone
 	
-	} while ($rowdata = $rs->fetch());
+	}
 } else {
 	print "録画ファイルがありません<br>\n";
 } //if
