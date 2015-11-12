@@ -104,25 +104,25 @@ if ($pid != "") {
 	$num       = $filesplit[2];
 	$date      = $filesplit[3];
 	if ($tid != '0') {
-		list($time, $ext) = split('\.', $filesplit[4]);
+		list($time, $ext)	= split('\.', $filesplit[4]);
 	} else {
-		list($time, $ext) = split('\.', $filesplit[4]);
-		list($ch, $ext) = split('\.', $filesplit[5]);
+        $time				= $filesplit[4];
+		list($ch, $ext)		= split('\.', $filesplit[5]);
 	}
 	$rowdata   = array();
 	$rowdata[0]= $tid;
 	$rowdata[1]= '';
 	$rowdata[2]= 'title';
-	$rowdata[3]= 'num';
+	$rowdata[3]= $num;
 	$rowdata[4]= 'subtitle';
-	$rowdata[5]= 'start';
+	$rowdata[5]= $filesplit[3] . $time;
 	$rowdata[6]= 'min';
 	if ($tid != '0') {
-		$rowdata[8]= $filesplit[1] . '-' . $num . '-' . $date . '-' . $time . '.m2t';
+		$rowdata[8] = $filesplit[1] . '-' . $num . '-' . $date . '-' . $time . '.m2t';
 	} else {
 		$rowdata[8]= $filesplit[1] . '-' . $num . '-' . $date . '-' . $time . '-' . $ch . '.m2t';
 	}
-	$rowdata[9]= htmlspecialchars($file);
+	$rowdata[9] = htmlspecialchars($file);
 	
 } else {
 	print "画像がありません。<br></body></html>";
@@ -167,7 +167,6 @@ $path      = ereg_replace("\.m2p$|\.m2t$", "", $m2pfilename);
 $serveruri = getserverfqdn ();
 
 exec ("ls -1F $recfolderpath/$tid.localized/img/$path/", $tids);
-//$timecount = 1;
 foreach($tids as $filetid) {
 	if (strpos($filetid, '/') !== false) {
 		continue;
