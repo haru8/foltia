@@ -193,7 +193,8 @@ $rowdataAll = $rs->fetchAll(PDO::FETCH_ASSOC);
 
 $rowSort = array();
 foreach ($rowdataAll as $key => $row) {
-	$rowSort[$key] = $row['mp4filename'];
+    $date          = explode('-', $row['mp4filename']);
+	$rowSort[$key] = $date[3];
 }
 array_multisort($rowSort, SORT_DESC, SORT_NATURAL, $rowdataAll);
 $rowdataAll = array_slice($rowdataAll, $st, $lim);
