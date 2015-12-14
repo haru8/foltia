@@ -25,6 +25,11 @@ use Time::Local;
 use DBI;
 use DBD::Pg;
 use DBD::SQLite;
+use utf8;
+
+binmode STDIN, ':utf8';
+binmode STDOUT, ':utf8';
+
 
 $path = $0;
 $path =~ s/xmltv2foltia.pl$//i;
@@ -197,6 +202,8 @@ while(<>) {
 		    $registdesc = $item{'desc'};
 		}
 		&registdb($item{'start'}, $item{'stop'}, $item{'channel'}, $item{'title'}, $registdesc , $item{'category'});
+		#printf("$item{'start'}, $item{'stop'}, $item{'channel'}, $item{'title'}, $registdesc , $item{'category'}\n");
+		printf("$item{'start'}, $item{'stop'}, $item{'channel'}, $item{'title'}, $item{'category'}\n");
 	
 	#	print "$item{start}
 	#$item{stop}
@@ -259,14 +266,19 @@ sub registdb {
 	my $category		= $_[5];
 	
 	#Encode::JP::H2Z::z2h(\$string);
-	$title = jcode($title)->tr('Ａ-Ｚａ-ｚ０-９！＃＄％＆（）＊＋，−．／：；＜＝＞？＠［＼］＾＿｀｛｜｝　','A-Za-z0-9!#$%&()*+,-./:;<=>?@[\]^_`{|} ')->utf8;
-	$desc  = jcode($desc)->tr('Ａ-Ｚａ-ｚ０-９！＃＄％＆（）＊＋，−．／：；＜＝＞？＠［＼］＾＿｀｛｜｝　','A-Za-z0-9!#$%&()*+,-./:;<=>?@[\]^_`{|} ')->utf8;
+	#$title = jcode($title)->tr('Ａ-Ｚａ-ｚ０-９！＃＄％＆（）＊＋，−．／：；＜＝＞？＠［＼］＾＿｀｛｜｝　','A-Za-z0-9!#$%&()*+,-./:;<=>?@[\]^_`{|} ')->utf8;
+	#$desc  = jcode($desc)->tr('Ａ-Ｚａ-ｚ０-９！＃＄％＆（）＊＋，−．／：；＜＝＞？＠［＼］＾＿｀｛｜｝　','A-Za-z0-9!#$%&()*+,-./:;<=>?@[\]^_`{|} ')->utf8;
 	#$title = jcode($title)->tr('Ａ-Ｚａ-ｚ０-９！＃＄％＆（）＊＋，−．／：；＜＝＞？＠［＼］＾＿｀｛｜｝','A-Za-z0-9!#$%&()*+,-./:;<=>?@[\]^_`{|}');
 	#$desc = jcode($desc)->tr('Ａ-Ｚａ-ｚ０-９！＃＄％＆（）＊＋，−．／：；＜＝＞？＠［＼］＾＿｀｛｜｝','A-Za-z0-9!#$%&()*+,-./:;<=>?@[\]^_`{|}');
+
+    $title =~ tr/Ａ-Ｚａ-ｚ０-９！＃＄％＆（）＊＋，－．／：；＜＝＞？＠［＼］＾＿｀｛｜｝　/A-Za-z0-9!#$%&()*+,-.\/:;<=>?@[\]^_`{|} /;
+    $desc  =~ tr/Ａ-Ｚａ-ｚ０-９！＃＄％＆（）＊＋，－．／：；＜＝＞？＠［＼］＾＿｀｛｜｝　/A-Za-z0-9!#$%&()*+,-.\/:;<=>?@[\]^_`{|} /;
 	
 	#&writelog("xmltv2foltia DEBUG $foltiastarttime:$foltiaendtime");
 	$foltiastarttime	= substr($foltiastarttime, 0, 12);
 	$foltiaendtime		= substr($foltiaendtime, 0, 12);
+
+    printf("$title\n");
 	
 	#if($foltiaendtime > $todaytime){#電波に乗ってきた情報は無条件更新
 	# epgidはAUTOINCREMENTに変更した #2010/8/10 
