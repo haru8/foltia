@@ -138,9 +138,12 @@ printhtmlpageheader();
 			<th align="left">話数</th>
 			<th align="left">サブタイトル</th>
 			<th align="left" style="width:130px;">開始時刻(ズレ)</th>
+			<th align="left" style="width:130px;">終了時刻</th>
 			<th align="left">総尺</th>
+<?php /* ?>
 			<th align="left">画質</th>
 			<th align="left" style="width:40px;">デジタル優先</th>
+<?php */ ?>
 			</tr>
 			</thead>
 
@@ -337,21 +340,23 @@ printhtmlpageheader();
 				}
 				// 開始時刻(ズレ)
 				echo("<td>".htmlspecialchars(foldate2print($rowdata['x']))."<br>(".htmlspecialchars($rowdata['foltia_subtitle.startoffset']).")</td>\n");
+				// 終了時刻
+				echo("<td>".htmlspecialchars(foldate2print($endtime))."</td>\n");
 				// 総尺
 				echo("<td>".htmlspecialchars($rowdata['foltia_subtitle.lengthmin'])."<br></td>\n");
 
-				//録画レート
-				echo("<td>".htmlspecialchars($rowdata['foltia_tvrecord.bitrate'])."<br></td>\n");
+				// 録画レート
+				//echo("<td>".htmlspecialchars($rowdata['foltia_tvrecord.bitrate'])."<br></td>\n");
 
-				//デジタル優先
-				echo("<td>");
-				if (htmlspecialchars($rowdata['foltia_tvrecord.digital']) == 1) {
-					print "する";
-				} else {
-					print "しない";
-				}
-				echo("<br></td>\n");
-				echo("</tr>\n");
+				// デジタル優先
+				//echo("<td>");
+				//if (htmlspecialchars($rowdata['foltia_tvrecord.digital']) == 1) {
+				//	print "する";
+				//} else {
+				//	print "しない";
+				//}
+				//echo("<br></td>\n");
+				//echo("</tr>\n");
 			} while ($rowdata = $rs->fetch());
 		?>
 			</tbody>
