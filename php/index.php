@@ -60,7 +60,7 @@ $lim = 300;
 $p = getgetnumform(p);
 
 // ページ取得の計算
-list($st,$p,$p2) = number_page($p,$lim);
+list($st, $p, $p2) = number_page($p, $lim);
 
 ////////////////////////////
 
@@ -83,7 +83,7 @@ $query = "
 	LIMIT 1000
 ";
 
-$reservedrssametid = sql_query($con, $query, "DBクエリに失敗しました",array($now));
+$reservedrssametid = sql_query($con, $query, "DBクエリに失敗しました", array($now));
 $rowdata = $reservedrssametid->fetch();
 if ($rowdata) {
 	do {
@@ -257,7 +257,7 @@ do {
 	if (in_array($rowdata[7], $reservedpidsametid)) {
 		$rclass = "reservedtitle";
 	} else {
-	$rclass = "";
+		$rclass = "";
 	}
 	// 録画予約済みなら色変え
 	if (in_array($rowdata[7], $reservedpid)) {
@@ -316,7 +316,7 @@ do {
 <?php
 /////////////////////////////////////////////////
 // Autopageing処理とページのリンクを表示
-page_display("",$p,$p2,$lim,$dtcnt,$mode);
+page_display("", $p, $p2, $lim, $dtcnt, $mode);
 /////////////////////////////////////////////////
 ?>
 

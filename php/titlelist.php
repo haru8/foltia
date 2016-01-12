@@ -50,7 +50,7 @@ $lim = 1000;
 $p = getgetnumform(p);
 
 // ページ取得の計算
-list($st,$p,$p2) = number_page($p,$lim);
+list($st, $p, $p2) = number_page($p, $lim);
 
 ///////////////////////////////////////////////////////////
 
@@ -59,7 +59,7 @@ $now = date("YmdHi");
 $query = "
 	SELECT 
 	  foltia_program.tid,
-	  foltia_program .title 
+	  foltia_program.title 
 	FROM foltia_program 
 	ORDER BY foltia_program.tid DESC
 	LIMIT $lim OFFSET $st
@@ -81,7 +81,7 @@ if (! $rowdata2) {
 	die_exit("番組データがありません<BR>");
 }
 
-//行数取得
+// 行数取得
 $dtcnt =  $rowdata2[0];
 ?>
 
@@ -142,7 +142,7 @@ do {
 
 /////////////////////////////////////////////////////////
 // Autopageing処理とページのリンクを表示
-page_display("",$p,$p2,$lim,$dtcnt,"");
+page_display("", $p, $p2, $lim, $dtcnt, "");
 ////////////////////////////////////////////////////////
 
 ?>

@@ -60,45 +60,45 @@ if ($now > 200501010000) {
 	$now = date("YmdHi");   
 }
 	$query = "
-SELECT
-    foltia_program.tid,
-    stationname,
-    foltia_program.title,
-    foltia_subtitle.countno,
-    foltia_subtitle.subtitle,
-    foltia_subtitle.startdatetime as x,
-    foltia_subtitle.lengthmin,
-    foltia_tvrecord.bitrate,
-    foltia_subtitle.startoffset,
-    foltia_subtitle.pid,
-    foltia_subtitle.epgaddedby,
-    foltia_tvrecord.digital 
-  FROM foltia_subtitle , foltia_program ,foltia_station ,foltia_tvrecord
-  WHERE foltia_tvrecord.tid = foltia_program.tid
-    AND foltia_tvrecord.stationid = foltia_station.stationid 
-    AND foltia_program.tid = foltia_subtitle.tid
-    AND foltia_station.stationid = foltia_subtitle.stationid
-    AND foltia_subtitle.enddatetime >= ? 
-  UNION
-    SELECT
-        foltia_program.tid,
-        stationname,
-        foltia_program.title,
-        foltia_subtitle.countno,
-        foltia_subtitle.subtitle,
-        foltia_subtitle.startdatetime,
-        foltia_subtitle.lengthmin,
-        foltia_tvrecord.bitrate,
-        foltia_subtitle.startoffset,
-        foltia_subtitle.pid,
-        foltia_subtitle.epgaddedby,
-        foltia_tvrecord.digital 
-      FROM foltia_tvrecord
-        LEFT OUTER JOIN foltia_subtitle ON (foltia_tvrecord.tid = foltia_subtitle.tid )
-        LEFT OUTER JOIN foltia_program  ON (foltia_tvrecord.tid = foltia_program.tid )
-        LEFT OUTER JOIN foltia_station  ON (foltia_subtitle.stationid = foltia_station.stationid )
-      WHERE foltia_tvrecord.stationid = 0
-        AND foltia_subtitle.enddatetime >= ? ORDER BY x ASC
+		SELECT
+		  foltia_program.tid,
+		  stationname,
+		  foltia_program.title,
+		  foltia_subtitle.countno,
+		  foltia_subtitle.subtitle,
+		  foltia_subtitle.startdatetime as x,
+		  foltia_subtitle.lengthmin,
+		  foltia_tvrecord.bitrate,
+		  foltia_subtitle.startoffset,
+		  foltia_subtitle.pid,
+		  foltia_subtitle.epgaddedby,
+		  foltia_tvrecord.digital 
+		FROM foltia_subtitle , foltia_program ,foltia_station ,foltia_tvrecord
+		WHERE foltia_tvrecord.tid = foltia_program.tid
+		  AND foltia_tvrecord.stationid = foltia_station.stationid 
+		  AND foltia_program.tid = foltia_subtitle.tid
+		  AND foltia_station.stationid = foltia_subtitle.stationid
+		  AND foltia_subtitle.enddatetime >= ? 
+		  UNION
+		  SELECT
+		    foltia_program.tid,
+		    stationname,
+		    foltia_program.title,
+		    foltia_subtitle.countno,
+		    foltia_subtitle.subtitle,
+		    foltia_subtitle.startdatetime,
+		    foltia_subtitle.lengthmin,
+		    foltia_tvrecord.bitrate,
+		    foltia_subtitle.startoffset,
+		    foltia_subtitle.pid,
+		    foltia_subtitle.epgaddedby,
+		    foltia_tvrecord.digital 
+		  FROM foltia_tvrecord
+		    LEFT OUTER JOIN foltia_subtitle ON (foltia_tvrecord.tid = foltia_subtitle.tid )
+		    LEFT OUTER JOIN foltia_program  ON (foltia_tvrecord.tid = foltia_program.tid )
+		    LEFT OUTER JOIN foltia_station  ON (foltia_subtitle.stationid = foltia_station.stationid )
+		  WHERE foltia_tvrecord.stationid = 0
+		    AND foltia_subtitle.enddatetime >= ? ORDER BY x ASC
 	";
 
 //	$rs = m_query($con, $query, "DBクエリに失敗しました");
@@ -246,32 +246,32 @@ printhtmlpageheader();
 				$externalinputs = 1; //現状一系統のみ
 				$query = "
 					SELECT
-					foltia_program.tid, stationname, foltia_program.title,
-					foltia_subtitle.countno, foltia_subtitle.subtitle,
-					foltia_subtitle.startdatetime, foltia_subtitle.lengthmin,
-					foltia_tvrecord.bitrate, foltia_subtitle.startoffset,
-					foltia_subtitle.pid, foltia_tvrecord.digital
-						FROM foltia_subtitle , foltia_program ,foltia_station ,foltia_tvrecord
-						WHERE foltia_tvrecord.tid = foltia_program.tid AND foltia_tvrecord.stationid = foltia_station .stationid AND foltia_program.tid = foltia_subtitle.tid AND foltia_station.stationid = foltia_subtitle.stationid
-						AND foltia_subtitle.enddatetime > ? 
-						AND foltia_subtitle.startdatetime < ?  
-						AND  (foltia_station.stationrecch = '0' OR  foltia_station.stationrecch = '-1' ) 
-						UNION
-						SELECT
-						foltia_program.tid, stationname, foltia_program.title,
-					foltia_subtitle.countno, foltia_subtitle.subtitle,
-					foltia_subtitle.startdatetime, foltia_subtitle.lengthmin,
-					foltia_tvrecord.bitrate, foltia_subtitle.startoffset,
-					foltia_subtitle.pid, foltia_tvrecord.digital
-						FROM foltia_tvrecord
-						LEFT OUTER JOIN foltia_subtitle on (foltia_tvrecord.tid = foltia_subtitle.tid )
-						LEFT OUTER JOIN foltia_program on (foltia_tvrecord.tid = foltia_program.tid )
-						LEFT OUTER JOIN foltia_station on (foltia_subtitle.stationid = foltia_station.stationid )
-						WHERE foltia_tvrecord.stationid = 0 AND
-						foltia_subtitle.enddatetime > ?  
-						AND foltia_subtitle.startdatetime < ?  
-						AND  (foltia_station.stationrecch = '0' OR  foltia_station.stationrecch = '-1' ) 
-						";
+					  foltia_program.tid, stationname, foltia_program.title,
+					  foltia_subtitle.countno, foltia_subtitle.subtitle,
+					  foltia_subtitle.startdatetime, foltia_subtitle.lengthmin,
+					  foltia_tvrecord.bitrate, foltia_subtitle.startoffset,
+					  foltia_subtitle.pid, foltia_tvrecord.digital
+					FROM foltia_subtitle , foltia_program ,foltia_station ,foltia_tvrecord
+					  WHERE foltia_tvrecord.tid = foltia_program.tid AND foltia_tvrecord.stationid = foltia_station .stationid AND foltia_program.tid = foltia_subtitle.tid AND foltia_station.stationid = foltia_subtitle.stationid
+					    AND foltia_subtitle.enddatetime > ? 
+					    AND foltia_subtitle.startdatetime < ?  
+					    AND (foltia_station.stationrecch = '0' OR  foltia_station.stationrecch = '-1' ) 
+					  UNION
+					  SELECT
+					    foltia_program.tid, stationname, foltia_program.title,
+					    foltia_subtitle.countno, foltia_subtitle.subtitle,
+					    foltia_subtitle.startdatetime, foltia_subtitle.lengthmin,
+					    foltia_tvrecord.bitrate, foltia_subtitle.startoffset,
+					    foltia_subtitle.pid, foltia_tvrecord.digital
+					  FROM foltia_tvrecord
+					    LEFT OUTER JOIN foltia_subtitle on (foltia_tvrecord.tid = foltia_subtitle.tid )
+					    LEFT OUTER JOIN foltia_program on (foltia_tvrecord.tid = foltia_program.tid )
+					    LEFT OUTER JOIN foltia_station on (foltia_subtitle.stationid = foltia_station.stationid )
+					  WHERE foltia_tvrecord.stationid = 0
+					    AND foltia_subtitle.enddatetime > ?  
+					    AND foltia_subtitle.startdatetime < ?  
+					    AND (foltia_station.stationrecch = '0' OR  foltia_station.stationrecch = '-1' ) 
+					";
 				//$eoverlap = m_query($con, $query, "DBクエリに失敗しました");
 				$eoverlap = sql_query($con, $query, "DBクエリに失敗しました", array($rowdata['x'], $endtime,$rowdata['x'],  $endtime));
 				$eowrowall = $eoverlap->fetchAll();
@@ -304,9 +304,9 @@ printhtmlpageheader();
 				echo("<tr class=\"$rclass\">\n");
 				// TID
 				print "<td>";
-				if ($tid == 0 ){
+				if ($tid == 0 ) {
 					print "$tid";
-				}else{
+				} else {
 					print "<a href=\"reserveprogram.php?tid=$tid\">$tid</a>";
 				}
 				print "</td>\n";
@@ -358,7 +358,7 @@ printhtmlpageheader();
 				//echo("<br></td>\n");
 				//echo("</tr>\n");
 			} while ($rowdata = $rs->fetch());
-		?>
+?>
 			</tbody>
 			</table>
 
@@ -370,18 +370,18 @@ printhtmlpageheader();
 			</table>
 
 
-			<?php
+<?php
 	} //if ($maxrows == 0)
 	$query = "
-SELECT 
- foltia_program.tid, stationname, foltia_program.title,
- foltia_tvrecord.bitrate, foltia_tvrecord.stationid, 
-foltia_tvrecord.digital   
-FROM  foltia_tvrecord , foltia_program , foltia_station 
-WHERE foltia_tvrecord.tid = foltia_program.tid  AND foltia_tvrecord.stationid = foltia_station .stationid 
-ORDER BY foltia_program.tid  DESC
-";
-//	$rs = m_query($con, $query, "DBクエリに失敗しました");
+		SELECT 
+		  foltia_program.tid, stationname, foltia_program.title,
+		  foltia_tvrecord.bitrate, foltia_tvrecord.stationid, 
+		  foltia_tvrecord.digital   
+		FROM  foltia_tvrecord , foltia_program , foltia_station 
+		WHERE foltia_tvrecord.tid = foltia_program.tid
+		  AND foltia_tvrecord.stationid = foltia_station.stationid 
+		ORDER BY foltia_program.tid  DESC
+		";
 $rs = sql_query($con, $query, "DBクエリに失敗しました");
 $rowdata = $rs->fetch();			
 if (! $rowdata) {
@@ -390,7 +390,7 @@ if (! $rowdata) {
 } else {
 	$maxcols = $rs->columnCount();
 
-	?>
+?>
 		<p align="left">録画予約番組タイトルを表示します。</p>
 		<table BORDER="0" CELLPADDING="0" CELLSPACING="2" WIDTH="100%">
 		<thead>
@@ -412,43 +412,47 @@ if (! $rowdata) {
 		do {
 			$tid = htmlspecialchars($rowdata[0]);
 
-			if ($tid > 0){
+			if ($tid > 0) {
 				echo("<tr>\n");
-				//予約解除
-				if ( $userclass <= 1){
+				// 予約解除
+				if ( $userclass <= 1) {
 					echo("<td><a href=\"delreserve.php?tid=$tid&sid=" .
 							htmlspecialchars($rowdata[4])  . "\">解除</a></td>\n");
-				}else{
-					echo("<td>−</td>");		
+				} else {
+					echo("<td>−</td>");
 				}
-				//TID
+				// TID
 				echo("<td><a href=\"reserveprogram.php?tid=$tid\">$tid</a></td>\n");
-				//放映局
-				echo("<td>".htmlspecialchars($rowdata[1])."<br></td>\n");
-				//タイトル
-				echo("<td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">" .
-						htmlspecialchars($rowdata[2]) . "</a></td>\n");
 
-				//MP4
+				// 放映局
+				echo("<td>".htmlspecialchars($rowdata[1])."<br></td>\n");
+
+				// タイトル
+				echo("<td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">" .
+				htmlspecialchars($rowdata[2]) . "</a></td>\n");
+
+				// MP4
 				echo("<td><a href=\"showlibc.php?tid=$tid\">mp4</a></td>\n");
-				//画質(アナログビットレート)
+
+				// 画質(アナログビットレート)
 				echo("<td>".htmlspecialchars($rowdata[3])."<br></td>\n");
-				//デジタル優先
+
+				// デジタル優先
 				echo("<td>");
-				if (htmlspecialchars($rowdata[5]) == 1){
+				if (htmlspecialchars($rowdata[5]) == 1) {
 					print "する";
-				}else{
+				} else {
 					print "しない";
 				}
 				echo("</tr>\n");
-			}else{
+			} else {
 				print "<tr>
-					<td>−</td><td>0</td>
-					<td>[全局]<br></td>
-					<td>EPG録画</td>
-					<td><a href=\"showlibc.php?tid=0\">mp4</a></td>";
-				echo("<td>".htmlspecialchars($rowdata[3])."<br></td>");
-				//デジタル優先
+				  <td>−</td><td>0</td>
+				  <td>[全局]<br></td>
+				  <td>EPG録画</td>
+				  <td><a href=\"showlibc.php?tid=0\">mp4</a></td>";
+				  echo("<td>".htmlspecialchars($rowdata[3])."<br></td>");
+				// デジタル優先
 				echo("<td>");
 				if (htmlspecialchars($rowdata[5]) == 1){
 					print "する";
@@ -456,13 +460,14 @@ if (! $rowdata) {
 					print "しない";
 				}
 				echo("\n</tr>");
-			}//if tid 0
+			} // if tid 0
 		} while ($rowdata = $rs->fetch());
-} //else
-		?>
+} // else
+?>
 	</tbody>
 </table>
 
 
 </body>
 </html>
+
