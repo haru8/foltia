@@ -44,7 +44,7 @@ $start = getgetnumform("start");
 if ($start == "") {
 	$start =  date("YmdHi");
 } else {
-  $start = ereg_replace( "[^0-9]", "", $start); 
+	$start = ereg_replace( "[^0-9]", "", $start); 
 }
 
 
@@ -83,7 +83,7 @@ print "($startyear/$startmonth/$startday $day_of_the_week $starthour:$startmin-)
 
 $yesterday		= date("YmdHi", mktime($starthour , 0 , 0, $startmonth, $startday -1, $startyear));
 $dayyesterday	= date("m/d(D)", mktime($starthour , 0 , 0, $startmonth, $startday -1, $startyear));
-$dayyesterday   = weekDaysRep($dayyesterday);
+$dayyesterday	= weekDaysRep($dayyesterday);
 
 /////////////////////////////////////////////////////////// 
 //時刻の隣の【翌日】の変数
@@ -144,7 +144,6 @@ $day7 = weekDaysRep($day7);
 $maxdisplay = 8;
 
 $query = "SELECT count(*) FROM foltia_station WHERE \"ontvcode\" LIKE '%ontvjapan%'";
-//$rs = m_query($con, $query, "DBクエリに失敗しました");
 $rs = sql_query($con, $query, "DBクエリに失敗しました");
 $maxrows = $rs->fetchColumn(0);
 if ($maxrows > $maxdisplay) {
@@ -215,45 +214,45 @@ if ($maxrows > $maxdisplay) {
 }
 //ココから新コード
 //・局リスト
-$query = "SELECT stationid, stationname, stationrecch, ontvcode 
-FROM foltia_station 
-WHERE \"ontvcode\" LIKE '%ontvjapan%'  
-ORDER BY stationid ASC , stationrecch 
-LIMIT ? OFFSET ?
+$query = "
+	SELECT stationid, stationname, stationrecch, ontvcode, digitalch
+	  FROM foltia_station 
+	WHERE \"ontvcode\" LIKE '%ontvjapan%'  
+	ORDER BY stationid ASC, stationrecch 
+	LIMIT ? OFFSET ?
 ";
 
-//$slistrs = m_query($con, $query, "DBクエリに失敗しました");
-$slistrs = sql_query($con, $query, "DBクエリに失敗しました",array($maxdisplay,$offset));
+$slistrs = sql_query($con, $query, "DBクエリに失敗しました", array($maxdisplay, $offset));
 while ($rowdata = $slistrs->fetch()) {
-	$stationhash[] = $rowdata[3];
-	$snames[] = $rowdata[1]; // headder
+	$stationhash[]	= $rowdata['ontvcode'];
+	$snames[]		= $rowdata['stationname'] . '(' . $rowdata['stationid'] . ')(' . $rowdata['digitalch'] . ')'; // headder
 }
 
 //・時間と全順番のハッシュ作る
 $epgstart = $start ;
 $epgend = calcendtime($start , (8*60));
 
-$query = "SELECT DISTINCT startdatetime   
-FROM foltia_epg
-WHERE foltia_epg.ontvchannel in (
-	SELECT ontvcode 
-	FROM foltia_station 
-	WHERE \"ontvcode\" LIKE '%ontvjapan%' 
-	ORDER BY stationid ASC , stationrecch 
-	LIMIT ? OFFSET ?
+$query = "
+	SELECT DISTINCT startdatetime   
+	FROM foltia_epg
+	WHERE foltia_epg.ontvchannel in (
+	  SELECT ontvcode 
+	    FROM foltia_station 
+	    WHERE \"ontvcode\" LIKE '%ontvjapan%' 
+	    ORDER BY stationid ASC , stationrecch 
+	  LIMIT ? OFFSET ?
 	)
-AND startdatetime  >= ? 
-AND startdatetime  < ? 
-ORDER BY foltia_epg.startdatetime  ASC	";
+	AND startdatetime  >= ? 
+	AND startdatetime  < ? 
+	ORDER BY foltia_epg.startdatetime  ASC";
 
-//$rs = m_query($con, $query, "DBクエリに失敗しました");
 $rs = sql_query($con, $query, "DBクエリに失敗しました",array($maxdisplay,$offset,$start,$epgend));
 
 //print "$query<br>\n";
 
 $rowdata = $rs->fetch();
 if (! $rowdata) {
-	//番組データがない
+	// 番組データがない
 	$colmnums = 2;
 } else {
 	$colmnums = 0;
@@ -277,34 +276,31 @@ foreach ($stationhash as $stationname) {
 	    startdatetime  < ?  
 	  ORDER BY foltia_epg.startdatetime  ASC";
 	
-	//	$statiodh = m_query($con, $query, "DBクエリに失敗しました");
 	$statiodh = sql_query($con, $query, "DBクエリに失敗しました", array($stationname, $epgstart, $epgend));
 	$stationrowdata = $statiodh->fetch();
 	if (! $stationrowdata) {
-		//print("番組データがありません<BR>");
 		$item[0]["$stationname"] =  ">番組データがありません";
 	} else {
 		do {
-			$printstarttime = substr($stationrowdata[0],8,2) . ":" .  substr($stationrowdata[0],10,2);
-			$tdclass = "t".substr($stationrowdata[0],8,2) .  substr($stationrowdata[0],10,2);
-			$title = $stationrowdata[3];
-			$title = htmlspecialchars(z2h($title));
-			$desc = $stationrowdata[4];
-			$desc = htmlspecialchars(z2h($desc));
+			$printstarttime	= substr($stationrowdata['startdatetime'], 8, 2) . ':' .  substr($stationrowdata['startdatetime'], 10, 2);
+			$tdclass		= 't' . substr($stationrowdata['startdatetime'], 8, 2) .  substr($stationrowdata['startdatetime'], 10, 2);
+			$title			= $stationrowdata['epgtitle'];
+			$title			= htmlspecialchars(z2h($title));
+			$desc			= $stationrowdata['epgdesc'];
+			$desc			= htmlspecialchars(z2h($desc));
 			
 			if ($epgviewstyle) {
-				$desc=$desc ."<br><br><!-- ". htmlspecialchars(foldate2print($stationrowdata[1])) ."-->";
+				$desc=$desc ."<br><br><!-- ". htmlspecialchars(foldate2print($stationrowdata['enddatetime'])) ."-->";
 			} else {
-				$desc=$desc ."<br><br>". htmlspecialchars(foldate2print($stationrowdata[1])) ;
+				$desc=$desc ."<br><br>". htmlspecialchars(foldate2print($stationrowdata['enddatetime'])) ;
 			}
 
-
-			$height =  htmlspecialchars($stationrowdata[2]) * 3;
-			$epgid =  htmlspecialchars($stationrowdata[7]);
-			$epgcategory = htmlspecialchars($stationrowdata[8]);
+			$height			= htmlspecialchars($stationrowdata['lengthmin']) * 3;
+			$epgid			= htmlspecialchars($stationrowdata['epgid']);
+			$epgcategory	= htmlspecialchars($stationrowdata['epgcategory']);
 			
-			if (isset($timetablehash["$stationrowdata[0]"])) {
-				$number = $timetablehash["$stationrowdata[0]"];
+			if (isset($timetablehash[$stationrowdata['startdatetime']])) {
+				$number = $timetablehash[$stationrowdata['startdatetime']];
 				//print "$stationname $stationrowdata[0] [$number] $printstarttime $title $desc<br>\n";
 			} else {
 				$number = 0;
@@ -314,10 +310,10 @@ foreach ($stationhash as $stationname) {
 				$item["$number"]["$stationname"] =  " onClick=\"location = './reserveepg.php?epgid=$epgid'\"><span id=\"epgstarttime\">$printstarttime</span> <A HREF=\"./reserveepg.php?epgid=$epgid\"><span id=\"epgtitle\">$title</span></A> <span id=\"epgdesc\">$desc</span>";
 			} else {
 				$item["$number"]["$stationname"] =  " id=\"$epgcategory\" onClick=\"location = './reserveepg.php?epgid=$epgid'\"><span id=\"epgstarttime\">$printstarttime</span> <A HREF=\"./reserveepg.php?epgid=$epgid\"><span id=\"epgtitle\">$title</span></A> <span id=\"epgdesc\">$desc</span></span>";
-			}//if
+			}
 
 		} while ($stationrowdata = $statiodh->fetch());
-	}//if
+	}
 
 	//・局ごとに間隔決定
 	//$item[$i][NHK] はヌルかどうか判定
@@ -405,5 +401,4 @@ print "<p align=\"left\"> $navigationbar </p>";
 </table>
 </body>
 </html>
-
 
