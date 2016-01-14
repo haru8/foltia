@@ -59,8 +59,10 @@ $now = date("YmdHi");
 $query = "
 	SELECT 
 	  foltia_program.tid,
-	  foltia_program.title 
+	  foltia_program.title,
+      foltia_tvrecord.tid AS rec
 	FROM foltia_program 
+      LEFT JOIN foltia_tvrecord ON foltia_tvrecord.tid = foltia_program.tid
 	ORDER BY foltia_program.tid DESC
 	LIMIT $lim OFFSET $st
 ";
@@ -117,18 +119,22 @@ echo "<div id=contents class=autopagerize_page_element />";
 <?php
 // テーブルのデータを出力
 do {
-	echo("<tr>\n");
+	if ($rowdata['rec'] != '') {
+		echo("<tr class=\"reservedtitle\">\n");
+	} else {
+		echo("<tr>\n");
+	}
 	
 	// TID
 	echo("<td><a href=\"reserveprogram.php?tid=" .
-	htmlspecialchars($rowdata[0])  . "\">" .
-	htmlspecialchars($rowdata[0]) . "</a></td>\n");
+	htmlspecialchars($rowdata['tid'])  . "\">" .
+	htmlspecialchars($rowdata['tid']) . "</a></td>\n");
 
 	// タイトル
     echo("<td><a href=\"http://cal.syoboi.jp/progedit.php?TID=" .
-	htmlspecialchars($rowdata[0])  . "\" target=\"_blank\">" .
-	htmlspecialchars($rowdata[1]) . "</a></td>\n");
-	print "<td><A HREF = \"showlibc.php?tid=".htmlspecialchars($rowdata[0])."\">mp4</A></td>\n";
+	htmlspecialchars($rowdata['tid'])  . "\" target=\"_blank\">" .
+	htmlspecialchars($rowdata['title']) . "</a></td>\n");
+	print "<td><A HREF = \"showlibc.php?tid=".htmlspecialchars($rowdata['tid'])."\">mp4</A></td>\n";
 
 	echo("</tr>\n");
 } while ($rowdata = $rs->fetch());
