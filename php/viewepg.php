@@ -63,34 +63,34 @@ printhtmlpageheader();
 ///////////////////////////////////////////////////////////////////////////
 //現在の日付情報取得
 $begin		= date("YmdHi");
-$beginyear	= substr($begin,0,4);
-$beginmonth	= substr($begin,4,2);
-$beginday	= substr($begin,6,2);
-$beginhour	= substr($begin,8,2);
-$beginmin	= substr($begin,10,2);
+$beginyear	= substr($begin,  0, 4);
+$beginmonth	= substr($begin,  4, 2);
+$beginday	= substr($begin,  6, 2);
+$beginhour	= substr($begin,  8, 2);
+$beginmin	= substr($begin, 10, 2);
 ///////////////////////////////////////////////////////////////////////////
 
-$startyear	= substr($start,0,4);
-$startmonth	= substr($start,4,2);
-$startday	= substr($start,6,2);
-$starthour	= substr($start,8,2);
-$startmin	= substr($start,10,2);
+$startyear	= substr($start,  0, 4);
+$startmonth	= substr($start,  4, 2);
+$startday	= substr($start,  6, 2);
+$starthour	= substr($start,  8, 2);
+$startmin	= substr($start, 10, 2);
 $day_of_the_week = date ("(D)",mktime($starthour , 0 , 0, $startmonth , $startday  , $startyear));
 $day_of_the_week = weekDaysRep($day_of_the_week);
 
 print "($startyear/$startmonth/$startday $day_of_the_week $starthour:$startmin-)<BR>\n";
 
 
-$yesterday		= date("YmdHi", mktime($starthour , 0 , 0, $startmonth, $startday -1, $startyear));
-$dayyesterday	= date("m/d(D)", mktime($starthour , 0 , 0, $startmonth, $startday -1, $startyear));
+$yesterday		= date("YmdHi" , mktime($starthour , 0 , 0, $startmonth, $startday - 1, $startyear));
+$dayyesterday	= date("m/d(D)", mktime($starthour , 0 , 0, $startmonth, $startday - 1, $startyear));
 $dayyesterday	= weekDaysRep($dayyesterday);
 
 /////////////////////////////////////////////////////////// 
 //時刻の隣の【翌日】の変数
-$tomorrow  = date ("YmdHi",mktime($starthour , 0 , 0, $startmonth , $startday +1 , $startyear));   
+$tomorrow  = date ("YmdHi", mktime($starthour , 0 , 0, $startmonth , $startday + 1 , $startyear));   
 /////////////////////////////////////////////////////////// 
 //EPG番組表を取得しますのとなりの日付の【曜日】の変数
-$daytomorrow  = date ("m/d(D)",mktime($starthour , 0 , 0, $startmonth , $startday +1 , $startyear));
+$daytomorrow  = date ("m/d(D)", mktime($starthour , 0 , 0, $startmonth , $startday + 1 , $startyear));
 $daytomorrow = weekDaysRep($daytomorrow);
 ///////////////////////////////////////////////////////////
 
@@ -112,30 +112,30 @@ function weekDaysRep($str)
 
 ///////////////////////////////////////////////////////////////////
 //１週間分のページのリンクの変数
-$day0after = date ("YmdHi",mktime($beginhour , 0 , 0, $beginmonth , $beginday  , $beginyear));
-$day0 = date ("m/d(D)",mktime($beginhour , 0 , 0, $beginmonth , $beginday  , $beginyear));
-$day0 = weekDaysRep($day0);
-$day1after = date ("YmdHi",mktime($beginhour , 0 , 0, $beginmonth , $beginday +1 , $beginyear));
-$day1 = date ("m/d(D)",mktime($beginhour , 0 , 0, $beginmonth , $beginday +1 , $beginyear));
-$day1 = weekDaysRep($day1);
-$day2after = date ("YmdHi",mktime($beginhour , 0 , 0, $beginmonth , $beginday +2 , $beginyear));
-$day2 = date ("m/d(D)",mktime($beginhour , 0 , 0, $beginmonth , $beginday +2 , $beginyear));
-$day2 = weekDaysRep($day2);
-$day3after = date ("YmdHi",mktime($beginhour , 0 , 0, $beginmonth , $beginday +3 , $beginyear));
-$day3 = date ("m/d(D)",mktime($beginhour , 0 , 0, $beginmonth , $beginday +3 , $beginyear));
-$day3 = weekDaysRep($day3);
-$day4after = date ("YmdHi",mktime($beginhour , 0 , 0, $beginmonth , $beginday +4 , $beginyear));
-$day4 = date ("m/d(D)",mktime($beginhour , 0 , 0, $beginmonth , $beginday +4 , $beginyear));
-$day4 = weekDaysRep($day4);
-$day5after = date ("YmdHi",mktime($beginhour , 0 , 0, $beginmonth , $beginday +5 , $beginyear));
-$day5 = date ("m/d(D)",mktime($beginhour , 0 , 0, $beginmonth , $beginday +5 , $beginyear));
-$day5 = weekDaysRep($day5);
-$day6after = date ("YmdHi",mktime($beginhour , 0 , 0, $beginmonth , $beginday +6 , $beginyear));
-$day6 = date ("m/d(D)",mktime($beginhour , 0 , 0, $beginmonth , $beginday +6 , $beginyear));
-$day6 = weekDaysRep($day6);
-$day7after = date ("YmdHi",mktime($beginhour , 0 , 0, $beginmonth , $beginday +7 , $beginyear));
-$day7 = date ("m/d(D)",mktime($beginhour , 0 , 0, $beginmonth , $beginday +7 , $beginyear));
-$day7 = weekDaysRep($day7);
+$day0after	= date ("YmdHi" , mktime($starthour , 0 , 0, $beginmonth , $beginday  , $beginyear));
+$day0		= date ("m/d(D)", mktime($starthour , 0 , 0, $beginmonth , $beginday  , $beginyear));
+$day0		= weekDaysRep($day0);
+$day1after	= date ("YmdHi" , mktime($starthour , 0 , 0, $beginmonth , $beginday + 1 , $beginyear));
+$day1		= date ("m/d(D)", mktime($starthour , 0 , 0, $beginmonth , $beginday + 1 , $beginyear));
+$day1		= weekDaysRep($day1);
+$day2after	= date ("YmdHi" , mktime($starthour , 0 , 0, $beginmonth , $beginday + 2 , $beginyear));
+$day2		= date ("m/d(D)", mktime($starthour , 0 , 0, $beginmonth , $beginday + 2 , $beginyear));
+$day2		= weekDaysRep($day2);
+$day3after	= date ("YmdHi" , mktime($starthour , 0 , 0, $beginmonth , $beginday + 3 , $beginyear));
+$day3		= date ("m/d(D)", mktime($starthour , 0 , 0, $beginmonth , $beginday + 3 , $beginyear));
+$day3		= weekDaysRep($day3);
+$day4after	= date ("YmdHi" , mktime($starthour , 0 , 0, $beginmonth , $beginday + 4 , $beginyear));
+$day4		= date ("m/d(D)", mktime($starthour , 0 , 0, $beginmonth , $beginday + 4 , $beginyear));
+$day4		= weekDaysRep($day4);
+$day5after	= date ("YmdHi" , mktime($starthour , 0 , 0, $beginmonth , $beginday + 5 , $beginyear));
+$day5		= date ("m/d(D)", mktime($starthour , 0 , 0, $beginmonth , $beginday + 5 , $beginyear));
+$day5		= weekDaysRep($day5);
+$day6after	= date ("YmdHi" , mktime($starthour , 0 , 0, $beginmonth , $beginday + 6 , $beginyear));
+$day6		= date ("m/d(D)", mktime($starthour , 0 , 0, $beginmonth , $beginday + 6 , $beginyear));
+$day6		= weekDaysRep($day6);
+$day7after	= date ("YmdHi" , mktime($starthour , 0 , 0, $beginmonth , $beginday + 7 , $beginyear));
+$day7		= date ("m/d(D)", mktime($starthour , 0 , 0, $beginmonth , $beginday + 7 , $beginyear));
+$day7		= weekDaysRep($day7);
 ///////////////////////////////////////////////////////////////////
 
 
