@@ -28,7 +28,7 @@ if ($useenvironmentpolicy == 1) {
 		redirectlogin();
 		exit;
 	} else {
-		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+		login($con, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 	}
 } //end if login
 
@@ -122,7 +122,7 @@ $query = "
 	WHERE foltia_tvrecord.stationid   = 0
 	  AND foltia_subtitle.enddatetime >= ? ORDER BY x ASC
 ";
-$reservedrs = sql_query($con, $query, "DBクエリに失敗しました",array($now,$now));
+$reservedrs = sql_query($con, $query, "DBクエリに失敗しました",array($now, $now));
 
 $rowdata = $reservedrs->fetch();
 if ($rowdata) {
@@ -193,11 +193,11 @@ if ($mode == "new") {
 	/////////////////////////////////////////////////////////////////
 } // end if
 
-$rs = sql_query($con, $query, "DBクエリに失敗しました",array($now));
+$rs = sql_query($con, $query, "DBクエリに失敗しました", array($now));
 $rowdata = $rs->fetch();
 
 if (! $rowdata) {
-	header("Status: 404 Not Found",TRUE,404);
+	header("Status: 404 Not Found", TRUE, 404);
 	printtitle();
 	print "<body BGCOLOR=\"#ffffff\" TEXT=\"#494949\" LINK=\"#0047ff\" VLINK=\"#000000\" ALINK=\"#c6edff\" >
 	<div align=\"center\">\n";
