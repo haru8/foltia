@@ -56,7 +56,7 @@ if (! $rowdata) {
 	die_exit("登録番組がありません<BR>");
 }
 
-$title = htmlspecialchars($rowdata[0]);
+$title = htmlspecialchars($rowdata['title']);
 ?>
 <body BGCOLOR="#ffffff" TEXT="#494949" LINK="#0047ff" VLINK="#000000" ALINK="#c6edff" >
 
@@ -92,11 +92,17 @@ if ($tid == 0) {
 <?php
 //録画候補局検索
 $query = "
-	SELECT distinct foltia_station.stationid, stationname, foltia_station.stationrecch
-	FROM foltia_subtitle, foltia_program, foltia_station
-	WHERE foltia_program.tid = foltia_subtitle.tid
+	SELECT
+	  distinct foltia_station.stationid,
+	  stationname,
+	  foltia_station.stationrecch
+	FROM
+	  foltia_subtitle,
+	  foltia_program,
+	  foltia_station
+	WHERE foltia_program.tid       = foltia_subtitle.tid
 	  AND foltia_station.stationid = foltia_subtitle.stationid
-	  AND foltia_program.tid = ?
+	  AND foltia_program.tid       = ?
 	ORDER BY stationrecch DESC
 ";
 $rs = sql_query($con, $query, "DBクエリに失敗しました",array($tid));
@@ -110,9 +116,9 @@ if (! $rowdata) {
 	/* テーブルのデータを出力 */
 	do {
 		echo("<option value=\"");
-		echo(htmlspecialchars($rowdata[0]));
+		echo(htmlspecialchars($rowdata['stationid']));
 		echo("\">");
-		echo(htmlspecialchars($rowdata[1]));
+		echo(htmlspecialchars($rowdata['stationname']));
 		echo("</option>\n");
 	} while ($rowdata = $rs->fetch());
 	echo("<option value=\"0\">全局</option>\n</select>\n");
@@ -165,25 +171,30 @@ if ($usedigital == 1) {
 <?php
 $query = "
 	SELECT 
-	  stationname,
-	  foltia_subtitle.countno,
-	  foltia_subtitle.subtitle,
-	  foltia_subtitle.startdatetime ,
-	  foltia_subtitle.lengthmin,
-	  foltia_subtitle.startoffset 
-	FROM foltia_subtitle, foltia_program, foltia_station
-	WHERE foltia_program.tid            = foltia_subtitle.tid
-	  AND foltia_station.stationid      = foltia_subtitle.stationid
-	  AND foltia_subtitle.startdatetime >= ?
-	  AND foltia_program.tid            = ?
-	ORDER BY foltia_subtitle.startdatetime  ASC
+	    stationname,
+	    foltia_subtitle.countno,
+	    foltia_subtitle.subtitle,
+	    foltia_subtitle.startdatetime,
+	    foltia_subtitle.lengthmin,
+	    foltia_subtitle.startoffset,
+	    foltia_tvrecord.tid AS rec
+	  FROM
+	    foltia_subtitle,
+	    foltia_program,
+	    foltia_station
+	  LEFT JOIN foltia_tvrecord ON foltia_tvrecord.tid = foltia_subtitle.tid AND foltia_tvrecord.stationid = foltia_subtitle.stationid
+	  WHERE foltia_program.tid            = foltia_subtitle.tid
+	    AND foltia_station.stationid      = foltia_subtitle.stationid
+	    AND foltia_subtitle.startdatetime >= ?
+	    AND foltia_program.tid            = ?
+	  ORDER BY foltia_subtitle.startdatetime  ASC
 ";
 $rs = sql_query($con, $query, "DBクエリに失敗しました", array($now, $tid));
 $rowdata = $rs->fetch();
 if (! $rowdata) {
 	echo("放映予定はありません<BR>");
 } else {
-	$maxcols = $rs->columnCount();
+	$maxcols = $rs->columnCount() - 1 ;
 ?>
   <table BORDER="0" CELLPADDING="0" CELLSPACING="2" WIDTH="100%" BGCOLOR="#bcf1be">
 	<thead>
@@ -203,7 +214,11 @@ if (! $rowdata) {
 <?php
 /* テーブルのデータを出力 */
 	do {
-		echo("<tr>\n");
+		if ($rowdata['rec']) {
+			echo("<tr class=\"reserved\">\n");
+		} else {
+			echo("<tr>\n");
+		}
 		for ($col = 0; $col < $maxcols; $col++) { /* 列に対応 */
 			if ($col == 3) {
 				echo("<td>".htmlspecialchars(foldate2print($rowdata[$col]))."<br></td>\n");
