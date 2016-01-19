@@ -180,6 +180,7 @@ while ($counttranscodefiles >= 1) {
                     }
 				}
 
+
 				# 不安定なので頭2秒は捨てる
 				$sstime = " -ss 00:00:02.000 ";
 
@@ -188,6 +189,8 @@ while ($counttranscodefiles >= 1) {
 				#	system ("nice -n 15 /usr/local/bin/ffmpeg -y -i $trcnmpegfile $cropopt $ffmpegencopt");
 				# まずTsSplitする →ワンセグをソースにしてしまわないように
 				if (! -e "$filenamebody.264") {
+				 	$sp_start = time();
+
 					&changefilestatus($pid, $FILESTATUSTRANSCODETSSPLITTING);
 					unlink("${filenamebody}_tss.m2t");
 					unlink("${filenamebody}_HD.m2t");
@@ -289,6 +292,9 @@ while ($counttranscodefiles >= 1) {
 						}
 					}
 
+					$sp_end		= time();
+					$cp_start	= time();
+
 					# Starlight breaker向けキャプチャ画像作成
 					# Split していないファイルを渡すとffmpegが戻ってこない事があるので。
 					if($trcnmpegfile ne $inputmpeg2) {
@@ -306,6 +312,9 @@ while ($counttranscodefiles >= 1) {
 						&writelog("trcnmpegfile = $trcnmpegfile  inputmpeg2 = $inputmpeg2");
 						&writelog("captureimagemaker.pl skip.");
 					}
+
+					$cp_end		= time();
+					$enc_start	= time();
 
 					# 再ffmpeg
 					&changefilestatus($pid, $FILESTATUSTRANSCODEFFMPEG);
@@ -382,6 +391,9 @@ while ($counttranscodefiles >= 1) {
 				&writelog("ffmpeg encode 264 file : $filenamebody.264 size: $enc264size MB");
 			}
 
+			$enc_end	= time();
+			$wav_start	= time();
+
 			if ($filestatus <= $FILESTATUSTRANSCODEWAVE) {
 				# WAV出力
 				unlink("${filenamebody}.wav");
@@ -413,6 +425,9 @@ while ($counttranscodefiles >= 1) {
 				$ftm_process = sprintf("%00d:%02d:%02d", int($tm_process / 3600), int($tm_process % 3600 / 60), $tm_process % 60);
 				&writelog("ffmpeg TS -> wav. PROCESS TIME : $tm_process sec, $ftm_process");
 			}
+
+			$wav_end	= time();
+			$aac_start	= time();
 
 			if ($filestatus <= $FILESTATUSTRANSCODEAAC) {
 				# AAC変換
@@ -454,6 +469,8 @@ while ($counttranscodefiles >= 1) {
 				&writelog("encode aac file size: $encaacsize MB");
 			}
 
+			$aac_end	= time();
+
 			if ($filestatus <= $FILESTATUSTRANSCODEMP4BOX) {
 
 				unlink("${filenamebody}.base.mp4");
@@ -476,7 +493,9 @@ while ($counttranscodefiles >= 1) {
 					if (-e "$toolpath/perl/tool/MP4Box") {
 						# Starlight breaker向けキャプチャ画像作成
 						# ここまででキャプチャを作ってなかったら作っておく。
+						$cp2_start	= time();
 						if (-e "$toolpath/perl/captureimagemaker.pl") {
+
 							$trcnmpegfilename = basename($trcnmpegfile);
 							&writelog("Call captureimagemaker(MP4Box) $trcnmpegfilename");
 							$tm_start = time();
@@ -486,6 +505,9 @@ while ($counttranscodefiles >= 1) {
 							$ftm_process = sprintf("%00d:%02d:%02d", int($tm_process / 3600), int($tm_process % 3600 / 60), $tm_process % 60);
 							&writelog("captureimagemaker.pl PROCESS TIME : $tm_process sec, $ftm_process");
 						}
+						$cp2_end	= time();
+
+						$mux_start	= time();
 						&changefilestatus($pid, $FILESTATUSTRANSCODEMP4BOX);
 						&writelog("MP4Box $filenamebody  :start.");
 						&writelog("CMD: cd $recfolderpath ;$toolpath/perl/tool/MP4Box -fps 29.97 -add $filenamebody.264 -new $filenamebody.base.mp4");
@@ -508,6 +530,7 @@ while ($counttranscodefiles >= 1) {
 							$debugenv =~ s/\n/ /g;
 							&writelog("ERR File not exist. $debugenv. $filelist; $filenamebody.base.mp4; $filelist; cd $recfolderpath; $toolpath/perl/tool/MP4Box -fps 29.97 -add $filenamebody.264 -new $filenamebody.base.mp4");
 						}
+						$mux_end	= time();
 					} else {
 						&writelog("WARN; Pls. install $toolpath/perl/tool/MP4Box");
 					}
@@ -652,9 +675,26 @@ while ($counttranscodefiles >= 1) {
 		
 
 	$mpeg2_tm_end = time();
-	$mpeg2_tm_process  = $mpeg2_tm_end - $mpeg2_tm_start;
+	$mpeg2_tm_process	= $mpeg2_tm_end - $mpeg2_tm_start;
+
 	$fmpeg2_tm_process = sprintf("%00d:%02d:%02d", int($mpeg2_tm_process / 3600), int($mpeg2_tm_process % 3600 / 60), $mpeg2_tm_process % 60);
 	&writelog("$mpeg2filename TS -> MP4 encode PROCESS TIME : $mpeg2_tm_process sec, $fmpeg2_tm_process");
+
+	$sp_sec		= $sp_end  - $sp_start;
+	$cp_sec		= $cp_end  - $cp_start;
+	$enc_sec	= $enc_end - $enc_start;
+	$wav_sec	= $wav_end - $wav_start;
+	$aac_sec	= $aac_end - $aac_start;
+	$cp2_sec	= $cp2_end - $cp2_start;
+	$mux_sec	= $mux_end - $mux_start;
+
+	$sp_time	= sprintf("%00d:%02d:%02d", int($sp_sec / 3600), int($sp_sec % 3600 / 60), $sp_sec % 60);
+	$cp_time	= sprintf("%00d:%02d:%02d", int($cp_sec / 3600), int($cp_sec % 3600 / 60), $cp_sec % 60);
+	$enc_time	= sprintf("%00d:%02d:%02d", int($enc_sec / 3600), int($enc_sec % 3600 / 60), $enc_sec % 60);
+	$wav_time	= sprintf("%00d:%02d:%02d", int($wav_sec / 3600), int($wav_sec % 3600 / 60), $wav_sec % 60);
+	$aac_time	= sprintf("%00d:%02d:%02d", int($aac_sec / 3600), int($aac_sec % 3600 / 60), $aac_sec % 60);
+	$cp2_time	= sprintf("%00d:%02d:%02d", int($cp2_sec / 3600), int($cp2_sec % 3600 / 60), $cp2_sec % 60);
+	$mux_time	= sprintf("%00d:%02d:%02d", int($mux_sec / 3600), int($mux_sec % 3600 / 60), $mux_sec % 60);
 
 	$tsFileSize     = `du -sh $inputmpeg2 | awk '{print \$1}'`;
 	$tsFileSizeF    = sprintf("%6s", $tsFileSize);
@@ -689,6 +729,13 @@ while ($counttranscodefiles >= 1) {
 	&writelog("  START   TIME    : $stDateF");
 	&writelog("  END     TIME    : $edDateF");
 	&writelog("  PROCESS TIME    : ${mpeg2_tm_process}sec $fmpeg2_tm_process");
+	&writelog("    SP TIME       : $sp_time");
+	&writelog("    CP TIME       : $cp_time");
+	&writelog("    CP2 TIME      : $cp2_time");
+	&writelog("    ENC TIME      : $enc_time");
+	&writelog("    WAV TIME      : $wav_time");
+	&writelog("    AAC TIME      : $aac_time");
+	&writelog("    MUX TIME      : $mux_time");
 	&writelog("=========================== TS to MP4 ENCODE RESULT End ===========================");
 	&writelog("");
 	&writelog("");
