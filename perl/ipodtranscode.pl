@@ -174,9 +174,9 @@ while ($counttranscodefiles >= 1) {
 
 				} elsif($trconqty == 3) {
                     if ($tid != 0) {
-					  $ffmpegencopt = " -threads 0 -s 640x360 -r 30000/1001 -vcodec libx264 -preset veryslow -crf 21 -bufsize 1024K -maxrate 1024K -refs 13 -tune animation -x264opts merange=32:no-dct-decimate -async 50 -vsync 1 -f h264 $filenamebody.264";
+					  $ffmpegencopt = " -threads 0 -s 640x360 -r 30000/1001 -vcodec libx264 -preset veryslow -crf 21 -bufsize 1152K -maxrate 1152K -refs 13 -tune animation -x264opts merange=32:no-dct-decimate -async 50 -vsync 1 -f h264 $filenamebody.264";
                     } else {
-					  $ffmpegencopt = " -threads 0 -s 640x360 -r 30000/1001 -vcodec libx264 -preset veryslow -crf 21 -bufsize 1024K -maxrate 1024K -refs 13 -tune film -x264opts merange=32:no-dct-decimate -async 50 -vsync 1 -f h264 $filenamebody.264";
+					  $ffmpegencopt = " -threads 0 -s 640x360 -r 30000/1001 -vcodec libx264 -preset veryslow -crf 21 -bufsize 1152K -maxrate 1152K -refs 13 -tune film -x264opts merange=32:no-dct-decimate -async 50 -vsync 1 -f h264 $filenamebody.264";
                     }
 				}
 
