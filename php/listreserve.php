@@ -137,8 +137,8 @@ printhtmlpageheader();
 			<th align="left">タイトル</th>
 			<th align="left">話数</th>
 			<th align="left">サブタイトル</th>
-			<th align="left" style="width:130px;">開始時刻(ズレ)</th>
-			<th align="left" style="width:130px;">終了時刻</th>
+			<th align="left" style="width:160px;">開始時刻(ズレ)</th>
+			<th align="left" style="width:160px;">終了時刻</th>
 			<th align="left">総尺</th>
 <?php /* ?>
 			<th align="left">画質</th>

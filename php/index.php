@@ -244,7 +244,7 @@ echo "<div id=contents class=autopagerize_page_element />";
 			<th align="left">タイトル</th>
 			<th align="left">話数</th>
 			<th align="left">サブタイトル</th>
-			<th align="left">開始時刻(ズレ)</th>
+			<th align="left" style="width: 160px;">開始時刻(ズレ)</th>
 			<th align="left">総尺</th>
 		</tr>
 	</thead>

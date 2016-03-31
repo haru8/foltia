@@ -333,15 +333,33 @@ function foldate2rfc822($start) {//戻り値　RFC822スタイルの時刻表記
 } //end sub
 
 function foldate2print($start) { //戻り値 日本語風時刻表記
-	$startyear	= substr($start,0,4);
-	$startmonth	= substr($start,4,2);
-	$startday	= substr($start,6,2);
-	$starthour	= substr($start,8,2);
-	$startmin	= substr($start,10,2);
+	$startyear	= substr($start,  0, 4);
+	$startmonth	= substr($start,  4, 2);
+	$startday	= substr($start,  6, 2);
+	$starthour	= substr($start,  8, 2);
+	$startmin	= substr($start, 10, 2);
 
-	$printabledate = date ("Y/m/d H:i",mktime($starthour  , $startmin , 0, $startmonth  , $startday, $startyear));
+	$timestamp = mktime($starthour, $startmin, 0, $startmonth, $startday, $startyear);
+	$weekjp = '(' . dateW2kanji(date("w", $timestamp)) . ')';
+    $printDate = date("Y/m/d", $timestamp);
+    $printTime = date("H:i", $timestamp);
+	$printabledate = $printDate . $weekjp . ' ' . $printTime;
 	return ($printabledate);
 } //end sub
+
+function dateW2kanji ($w) {
+	$weekjp = array(
+		'日', // 0
+		'月', // 1
+		'火', // 2
+		'水', // 3
+		'木', // 4
+		'金', // 5
+		'土'  // 6
+	);
+
+	return isset($weekjp[$w]) ? $weekjp[$w] : '';
+}
 
 function getserveruri() { //戻り値　サーバアドレス Ex.www.dcc-jpl.com:8800/soft/foltia/
 
