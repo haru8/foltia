@@ -153,17 +153,17 @@ printhtmlpageheader();
 			do {
 				echo("<tr>\n");
 
-				$pid			= htmlspecialchars($rowdata['foltia_subtitle.pid']);
-
-				$tid			= htmlspecialchars($rowdata['foltia_program.tid']);
-				$title			= htmlspecialchars($rowdata['foltia_program.title']);
-				$subtitle		= htmlspecialchars($rowdata['foltia_subtitle.subtitle']);
-				$dbepgaddedby	= htmlspecialchars($rowdata['foltia_subtitle.epgaddedby']);
+				$pid			= htmlspecialchars($rowdata['pid']);
+				$tid			= htmlspecialchars($rowdata['tid']);
+				$title			= htmlspecialchars($rowdata['title']);
+				$subtitle		= htmlspecialchars($rowdata['subtitle']);
+				$dbepgaddedby	= htmlspecialchars($rowdata['epgaddedby']);
 
 				//重複検出
 				//開始時刻 $rowdata[5]
 				//終了時刻
-				$endtime = calcendtime($rowdata['x'], $rowdata['foltia_subtitle.lengthmin']);
+				$endtime = calcendtime($rowdata['x'], $rowdata['lengthmin']);
+
 				//番組の開始時刻より遅い時刻に終了し、終了時刻より前にはじまる番組があるかどうか
 
 				//オンボードチューナー録画
@@ -321,7 +321,7 @@ printhtmlpageheader();
 				}
 				print "</td>\n";
 				// 話数
-				echo("<td>".htmlspecialchars($rowdata['foltia_subtitle.countno'])."<br></td>\n");
+				echo("<td>".htmlspecialchars($rowdata['countno'])."<br></td>\n");
 				// サブタイ
 				if ($pid > 0 ) {
 					print "<td><a href=\"http://cal.syoboi.jp/tid/$tid/time#$pid\" target=\"_blank\">$subtitle<br></td>\n";
@@ -339,11 +339,11 @@ printhtmlpageheader();
 					}
 				}
 				// 開始時刻(ズレ)
-				echo("<td>".htmlspecialchars(foldate2print($rowdata['x']))."<br>(".htmlspecialchars($rowdata['foltia_subtitle.startoffset']).")</td>\n");
+				echo("<td>".htmlspecialchars(foldate2print($rowdata['x']))."<br>(".htmlspecialchars($rowdata['startoffset']).")</td>\n");
 				// 終了時刻
 				echo("<td>".htmlspecialchars(foldate2print($endtime))."</td>\n");
 				// 総尺
-				echo("<td>".htmlspecialchars($rowdata['foltia_subtitle.lengthmin'])."<br></td>\n");
+				echo("<td>".htmlspecialchars($rowdata['lengthmin'])."<br></td>\n");
 
 				// 録画レート
 				//echo("<td>".htmlspecialchars($rowdata['foltia_tvrecord.bitrate'])."<br></td>\n");
