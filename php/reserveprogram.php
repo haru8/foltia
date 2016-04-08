@@ -221,9 +221,9 @@ if (! $rowdata) {
 		}
 		for ($col = 0; $col < $maxcols; $col++) { /* 列に対応 */
 			if ($col == 3) {
-				echo("<td>".htmlspecialchars(foldate2print($rowdata[$col]))."<br></td>\n");
+				echo("<td>" . htmlspecialchars(foldate2print($rowdata[$col])) . "<br></td>\n");
 			} else {
-				echo("<td>".htmlspecialchars($rowdata[$col])."<br></td>\n");
+				echo("<td>" . htmlspecialchars($rowdata[$col]) . "<br></td>\n");
 			}
 		}
 		echo("</tr>\n");
