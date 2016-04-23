@@ -44,7 +44,7 @@ if ($tid == "") {
 if (file_exists  ( "./iui/iui.css"  )) {
 	$useragent = $_SERVER['HTTP_USER_AGENT'];
 }
-if(ereg("iPhone", $useragent)) {
+if (ereg("iPhone", $useragent)) {
 	print "<meta name=\"viewport\" content=\"width=320; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;\"/>
 		<link rel=\"apple-touch-icon\" type=\"image/png\" href=\"./img/icon.png\" />
 		<style type=\"text/css\" media=\"screen\">@import \"./iui/iui.css\";</style>
@@ -100,7 +100,7 @@ print "<title>foltia:Lib $tid:$title</title></head>";
 $serveruri = getserveruri();
 
 
-if(ereg("iPhone", $useragent)) {
+if (ereg("iPhone", $useragent)) {
 	print "<body onclick=\"console.log('Hello', event.target);\">
 		<div class=\"toolbar\">
 			<h1 id=\"pageTitle\"></h1>
@@ -120,7 +120,7 @@ if(ereg("iPhone", $useragent)) {
 			【<A HREF = \"./folcast.php?tid=$tid\">この番組のFolcast</A> 
 			［<a href=\"itpc://$serveruri/folcast.php?tid=$tid\">iTunesに登録</a>］】 <br>\n";
 	}
-} // endif if(ereg("iPhone", $useragent))
+} // endif if (ereg("iPhone", $useragent))
 
 //確認
 if (file_exists ("$recfolderpath/$tid.localized")) {
@@ -200,7 +200,7 @@ array_multisort($rowSort, SORT_DESC, SORT_NATURAL, $rowdataAll);
 $rowdataAll = array_slice($rowdataAll, $st, $lim);
 
 if ($rowdataAll) {
-	if(ereg("iPhone", $useragent)) {
+	if (ereg("iPhone", $useragent)) {
 		print "<ul id=\"home\" title=\"$title\" selected=\"true\">";
 	} else {
 		print "<table BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"2\" WIDTH=\"100%\"><tbody>";
@@ -244,9 +244,7 @@ if ($rowdataAll) {
 		if ($onairdate == "") {
 			$onairdate = "[放送日]";
 		} else {
-			$day  = substr($onairdate, 0, 4) . "/" . substr($onairdate, 4, 2) . "/" . substr($onairdate, 6, 2);
-			$time = substr($onairdate, 8, 2). ":" . substr($onairdate, 10, 2);
-			$onairdate = "$day $time";
+			$onairdate = foldate2print($onairdate);
 		}
 		//Starlight Breaker向け拡張
 		//$debug_pg_num_rows = $rs ->rowCount();
@@ -270,7 +268,7 @@ if ($rowdataAll) {
 			$imgsrcuri = "./img/no-thumbnail-img.png\" alt=\"NO IMAGE";
 		}
 		
-		if(ereg("iPhone", $useragent)) {
+		if (ereg("iPhone", $useragent)) {
 			print "<li><a href=\"http://$serverfqdn/$httpmediamappath/$tid.localized/mp4/$fName\" target=\"_self\">$count $subtitle $onairdate</a></li>\n";
 		
 		} else {
@@ -315,7 +313,7 @@ if ($rowdataAll) {
 	print "録画ファイルがありません<br>\n";
 } //if
 
-if(ereg("iPhone", $useragent)) {
+if (ereg("iPhone", $useragent)) {
 	print "<li><a href=\"http://$serveruri/showlib.php\" target=\"_self\">一覧へ戻る</a></li>\n";
 	print "</ul>\n";
 } else {
