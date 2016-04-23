@@ -210,14 +210,14 @@ print "時刻が不正なために予約できませんでした。 <br>";
 ?>
 <form id="record" name="record" method="get" action="./m.php" autocomplete="off">
   <p>放送日:
-    <input name="startdate" type="text" id="startdate" size="9" value="<?php print "$startdate"; ?>" />
+    <input name="startdate" type="text" id="startdate" size="9" value="<?php if (isset($startdate)): print "$startdate"; else: print "$today"; endif ?>" />
   年月日 Ex.<?php print "$today";?></p>
   <p>録画開始時刻:
-    <input name="starttime" type="text" id="starttime" size="5" value="<?php print "$starttime"; ?>" />
+    <input name="starttime" type="text" id="starttime" size="5" value="<?php if (isset($starttime)): print "$starttime"; else: print "$nowdate"; endif ?>" />
   時分 Ex.<?php print "$nowdate"; ?>  </p>
   <p>
     録画尺:
-      <input name="lengthmin" type="text" id="lengthmin" size="4" value="<?php print "$lengthmin"; ?>"/> 
+      <input name="lengthmin" type="text" id="lengthmin" size="4" value="<?php print "$lengthmin"; ?>"/>
     分 (最長360分) </p>
 
   <p>録画局:
