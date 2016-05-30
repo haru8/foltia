@@ -78,7 +78,7 @@ $startmin	= substr($start, 10, 2);
 $day_of_the_week = date ("(D)",mktime($starthour , 0 , 0, $startmonth , $startday  , $startyear));
 $day_of_the_week = weekDaysRep($day_of_the_week);
 
-print "($startyear/$startmonth/$startday $day_of_the_week $starthour:$startmin-)<BR>\n";
+print "<span style=\"font-weight: bold\";>($startyear/$startmonth/$startday $day_of_the_week $starthour:$startmin-)</span><BR>\n";
 
 
 $yesterday		= date("YmdHi" , mktime($starthour , 0 , 0, $startmonth, $startday - 1, $startyear));
