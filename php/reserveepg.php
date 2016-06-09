@@ -217,11 +217,12 @@ print "<table width=\"100%\" border=\"0\">
     <tr><td>放送終了</td><td>$endprinttime</td></tr>
     <tr><td>尺(分)</td><td>$lengthmin</td></tr>
     <tr><td>放送チャンネル</td><td>$recch</td></tr>
-    <tr><td>番組名</td><td>$progname</td></tr>
+    <tr><td>番組名</td><td><a href=\"./showlibc.php?tid=$tid\">$progname</a></td></tr>
     <tr><td>内容</td><td>$progdesc</td></tr>
     <tr><td>ジャンル</td><td>$progcat</td></tr>
     <tr><td>番組ID</td><td>$epgid</td></tr>
     <tr><td>局コード</td><td>$stationid</td></tr>
+    <tr><td>TID</td><td>$tid</td></tr>
 </table>
 
 <input type=\"hidden\" name=\"epgid\" value=\"$epgid\" />
