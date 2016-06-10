@@ -210,16 +210,16 @@ if (! $chkoverwrap) {
 		print "<strong>この番組は既に一部予約済みです。</strong><br>\n";
 	}
 	print '<table width="60%" style="width: 60%">';
-	print '<tr><th>予約番組名</th><th>開始</th><th>終了</th></tr>';
+	print '<tr><th>予約番組名</th><th>開始</th><th>終了</th><th>尺(分)</th></tr>';
 	foreach ($chkoverwrap as $item) {
 		$prereservedtitle = $item['title'];
 		$tid = $item['tid'];
 		$pid = $item['stationname'];
 		print "<tr>";
 		if ($tid > 1) {
-			echo "<td><a href=\"http://cal.syoboi.jp/tid/$tid/time/#$pid\" target=\"_blank\">$prereservedtitle</a></td><td>" . foldate2print($item['startdatetime']) . "</td><td>" . foldate2print($item['enddatetime']) . "</td>\n";
+			echo "<td><a href=\"http://cal.syoboi.jp/tid/$tid/time/#$pid\" target=\"_blank\">$prereservedtitle</a></td><td>" . foldate2print($item['startdatetime']) . "</td><td>" . foldate2print($item['enddatetime']) . "</td><td>" . $item['lengthmin'] . "</td>\n";
 		} else {
-			echo "<td>EPG録画</td><td>" . foldate2print($item['startdatetime']) . "</td><td>" . foldate2print($item['enddatetime']) . "</td>\n";
+			echo "<td>EPG録画</td><td>" . foldate2print($item['startdatetime']) . "</td><td>" . foldate2print($item['enddatetime']) . "</td><td>" . $item['lengthmin'] . "</td>\n";
 		}
 		print "</tr>";
 	}
