@@ -795,6 +795,26 @@ function getnextstationid($con) {
 	return ($sid);
 } //end getnextstationid
 
+// 録画予約の配列、開始時間、終了時間を受け取って、予約済みかを返す。
+// 0: 予約なし
+// 1: 予約有り
+// 2: 一部の予約有り
+function searchStartEndTime($haystack, $startdatetime, $enddatetime)
+{
+	$ret = 0;
+	foreach ($haystack as $item) {
+		if ($startdatetime == $item['startdatetime'] &&
+			$enddatetime   == $item['enddatetime']) {
+			return 1;
+		}
+		if ($startdatetime <= $item['startdatetime'] &&
+			$enddatetime   >= $item['enddatetime']) {
+			$ret = 2;
+		}
+	}
+	return $ret;
+}
+
 // デバッグ用
 function d($var) {
 	echo '<pre style="text-align: left;">';

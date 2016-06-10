@@ -121,6 +121,7 @@ function reserveCheck($con, $startfoltime, $endfoltime, $stationid)
        foltia_subtitle.countno,
        foltia_subtitle.subtitle,
        foltia_subtitle.startdatetime,
+       foltia_subtitle.enddatetime,
        foltia_subtitle.lengthmin,
        foltia_tvrecord.bitrate,
        foltia_subtitle.startoffset,
@@ -134,8 +135,8 @@ function reserveCheck($con, $startfoltime, $endfoltime, $stationid)
         AND foltia_tvrecord.stationid     = foltia_station .stationid
         AND foltia_program.tid            = foltia_subtitle.tid
         AND foltia_station.stationid      = foltia_subtitle.stationid
-        AND foltia_subtitle.startdatetime = ?
-        AND foltia_subtitle.enddatetime   = ?
+        AND foltia_subtitle.startdatetime >= ?
+        AND foltia_subtitle.enddatetime   <= ?
         AND foltia_station.stationid      = ?
       UNION
       SELECT
@@ -146,6 +147,7 @@ function reserveCheck($con, $startfoltime, $endfoltime, $stationid)
        foltia_subtitle.countno,
        foltia_subtitle.subtitle,
        foltia_subtitle.startdatetime,
+       foltia_subtitle.enddatetime,
        foltia_subtitle.lengthmin,
        foltia_tvrecord.bitrate,
        foltia_subtitle.startoffset,
@@ -155,12 +157,13 @@ function reserveCheck($con, $startfoltime, $endfoltime, $stationid)
         LEFT OUTER JOIN foltia_program  ON (foltia_tvrecord.tid = foltia_program.tid )
         LEFT OUTER JOIN foltia_station  ON (foltia_subtitle.stationid = foltia_station.stationid )
       WHERE foltia_tvrecord.stationid     = 0
-        AND foltia_subtitle.startdatetime = ?
-        AND foltia_subtitle.enddatetime   = ?
+        AND foltia_subtitle.startdatetime >= ?
+        AND foltia_subtitle.enddatetime   <= ?
         AND foltia_station.stationid      = ?
+      ORDER BY foltia_subtitle.startdatetime ASC ;
 	";
 	$rs = sql_query($con, $query, "DBクエリに失敗しました", array($startfoltime, $endfoltime, $stationid, $startfoltime, $endfoltime, $stationid));
-	return $chkoverwrap = $rs->fetch();
+	return $chkoverwrap = $rs->fetchAll(PDO::FETCH_ASSOC);
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -265,8 +268,8 @@ if ($maxrows > $maxdisplay) {
 		print "<a href = \"./viewepg.php?p=$nextpage&start=$start\">→</a>";
 	}
 }
-//ココから新コード
-//・局リスト
+// ココから新コード
+// 局リスト
 $query = "
     SELECT
       stationid,
@@ -288,10 +291,11 @@ while ($rowdata = $slistrs->fetch()) {
 	$stationinfo[$rowdata['ontvcode']] = array('stationid' => $rowdata['stationid'], 'stationname' => $rowdata['stationname'], 'digitalch' => $rowdata['digitalch']);
 }
 
-//・時間と全順番のハッシュ作る
+// 時間と全順番のハッシュ作る
 $epgstart = $start ;
 $epgend = calcendtime($start , (8*60));
 
+// 番組毎の放送開始時間の一覧を抽出
 $query = "
 	SELECT DISTINCT startdatetime
 	FROM foltia_epg
@@ -306,7 +310,7 @@ $query = "
 	AND startdatetime  < ?
 	ORDER BY foltia_epg.startdatetime  ASC";
 
-$rs = sql_query($con, $query, "DBクエリに失敗しました",array($maxdisplay,$offset,$start,$epgend));
+$rs = sql_query($con, $query, "DBクエリに失敗しました",array($maxdisplay, $offset, $start, $epgend));
 
 //print "$query<br>\n";
 
@@ -327,6 +331,8 @@ if (! $rowdata) {
 //・局ごとに縦に配列入れていく
 foreach ($stationhash as $stationname) {
 	$stationid = $stationinfo[$stationname]['stationid'];
+	$reserve = reserveCheck($con, $epgstart, $epgend, $stationid);
+//d($reserve);
 	$epgstart = $start ;
 	$epgend = calcendtime($start , (8*60));
 	$query = "
@@ -354,7 +360,6 @@ foreach ($stationhash as $stationname) {
 		do {
 			$startdatetime	= $stationrowdata['startdatetime'];
 			$enddatetime	= $stationrowdata['enddatetime'];
-			$reserveCheck	= reserveCheck($con, $startdatetime, $enddatetime, $stationid);
 
 			$printstarttime	= substr($startdatetime, 8, 2) . ':' .  substr($startdatetime, 10, 2);
 			$tdclass		= 't' . substr($startdatetime, 8, 2) .  substr($startdatetime, 10, 2);
@@ -383,8 +388,11 @@ foreach ($stationhash as $stationname) {
 				//print "$stationname $stationrowdata[0] 現在番組 $printstarttime $title $desc<br>\n";
 			}
 			$reservedStyle = '';
-			if ($reserveCheck) {
+			$reserveCheck = searchStartEndTime($reserve, $startdatetime, $enddatetime);
+			if ($reserveCheck == 1) {
 				$reservedStyle = ' style="border: 3px #ff0000 solid;" ';
+			} else if($reserveCheck == 2) {
+				$reservedStyle = ' style="border: 3px #ff000f dashed;" ';
 			}
 			$program  = " onClick=\"location = './reserveepg.php?epgid=$epgid'\" $reservedStyle>\n";
 			$program .= "      <span id=\"epgstarttime\">$printstarttime</span>\n";
@@ -408,7 +416,7 @@ foreach ($stationhash as $stationname) {
 	$rowspan	= 0;
 
 	for ($i = 1; $i <= $colmnums; $i++) {
-		if ($i === ($colmnums )) { // 最終行
+		if ($i === ($colmnums)) { // 最終行
 			$rowspan = $i - $dataplace ;
 			// そして自分自身にタグを
 			if (!isset($item[$i][$stationname])) {
