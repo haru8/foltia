@@ -18,7 +18,7 @@ startdate:特定日付からの予約状況。YYYYmmddHHii形式で。表示数�
 
 History
 
-2009/5/1 
+2009/5/1
 重複予約検出処理の修正 http://www.dcc-jpl.com/foltia/ticket/7
 パッチ適用
 */
@@ -44,7 +44,7 @@ $userclass = getuserclass($con);
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<link rel="stylesheet" type="text/css" href="graytable.css"> 
+<link rel="stylesheet" type="text/css" href="graytable.css">
 <title>foltia:record plan</title>
 </head>
 
@@ -57,7 +57,7 @@ $now = getgetnumform(date);
 
 if ($now > 200501010000) {
 } else {
-	$now = date("YmdHi");   
+	$now = date("YmdHi");
 }
 	$query = "
 		SELECT
@@ -72,13 +72,17 @@ if ($now > 200501010000) {
 		  foltia_subtitle.startoffset,
 		  foltia_subtitle.pid,
 		  foltia_subtitle.epgaddedby,
-		  foltia_tvrecord.digital 
-		FROM foltia_subtitle , foltia_program ,foltia_station ,foltia_tvrecord
-		WHERE foltia_tvrecord.tid = foltia_program.tid
-		  AND foltia_tvrecord.stationid = foltia_station.stationid 
-		  AND foltia_program.tid = foltia_subtitle.tid
-		  AND foltia_station.stationid = foltia_subtitle.stationid
-		  AND foltia_subtitle.enddatetime >= ? 
+		  foltia_tvrecord.digital
+		FROM
+		  foltia_subtitle,
+		  foltia_program,
+		  foltia_station,
+		  foltia_tvrecord
+		WHERE foltia_tvrecord.tid         = foltia_program.tid
+		  AND foltia_tvrecord.stationid   = foltia_station.stationid
+		  AND foltia_program.tid          = foltia_subtitle.tid
+		  AND foltia_station.stationid    = foltia_subtitle.stationid
+		  AND foltia_subtitle.enddatetime >= ?
 		  UNION
 		  SELECT
 		    foltia_program.tid,
@@ -92,12 +96,13 @@ if ($now > 200501010000) {
 		    foltia_subtitle.startoffset,
 		    foltia_subtitle.pid,
 		    foltia_subtitle.epgaddedby,
-		    foltia_tvrecord.digital 
-		  FROM foltia_tvrecord
+		    foltia_tvrecord.digital
+		  FROM
+		    foltia_tvrecord
 		    LEFT OUTER JOIN foltia_subtitle ON (foltia_tvrecord.tid = foltia_subtitle.tid )
 		    LEFT OUTER JOIN foltia_program  ON (foltia_tvrecord.tid = foltia_program.tid )
 		    LEFT OUTER JOIN foltia_station  ON (foltia_subtitle.stationid = foltia_station.stationid )
-		  WHERE foltia_tvrecord.stationid = 0
+		  WHERE foltia_tvrecord.stationid   = 0
 		    AND foltia_subtitle.enddatetime >= ? ORDER BY x ASC
 	";
 
@@ -114,7 +119,7 @@ if ($now > 200501010000) {
 
 <body BGCOLOR="#ffffff" TEXT="#494949" LINK="#0047ff" VLINK="#000000" ALINK="#c6edff" >
 <div align="center">
-<?php 
+<?php
 printhtmlpageheader();
 ?>
   <p align="left"><font color="#494949" size="6">予約一覧</font></p>
@@ -185,8 +190,8 @@ printhtmlpageheader();
                           AND foltia_tvrecord.stationid = foltia_station .stationid
                           AND foltia_program.tid = foltia_subtitle.tid
                           AND foltia_station.stationid = foltia_subtitle.stationid
-                          AND foltia_subtitle.enddatetime > ? 
-                          AND foltia_subtitle.startdatetime < ?  
+                          AND foltia_subtitle.enddatetime > ?
+                          AND foltia_subtitle.startdatetime < ?
                         GROUP BY foltia_station.stationid
                       UNION
                         SELECT
@@ -206,8 +211,8 @@ printhtmlpageheader();
                             LEFT OUTER JOIN foltia_program on (foltia_tvrecord.tid = foltia_program.tid )
                             LEFT OUTER JOIN foltia_station on (foltia_subtitle.stationid = foltia_station.stationid )
                           WHERE foltia_tvrecord.stationid = 0
-                            AND foltia_subtitle.enddatetime > ?  
-                            AND foltia_subtitle.startdatetime < ?  
+                            AND foltia_subtitle.enddatetime > ?
+                            AND foltia_subtitle.startdatetime < ?
                           GROUP BY foltia_station.stationid
                          ";
 
@@ -253,9 +258,9 @@ printhtmlpageheader();
 					  foltia_subtitle.pid, foltia_tvrecord.digital
 					FROM foltia_subtitle , foltia_program ,foltia_station ,foltia_tvrecord
 					  WHERE foltia_tvrecord.tid = foltia_program.tid AND foltia_tvrecord.stationid = foltia_station .stationid AND foltia_program.tid = foltia_subtitle.tid AND foltia_station.stationid = foltia_subtitle.stationid
-					    AND foltia_subtitle.enddatetime > ? 
-					    AND foltia_subtitle.startdatetime < ?  
-					    AND (foltia_station.stationrecch = '0' OR  foltia_station.stationrecch = '-1' ) 
+					    AND foltia_subtitle.enddatetime > ?
+					    AND foltia_subtitle.startdatetime < ?
+					    AND (foltia_station.stationrecch = '0' OR  foltia_station.stationrecch = '-1' )
 					  UNION
 					  SELECT
 					    foltia_program.tid, stationname, foltia_program.title,
@@ -268,9 +273,9 @@ printhtmlpageheader();
 					    LEFT OUTER JOIN foltia_program on (foltia_tvrecord.tid = foltia_program.tid )
 					    LEFT OUTER JOIN foltia_station on (foltia_subtitle.stationid = foltia_station.stationid )
 					  WHERE foltia_tvrecord.stationid = 0
-					    AND foltia_subtitle.enddatetime > ?  
-					    AND foltia_subtitle.startdatetime < ?  
-					    AND (foltia_station.stationrecch = '0' OR  foltia_station.stationrecch = '-1' ) 
+					    AND foltia_subtitle.enddatetime > ?
+					    AND foltia_subtitle.startdatetime < ?
+					    AND (foltia_station.stationrecch = '0' OR  foltia_station.stationrecch = '-1' )
 					";
 				//$eoverlap = m_query($con, $query, "DBクエリに失敗しました");
 				$eoverlap = sql_query($con, $query, "DBクエリに失敗しました", array($rowdata['x'], $endtime,$rowdata['x'],  $endtime));
@@ -373,13 +378,13 @@ printhtmlpageheader();
 <?php
 	} //if ($maxrows == 0)
 	$query = "
-		SELECT 
+		SELECT
 		  foltia_program.tid, stationname, foltia_program.title,
-		  foltia_tvrecord.bitrate, foltia_tvrecord.stationid, 
-		  foltia_tvrecord.digital   
-		FROM  foltia_tvrecord , foltia_program , foltia_station 
+		  foltia_tvrecord.bitrate, foltia_tvrecord.stationid,
+		  foltia_tvrecord.digital
+		FROM  foltia_tvrecord , foltia_program , foltia_station
 		WHERE foltia_tvrecord.tid = foltia_program.tid
-		  AND foltia_tvrecord.stationid = foltia_station.stationid 
+		  AND foltia_tvrecord.stationid = foltia_station.stationid
 		ORDER BY foltia_program.tid  DESC
 		";
 $rs = sql_query($con, $query, "DBクエリに失敗しました");
