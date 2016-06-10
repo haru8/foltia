@@ -84,7 +84,7 @@ printhtmlpageheader();
 
   <p align="left"><font color="#494949" size="6">番組予約</font></p>
   <hr size="4">
-EPGから下記番組を録画予約します。 <br>
+EPGから下記番組を録画予約します。 <br><br>
 
 
 <?php
@@ -152,6 +152,7 @@ $query = "
    foltia_subtitle.countno,
    foltia_subtitle.subtitle,
    foltia_subtitle.startdatetime,
+   foltia_subtitle.enddatetime,
    foltia_subtitle.lengthmin,
    foltia_tvrecord.bitrate,
    foltia_subtitle.startoffset,
@@ -165,8 +166,8 @@ $query = "
     AND foltia_tvrecord.stationid     = foltia_station .stationid
     AND foltia_program.tid            = foltia_subtitle.tid
     AND foltia_station.stationid      = foltia_subtitle.stationid
-    AND foltia_subtitle.startdatetime = ?
-    AND foltia_subtitle.enddatetime   = ?
+    AND foltia_subtitle.startdatetime >= ?
+    AND foltia_subtitle.enddatetime   <= ?
     AND foltia_station.stationid      = ?
   UNION
   SELECT
@@ -177,6 +178,7 @@ $query = "
    foltia_subtitle.countno,
    foltia_subtitle.subtitle,
    foltia_subtitle.startdatetime,
+   foltia_subtitle.enddatetime,
    foltia_subtitle.lengthmin,
    foltia_tvrecord.bitrate,
    foltia_subtitle.startoffset,
@@ -186,43 +188,57 @@ $query = "
     LEFT OUTER JOIN foltia_program  ON (foltia_tvrecord.tid = foltia_program.tid )
     LEFT OUTER JOIN foltia_station  ON (foltia_subtitle.stationid = foltia_station.stationid )
   WHERE foltia_tvrecord.stationid     = 0
-    AND foltia_subtitle.startdatetime = ?
-    AND foltia_subtitle.enddatetime   = ?
+    AND foltia_subtitle.startdatetime >= ?
+    AND foltia_subtitle.enddatetime   <= ?
     AND foltia_station.stationid      = ?
+  ORDER BY foltia_subtitle.startdatetime ASC ;
 ";
 
 
 print "<form name=\"recordingsetting\" method=\"POST\" action=\"reserveepgcomp.php\">\n";
 
 $rs = sql_query($con, $query, "DBクエリに失敗しました", array($startfoltime, $endfoltime, $stationid, $startfoltime, $endfoltime, $stationid));
-$chkoverwrap = $rs->fetch();
+$chkoverwrap = $rs->fetchAll(PDO::FETCH_ASSOC);
+$reserveCheck = searchStartEndTime($chkoverwrap, $startfoltime, $endfoltime);
 if (! $chkoverwrap) {
 	// 重複なし
 	print "<input type=\"submit\" value=\"予約\" ><br>\n";
 } else {
-	$prereservedtitle = htmlspecialchars($chkoverwrap[0]);
-	$tid =  htmlspecialchars($chkoverwrap[1]);
-	$pid =  htmlspecialchars($chkoverwrap[2]);
-	print "<input type=\"submit\" value=\"それでも予約\" ><br><strong>この番組は既に予約済みです。</strong>　\n";
-	if ($tid > 1) {
-		print "予約番組名:<a href=\"http://cal.syoboi.jp/tid/$tid/time/#$pid\" target=\"_blank\">$prereservedtitle</a><br>\n";
-	} else {
-		print "予約方法:EPG録画<br>\n";
+	if ($reserveCheck == 1) {
+		print "<strong>この番組は既に予約済みです。</strong><br>\n";
+	} else if ($reserveCheck == 2) {
+		print "<strong>この番組は既に一部予約済みです。</strong><br>\n";
 	}
+	print '<table width="60%" style="width: 60%">';
+	print '<tr><th>予約番組名</th><th>開始</th><th>終了</th></tr>';
+	foreach ($chkoverwrap as $item) {
+		$prereservedtitle = $item['title'];
+		$tid = $item['tid'];
+		$pid = $item['stationname'];
+		print "<tr>";
+		if ($tid > 1) {
+			echo "<td><a href=\"http://cal.syoboi.jp/tid/$tid/time/#$pid\" target=\"_blank\">$prereservedtitle</a></td><td>" . foldate2print($item['startdatetime']) . "</td><td>" . foldate2print($item['enddatetime']) . "</td>\n";
+		} else {
+			echo "<td>EPG録画</td><td>" . foldate2print($item['startdatetime']) . "</td><td>" . foldate2print($item['enddatetime']) . "</td>\n";
+		}
+		print "</tr>";
+	}
+	print "</table>";
+	print "<br><input type=\"submit\" value=\"それでも予約\" ><br>\n";
 }
 
 print "<table width=\"100%\" border=\"0\">
-    <tr><td>放送局</td><td>$stationjname</td></tr>
-    <tr><td>放送開始</td><td>$startprinttime</td></tr>
-    <tr><td>放送終了</td><td>$endprinttime</td></tr>
-    <tr><td>尺(分)</td><td>$lengthmin</td></tr>
-    <tr><td>放送チャンネル</td><td>$recch</td></tr>
-    <tr><td>番組名</td><td><a href=\"./showlibc.php?tid=$tid\">$progname</a></td></tr>
-    <tr><td>内容</td><td>$progdesc</td></tr>
-    <tr><td>ジャンル</td><td>$progcat</td></tr>
-    <tr><td>番組ID</td><td>$epgid</td></tr>
-    <tr><td>局コード</td><td>$stationid</td></tr>
-    <tr><td>TID</td><td>$tid</td></tr>
+    <tr><th>放送局</th><td>$stationjname</td></tr>
+    <tr><th>放送開始</th><td>$startprinttime</td></tr>
+    <tr><th>放送終了</th><td>$endprinttime</td></tr>
+    <tr><th>尺(分)</th><td>$lengthmin</td></tr>
+    <tr><th>放送チャンネル</th><td>$recch</td></tr>
+    <tr><th>番組名</th><td><a href=\"./showlibc.php?tid=$tid\">$progname</a></td></tr>
+    <tr><th>内容</th><td>$progdesc</td></tr>
+    <tr><th>ジャンル</th><td>$progcat</td></tr>
+    <tr><th>番組ID</th><td>$epgid</td></tr>
+    <tr><th>局コード</th><td>$stationid</td></tr>
+    <tr><th>TID</th><td>$tid</td></tr>
 </table>
 
 <input type=\"hidden\" name=\"epgid\" value=\"$epgid\" />
