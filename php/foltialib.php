@@ -20,7 +20,7 @@ function getgetform($key) {
 		$value = $_GET["{$key}"];
 		$value = escape_string($value);
 		$value = htmlspecialchars($value);
-	return ($value);
+		return ($value);
     }
 }
 
@@ -33,7 +33,7 @@ function getgetnumform($key) {
 		return ($value);
 	}
 }
-	
+
 //フォームデコード
 function getform($key) {
 	if ($_POST["{$key}"] != "") {
@@ -72,7 +72,7 @@ function pnum2dnum($num) {
 
 	return $num;
 }
-	
+
 /* 終了関数の定義 */
 function die_exit($message) {
 		?>
@@ -82,7 +82,7 @@ function die_exit($message) {
 </html><?php
 		exit;
 }
-	
+
 /* 入力した値のサイズをチェック */
 function check_length($str, $maxlen, $must, $name) {
 	$len = strlen($str);
@@ -112,8 +112,8 @@ function escape_string($sql, $quote = FALSE) {
 	} else {
 			return "null";
 	}
-} 
-	
+}
+
 /* SQL 数値のエスケープ */
 function escape_numeric($sql) {
 	if (strlen($sql) == 0) {
@@ -124,9 +124,9 @@ function escape_numeric($sql) {
 	}
 	return $sql;
 }
-	
+
 /* DBに接続 */
-function m_connect() { 
+function m_connect() {
 	try {
 		$dbh = new PDO(DSN);
 		$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -252,26 +252,26 @@ function printhtmlpageheader() {
 function renderepgstation($con,$stationname,$start) { //戻り値 なし EPGの局表示
 
 	$now = date("YmdHi");
-	$today = date("Ymd");   
+	$today = date("Ymd");
 	$tomorrow = date ("Ymd",mktime(0, 0, 0, date("m")  , date("d")+1, date("Y")));
-	//$today = "20051013";   
+	//$today = "20051013";
 	//$tomorrow = "20051014";
 	//$epgstart = $today . "2000";
 	$epgstart = $start ;
 	//$epgend = $tomorrow . "0400";
 	$epgend = calcendtime($start , (8*60));
 	$query = "
-		SELECT startdatetime , enddatetime , lengthmin , epgtitle , epgdesc , epgcategory  ,ontvchannel  ,epgid 
-		FROM foltia_epg 
-		WHERE foltia_epg.ontvchannel = '$stationname' AND 
-		enddatetime  > $epgstart  AND 
-		startdatetime  < $epgend  
+		SELECT startdatetime , enddatetime , lengthmin , epgtitle , epgdesc , epgcategory  ,ontvchannel  ,epgid
+		FROM foltia_epg
+		WHERE foltia_epg.ontvchannel = '$stationname' AND
+		enddatetime  > $epgstart  AND
+		startdatetime  < $epgend
 		ORDER BY foltia_epg.startdatetime  ASC
 		";
 	$rs = m_query($con, $query, "DBクエリに失敗しました");
 	$rowdata = $rs->fetch();
 	if (! $rowdata) {
-		print("番組データがありません<BR>");			
+		print("番組データがありません<BR>");
 	} else {
 		print "<table width=\"100%\"  border=\"0\">\n";
 		//print "<ul><!-- ($maxrows) $query -->\n";
@@ -302,17 +302,17 @@ function renderepgstation($con,$stationname,$start) { //戻り値 なし EPGの�
 	}//if
 }//end function
 
-function calcendtime($start,$lengthmin) { //戻り値 終了時刻(Ex:200510170130) 
-	$startyear	= substr($start,0,4);
-	$startmonth	= substr($start,4,2);
-	$startday	= substr($start,6,2);
-	$starthour	= substr($start,8,2);
-	$startmin	= substr($start,10,2);
+function calcendtime($start, $lengthmin) { // 戻り値 終了時刻(Ex:200510170130)
+	$startyear	= substr($start,  0, 4);
+	$startmonth	= substr($start,  4, 2);
+	$startday	= substr($start,  6, 2);
+	$starthour	= substr($start,  8, 2);
+	$startmin	= substr($start, 10, 2);
 	//int mktime ( [int hour [, int minute [, int second [, int month [, int day [, int year [, int is_dst]]]]]]] )
-	$endtime = date ("YmdHi",mktime($starthour  , $startmin + $lengthmin , 0, $startmonth  , $startday, $startyear));
+	$endtime = date ("YmdHi", mktime($starthour, $startmin + $lengthmin, 0, $startmonth, $startday, $startyear));
 
 	return ($endtime );
-} //end function
+} // end function
 
 
 function z2h($string) { //戻り値　半角化した文字
@@ -509,14 +509,13 @@ function warndiskfreearea() {
 function foldatevalidation($foldate) {
 
 	if (strlen($foldate) == 12 ) {
+		$startyear	= substr($foldate,  0, 4);
+		$startmonth	= substr($foldate,  4, 2);
+		$startday	= substr($foldate,  6, 2);
+		$starthour	= substr($foldate,  8, 2);
+		$startmin	= substr($foldate, 10, 2);
 
-		$startyear =   substr($foldate,0,4);
-		$startmonth =   substr($foldate,4,2);
-		$startday =   substr($foldate,6,2);
-		$starthour =   substr($foldate,8,2);
-		$startmin =   substr($foldate,10,2);
-
-		$startepoch = date ("U",mktime($starthour  , $startmin , 0, $startmonth  , $startday, $startyear));	
+		$startepoch = date ("U", mktime($starthour, $startmin, 0, $startmonth, $startday, $startyear));
 		$nowe = time();
 		if ($startepoch > $nowe) {
 			//print "$foldate:$startepoch:$nowe";
@@ -526,7 +525,7 @@ function foldatevalidation($foldate) {
 		}	//end if $startepoch > $nowe
 	} else {
 		return FALSE;
-	}//end if ($foldate) == 12 
+	}//end if ($foldate) == 12
 
 } //end function
 
@@ -549,9 +548,9 @@ function login($con,$name,$passwd) {
 		escape_string($passwd);
 
 		$query = "
-			SELECT memberid ,userclass,name,passwd1 
-			FROM foltia_envpolicy 
-			WHERE foltia_envpolicy.name  = '$name'  
+			SELECT memberid, userclass, name, passwd1
+			FROM foltia_envpolicy
+			WHERE foltia_envpolicy.name  = '$name'
 			";
 		$useraccount = m_query($con, $query, "DBクエリに失敗しました");
 		$rowdata = $useraccount->fetch();
@@ -560,10 +559,10 @@ function login($con,$name,$passwd) {
 			redirectlogin();
 		}
 
-		$memberid = $rowdata[0];
-		$userclass = $rowdata[1];
-		$username =  $rowdata[2];
-		$dbpasswd = $rowdata[3];
+		$memberid	= $rowdata[0];
+		$userclass	= $rowdata[1];
+		$username	= $rowdata[2];
+		$dbpasswd	= $rowdata[3];
 
 		$rowdata = $useraccount->fetch();
 		if ($rowdata) {
@@ -576,7 +575,7 @@ function login($con,$name,$passwd) {
 			$dbpasswd = "$dbpasswd";
 		} else {
 			// db passwdとトークンを連結し
-			$dbpasswd = "$dbpasswd"."$environmentpolicytoken";
+			$dbpasswd = "$dbpasswd" . "$environmentpolicytoken";
 		}
 		//それが入力と一致すれば認証
 		if ($passwd == $dbpasswd) {
@@ -617,9 +616,9 @@ function getuserclass($con) {
 
 	if ($useenvironmentpolicy == 1) {
 		$query = "
-			SELECT memberid ,userclass,name,passwd1 
-			FROM foltia_envpolicy 
-			WHERE foltia_envpolicy.name  = '$username'  
+			SELECT memberid ,userclass,name,passwd1
+			FROM foltia_envpolicy
+			WHERE foltia_envpolicy.name  = '$username'
 			";
 		$useraccount = m_query($con, $query, "DBクエリに失敗しました");
 		$rowdata = $useraccount->fetch();
@@ -649,9 +648,9 @@ function getmymemberid($con) {
 
 	if ($useenvironmentpolicy == 1) {
 		$query = "
-			SELECT memberid ,userclass,name,passwd1 
-			FROM foltia_envpolicy 
-			WHERE foltia_envpolicy.name  = '$username'  
+			SELECT memberid ,userclass,name,passwd1
+			FROM foltia_envpolicy
+			WHERE foltia_envpolicy.name  = '$username'
 			";
 		$useraccount = m_query($con, $query, "DBクエリに失敗しました");
 		$rowdata = $useraccount->fetch();
@@ -680,9 +679,9 @@ function getmemberid2name($con,$memberid) {
 
 	if ($useenvironmentpolicy == 1) {
 		$query = "
-			SELECT memberid ,userclass,name,passwd1 
-			FROM foltia_envpolicy 
-			WHERE foltia_envpolicy.memberid  = '$memberid'  
+			SELECT memberid ,userclass,name,passwd1
+			FROM foltia_envpolicy
+			WHERE foltia_envpolicy.memberid  = '$memberid'
 			";
 		$useraccount = m_query($con, $query, "DBクエリに失敗しました");
 		$rowdata = $useraccount->fetch();
@@ -707,7 +706,7 @@ function getmemberid2name($con,$memberid) {
 
 
 
-function number_page($p,$lim) {
+function number_page($p, $lim) {
 	//Autopager・ページリンクで使用している関数
 	//下記は関数をしているファイル名
 	//index.php  showplaylist.php  titlelist.php  showlib.php  showlibc.php
@@ -731,11 +730,11 @@ function number_page($p,$lim) {
 	$st = ($p -1) * $lim;
 
 	//
-	return array($st,$p,$p2);
+	return array($st, $p, $p2);
 } //end number_page
 
 
-function page_display($query_st,$p,$p2,$lim,$dtcnt,$mode) {
+function page_display($query_st, $p, $p2, $lim, $dtcnt,$mode) {
 	//Autopager・ページリンクで使用している関数
 	//下記は関数を使用しているファイル名
 	//index.php　showplaylist.php　titlelist.php　showlib.php　showlibc.php
