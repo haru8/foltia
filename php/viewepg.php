@@ -40,11 +40,14 @@ if ($useenvironmentpolicy == 1) {
 </head>
 <?php
 $start = getgetnumform("start");
-
 if ($start == "") {
 	$start =  date("YmdHi");
 } else {
 	$start = ereg_replace( "[^0-9]", "", $start);
+}
+$endh = getgetnumform("e");
+if (!ctype_digit($endh)) {
+	$endh = 8;
 }
 
 
@@ -75,10 +78,10 @@ $startmonth	= substr($start,  4, 2);
 $startday	= substr($start,  6, 2);
 $starthour	= substr($start,  8, 2);
 $startmin	= substr($start, 10, 2);
-$day_of_the_week = date ("(D)",mktime($starthour , 0 , 0, $startmonth , $startday  , $startyear));
+$day_of_the_week = date ("(D)", mktime($starthour, 0, 0, $startmonth, $startday, $startyear));
 $day_of_the_week = weekDaysRep($day_of_the_week);
 
-print "<span style=\"font-weight: bold\";>($startyear/$startmonth/$startday $day_of_the_week $starthour:$startmin-)</span><BR>\n";
+print "<span style=\"font-weight: bold\";>($startyear/$startmonth/$startday $day_of_the_week $starthour:$startmin - {$endh}h)</span><BR>\n";
 
 
 $yesterday		= date("YmdHi" , mktime($starthour , 0 , 0, $startmonth, $startday - 1, $startyear));
@@ -195,9 +198,12 @@ $day7		= weekDaysRep($day7);
 ///////////////////////////////////////////////////////////////////
 
 
-//表示局選定
+// 表示局選定
 // $page = 1
-$maxdisplay = 8;
+$maxdisplay = getgetnumform("st");
+if (!ctype_digit($maxdisplay)) {
+	$maxdisplay = 8;
+}
 
 $query = "SELECT count(*) FROM foltia_station WHERE \"ontvcode\" LIKE '%ontvjapan%'";
 $rs = sql_query($con, $query, "DBクエリに失敗しました");
@@ -229,23 +235,23 @@ $navigationbar =  "
 [<A HREF=\"./viewepg.php\">現在</A>] |
 <A HREF=\"./viewepg.php?p=$page&start=$yesterday\">$dayyesterday [前日]</A> |
 当日(
-<A HREF=\"./viewepg.php?p=$page&start=$today0400\">4:00</A>　
-<A HREF=\"./viewepg.php?p=$page&start=$today0800\">8:00</A>　
-<A HREF=\"./viewepg.php?p=$page&start=$today1200\">12:00</A>　
-<A HREF=\"./viewepg.php?p=$page&start=$today1600\">16:00</A>　
-<A HREF=\"./viewepg.php?p=$page&start=$today2000\">20:00</A>　
-<A HREF=\"./viewepg.php?p=$page&start=$today2359\">24:00</A>) |
-<A HREF=\"./viewepg.php?p=$page&start=$tomorrow\">$daytomorrow [翌日]</A>
+<A HREF=\"./viewepg.php?p=$page&st=$maxdisplay&start=$today0400&e=$endh\">4:00</A>　
+<A HREF=\"./viewepg.php?p=$page&st=$maxdisplay&start=$today0800&e=$endh\">8:00</A>　
+<A HREF=\"./viewepg.php?p=$page&st=$maxdisplay&start=$today1200&e=$endh\">12:00</A>　
+<A HREF=\"./viewepg.php?p=$page&st=$maxdisplay&start=$today1600&e=$endh\">16:00</A>　
+<A HREF=\"./viewepg.php?p=$page&st=$maxdisplay&start=$today2000&e=$endh\">20:00</A>　
+<A HREF=\"./viewepg.php?p=$page&st=$maxdisplay&start=$today2359&e=$endh\">24:00</A>) |
+<A HREF=\"./viewepg.php?p=$page&st=$maxdisplay&start=$tomorrow&e=$endh\">$daytomorrow [翌日]</A>
 <br>
  |
-<A HREF=\"./viewepg.php?p=$page&start=$day0after\">$day0</A> |
-<A HREF=\"./viewepg.php?p=$page&start=$day1after\">$day1</A> |
-<A HREF=\"./viewepg.php?p=$page&start=$day2after\">$day2</A> |
-<A HREF=\"./viewepg.php?p=$page&start=$day3after\">$day3</A> |
-<A HREF=\"./viewepg.php?p=$page&start=$day4after\">$day4</A> |
-<A HREF=\"./viewepg.php?p=$page&start=$day5after\">$day5</A> |
-<A HREF=\"./viewepg.php?p=$page&start=$day6after\">$day6</A> |
-<A HREF=\"./viewepg.php?p=$page&start=$day7after\">$day7</A> | <BR>\n";
+<A HREF=\"./viewepg.php?p=$page&st=$maxdisplay&start=$day0after&e=$endh\">$day0</A> |
+<A HREF=\"./viewepg.php?p=$page&st=$maxdisplay&start=$day1after&e=$endh\">$day1</A> |
+<A HREF=\"./viewepg.php?p=$page&st=$maxdisplay&start=$day2after&e=$endh\">$day2</A> |
+<A HREF=\"./viewepg.php?p=$page&st=$maxdisplay&start=$day3after&e=$endh\">$day3</A> |
+<A HREF=\"./viewepg.php?p=$page&st=$maxdisplay&start=$day4after&e=$endh\">$day4</A> |
+<A HREF=\"./viewepg.php?p=$page&st=$maxdisplay&start=$day5after&e=$endh\">$day5</A> |
+<A HREF=\"./viewepg.php?p=$page&st=$maxdisplay&start=$day6after&e=$endh\">$day6</A> |
+<A HREF=\"./viewepg.php?p=$page&st=$maxdisplay&start=$day7after&e=$endh\">$day7</A> | <BR>\n";
 print "$navigationbar";
 ///////////////////////////////////////////////////////////////////
 
@@ -292,8 +298,8 @@ while ($rowdata = $slistrs->fetch()) {
 }
 
 // 時間と全順番のハッシュ作る
-$epgstart = $start ;
-$epgend = calcendtime($start , (8*60));
+$epgstart = $start;
+$epgend = calcendtime($start, ($endh * 60));
 
 // 番組毎の放送開始時間の一覧を抽出
 $query = "
@@ -332,9 +338,6 @@ if (! $rowdata) {
 foreach ($stationhash as $stationname) {
 	$stationid = $stationinfo[$stationname]['stationid'];
 	$reserve = reserveCheck($con, $epgstart, $epgend, $stationid);
-//d($reserve);
-	$epgstart = $start ;
-	$epgend = calcendtime($start , (8*60));
 	$query = "
 	  SELECT
         startdatetime,
