@@ -210,16 +210,17 @@ if (! $chkoverwrap) {
 		print "<strong>この番組は既に一部予約済みです。</strong><br>\n";
 	}
 	print '<table width="60%" style="width: 60%">';
-	print '<tr><th>予約番組名</th><th>開始</th><th>終了</th><th>尺(分)</th></tr>';
+	print '<tr><th>削除</th><th>予約番組名</th><th>開始</th><th>終了</th><th>尺(分)</th></tr>';
 	foreach ($chkoverwrap as $item) {
 		$prereservedtitle = $item['title'];
+		$stationname = $item['stationname'];
 		$tid = $item['tid'];
-		$pid = $item['stationname'];
+		$pid = $item['pid'];
 		print "<tr>";
 		if ($tid > 1) {
-			echo "<td><a href=\"http://cal.syoboi.jp/tid/$tid/time/#$pid\" target=\"_blank\">$prereservedtitle</a></td><td>" . foldate2print($item['startdatetime']) . "</td><td>" . foldate2print($item['enddatetime']) . "</td><td>" . $item['lengthmin'] . "</td>\n";
+			echo "<td><a href=\"delreserve.php?tid=$tid&sid=$stationid\">予約削除</a></td><td><a href=\"http://cal.syoboi.jp/tid/$tid/time/#$stationname\" target=\"_blank\">$prereservedtitle</a></td><td>" . foldate2print($item['startdatetime']) . "</td><td>" . foldate2print($item['enddatetime']) . "</td><td>" . $item['lengthmin'] . "</td>\n";
 		} else {
-			echo "<td>EPG録画</td><td>" . foldate2print($item['startdatetime']) . "</td><td>" . foldate2print($item['enddatetime']) . "</td><td>" . $item['lengthmin'] . "</td>\n";
+			echo "<td><a href=\"delepgp.php?pid=$pid\">予約削除</a></td><td>EPG録画</td><td>" . foldate2print($item['startdatetime']) . "</td><td>" . foldate2print($item['enddatetime']) . "</td><td>" . $item['lengthmin'] . "</td>\n";
 		}
 		print "</tr>";
 	}
