@@ -379,16 +379,22 @@ printhtmlpageheader();
 	} //if ($maxrows == 0)
 	$query = "
 		SELECT
-		  foltia_program.tid, stationname, foltia_program.title,
-		  foltia_tvrecord.bitrate, foltia_tvrecord.stationid,
+		  foltia_program.tid,
+		  stationname,
+		  foltia_program.title,
+		  foltia_tvrecord.bitrate,
+		  foltia_tvrecord.stationid,
 		  foltia_tvrecord.digital
-		FROM  foltia_tvrecord , foltia_program , foltia_station
-		WHERE foltia_tvrecord.tid = foltia_program.tid
+		FROM 
+		  foltia_tvrecord,
+		  foltia_program,
+		  foltia_station
+		WHERE foltia_tvrecord.tid       = foltia_program.tid
 		  AND foltia_tvrecord.stationid = foltia_station.stationid
-		ORDER BY foltia_program.tid  DESC
+		ORDER BY foltia_program.tid DESC
 		";
 $rs = sql_query($con, $query, "DBクエリに失敗しました");
-$rowdata = $rs->fetch();			
+$rowdata = $rs->fetch();
 if (! $rowdata) {
 	//なければなにもしない
 
