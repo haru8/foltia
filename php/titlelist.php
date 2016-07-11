@@ -63,6 +63,7 @@ $query = "
       foltia_tvrecord.tid AS rec
 	FROM foltia_program 
       LEFT JOIN foltia_tvrecord ON foltia_tvrecord.tid = foltia_program.tid
+	GROUP BY foltia_program.tid
 	ORDER BY foltia_program.tid DESC
 	LIMIT $lim OFFSET $st
 ";
