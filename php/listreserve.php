@@ -134,21 +134,23 @@ printhtmlpageheader();
 		/* フィールド数 */
 		$maxcols = $rs->columnCount();
 		?>
-			<table BORDER="0" CELLPADDING="0" CELLSPACING="2" WIDTH="100%" style="margin-bottom:5px;">
+			<table BORDER="0" CELLPADDING="0" CELLSPACING="2" WIDTH="100%" style="margin-bottom:5px; table-layout: fixed;">
 			<thead>
 			<tr>
-			<th align="left">TID</th>
-			<th align="left" style="width:85px;">放映局</th>
-			<th align="left">タイトル</th>
-			<th align="left">話数</th>
-			<th align="left">サブタイトル</th>
-			<th align="left" style="width:160px;">開始時刻(ズレ)</th>
-			<th align="left" style="width:160px;">終了時刻</th>
-			<th align="left">総尺</th>
+				<th align="left" rowspan="2" style="width:40px;">TID</th>
+				<th align="left" rowspan="2" style="width:85px;">放映局</th>
+				<th align="left" rowspan="2" style="width:350px;">タイトル</th>
+				<th align="left" rowspan="2" style="width:40px;">話数</th>
+				<th align="left" rowspan="2">サブタイトル</th>
+				<th align="left" style="width:180px;">開始時刻(ズレ)</th>
+				<th align="left" rowspan="2" style="width:40px;">総尺</th>
 <?php /* ?>
 			<th align="left">画質</th>
 			<th align="left" style="width:40px;">デジタル優先</th>
 <?php */ ?>
+			</tr>
+			<tr>
+				<th align="left" style="width:160px;">終了時刻</th>
 			</tr>
 			</thead>
 
@@ -308,7 +310,7 @@ printhtmlpageheader();
 				}
 				echo("<tr class=\"$rclass\">\n");
 				// TID
-				print "<td>";
+				print '<td rowspan="2" style="text-align: center; vertical-align: middle;">';
 				if ($tid == 0 ) {
 					print "$tid";
 				} else {
@@ -316,9 +318,9 @@ printhtmlpageheader();
 				}
 				print "</td>\n";
 				// 放映局
-				echo("<td>".htmlspecialchars($rowdata['stationname'])."<br></td>\n");
+				echo('<td rowspan="2" style="text-align: center; vertical-align: middle;">' . htmlspecialchars($rowdata['stationname']) . "<br></td>\n");
 				// タイトル
-				print "<td>";
+				print '<td rowspan="2">';
 				if ($tid == 0 ) {
 					print "$title";
 				} else {
@@ -326,10 +328,10 @@ printhtmlpageheader();
 				}
 				print "</td>\n";
 				// 話数
-				echo("<td>".htmlspecialchars($rowdata['countno'])."<br></td>\n");
+				echo('<td rowspan="2" style="text-align: center; vertical-align: middle;">' . htmlspecialchars($rowdata['countno']) . "<br></td>\n");
 				// サブタイ
 				if ($pid > 0 ) {
-					print "<td><a href=\"http://cal.syoboi.jp/tid/$tid/time#$pid\" target=\"_blank\">$subtitle<br></td>\n";
+					print "<td rowspan=\"2\"><a href=\"http://cal.syoboi.jp/tid/$tid/time#$pid\" target=\"_blank\">$subtitle<br></td>\n";
 				} else {
 					if (($mymemberid == $dbepgaddedby)||($userclass <= 1)) {
 						if ($userclass <= 1 ) { //管理者なら
@@ -338,17 +340,15 @@ printhtmlpageheader();
 						} else {
 							$membername = "";
 						}
-						print "<td>$subtitle [<a href=\"delepgp.php?pid=$pid\">予約解除</a>$membername]<br></td>\n";
+						print "<td rowspan=\"2\">$subtitle [<a href=\"delepgp.php?pid=$pid\">予約解除</a>$membername]<br></td>\n";
 					} else {
-						print "<td>$subtitle [解除不能]<br></td>\n";
+						print "<td rowspan=\"2\">$subtitle [解除不能]<br></td>\n";
 					}
 				}
 				// 開始時刻(ズレ)
-				echo("<td>".htmlspecialchars(foldate2print($rowdata['x']))."<br>(".htmlspecialchars($rowdata['startoffset']).")</td>\n");
-				// 終了時刻
-				echo("<td>".htmlspecialchars(foldate2print($endtime))."</td>\n");
+				echo('<td>' . htmlspecialchars(foldate2print($rowdata['x'])) . ' (' . htmlspecialchars($rowdata['startoffset']) . ")</td>\n");
 				// 総尺
-				echo("<td>".htmlspecialchars($rowdata['lengthmin'])."<br></td>\n");
+				echo('<td rowspan="2" style="text-align: center; vertical-align: middle;">' . htmlspecialchars($rowdata['lengthmin']) . "<br></td>\n");
 
 				// 録画レート
 				//echo("<td>".htmlspecialchars($rowdata['foltia_tvrecord.bitrate'])."<br></td>\n");
@@ -361,7 +361,11 @@ printhtmlpageheader();
 				//	print "しない";
 				//}
 				//echo("<br></td>\n");
-				//echo("</tr>\n");
+				echo("</tr>\n");
+				echo("<tr>\n");
+				// 終了時刻
+				echo("<td>".htmlspecialchars(foldate2print($endtime))."</td>\n");
+				echo("</tr>\n");
 			} while ($rowdata = $rs->fetch());
 ?>
 			</tbody>
