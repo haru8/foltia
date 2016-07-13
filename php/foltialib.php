@@ -814,6 +814,8 @@ function searchStartEndTime($haystack, $startdatetime, $enddatetime)
 	return $ret;
 }
 
+// 予約済みかをチェックする
+// 
 function reserveCheck($con, $startfoltime, $endfoltime, $stationid)
 {
 	$query = "
