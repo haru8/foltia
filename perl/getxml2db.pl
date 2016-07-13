@@ -171,11 +171,17 @@ foreach(@line) {
 			if ($item{Count} == "") {
 				$sth = $dbh->prepare($stmt{'getxml2db.6'});
 				$oserr = $sth->execute($stationid, undef, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length, $item{'TID'}, $item{'PID'});
-				#printf("getxml2db.6: $stationid, undef, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length, $item{'TID'}, $item{'PID'}\n");
+				if (!$oserr) {
+					&writelog("getxml2db.6 Error. $stationid, undef, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length, $item{'TID'}, $item{'PID'}");
+					printf("getxml2db.6: $stationid, undef, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length, $item{'TID'}, $item{'PID'}\n");
+				}
 			} else {
 				$sth = $dbh->prepare($stmt{'getxml2db.7'});
 				$oserr = $sth->execute($stationid, $item{'Count'}, $programSubTitle,  $recstartdate, $recenddate, $offsetmin, $length, $item{'TID'}, $item{'PID'});
-				#printf("getxml2db.7: $stationid, $item{'Count'}, $programSubTitle,  $recstartdate, $recenddate, $offsetmin, $length, $item{'TID'}, $item{'PID'}\n");
+				if (!$oserr) {
+					&writelog("getxml2db.7 Error. $stationid, $item{'Count'}, $programSubTitle,  $recstartdate, $recenddate, $offsetmin, $length, $item{'TID'}, $item{'PID'}");
+					printf("getxml2db.7: $stationid, $item{'Count'}, $programSubTitle,  $recstartdate, $recenddate, $offsetmin, $length, $item{'TID'}, $item{'PID'}\n");
+				}
 			}
 		} else {
 			#なければ追加
@@ -185,11 +191,17 @@ foreach(@line) {
 			if ($item{Count} eq "") {
 				$sth = $dbh->prepare($stmt{'getxml2db.8'});
 				$oserr = $sth->execute($item{'PID'}, $item{'TID'}, $stationid, undef, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length);
-				#printf("getxml2db.8: $item{'PID'}, $item{'TID'}, $stationid, undef, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length\n");
+				if (!$oserr) {
+					&writelog("getxml2db.8 Error. $item{'PID'}, $item{'TID'}, $stationid, undef, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length");
+					printf("getxml2db.8: $item{'PID'}, $item{'TID'}, $stationid, undef, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length\n");
+				}
 			} else {
 				$sth = $dbh->prepare($stmt{'getxml2db.9'});
 				$oserr = $sth->execute($item{'PID'}, $item{'TID'}, $stationid, $item{'Count'}, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length);
-				#printf("getxml2db.9: $item{'PID'}, $item{'TID'}, $stationid, $item{'Count'}, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length\n");
+				if (!$oserr) {
+					&writelog("getxml2db.9 Error. $item{'PID'}, $item{'TID'}, $stationid, $item{'Count'}, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length");
+					printf("getxml2db.9: $item{'PID'}, $item{'TID'}, $stationid, $item{'Count'}, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length\n");
+				}
 			}
 		}
 		

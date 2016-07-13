@@ -66,8 +66,10 @@ foreach (@mp4filelist) {
 	if (($filetid ne "" )&& ($fileline[2] ne "" )) {
 		$sth = $dbh->prepare($stmt{'updatem2pfiletable.4'});
 		$oserr = $sth->execute($filetid, $fileline[2]);
-		#printf("updatem2pfiletable.4: $filetid, $fileline[2]\n");
-		#print "$filetid;$fileline[2];$query\n"
+		if (!$oserr) {
+			&writelog("updatem2pfiletable.4 Error. $filetid, $fileline[2]");
+			printf("updatem2pfiletable.4: $filetid, $fileline[2]\n");
+		}
 	# http://www.atmarkit.co.jp/fnetwork/rensai/sql03/sql1.html
 	} #end if
 } # end foreach
