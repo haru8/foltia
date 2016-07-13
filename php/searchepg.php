@@ -108,7 +108,7 @@ function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid)
     <?php while($epg = $rs->fetch(PDO::FETCH_ASSOC)): ?>
     <?php $reservedClass = reserveCheckClass($con, $epg['startdatetime'], $epg['enddatetime'], $epg['stationid']); ?>
       <tr <?php echo $reservedClass ?>>
-        <td rowspan="2" ><a href="./reserveepg.php?epgid=<?php echo htmlspecialchars($epg['epgid']) ?>"><?php echo htmlspecialchars($epg['epgid']) ?></a></td>
+        <td rowspan="2" style="text-align: center; vertical-align: middle;"><a href="./reserveepg.php?epgid=<?php echo htmlspecialchars($epg['epgid']) ?>"><?php echo htmlspecialchars($epg['epgid']) ?></a></td>
         <td rowspan="2" style="text-align: center; vertical-align: middle;"><?php echo htmlspecialchars($epg['stationname']) ?>(<?php echo htmlspecialchars($epg['stationid']) ?>)</td>
         <td><?php echo htmlspecialchars(foldate2print($epg['startdatetime'])) ?></td>
         <td rowspan="2" style="text-align: center; vertical-align: middle;"><?php echo htmlspecialchars($epg['lengthmin']) ?></td>
