@@ -44,6 +44,7 @@ if ($useenvironmentpolicy == 1) {
 printhtmlpageheader();
 
 $word = getgetform('word');
+$word = trim($word);
 $nowdate = date('YmdHi');
 $enddate = date('YmdHi', strtotime('+1 week'));
 
@@ -52,14 +53,14 @@ if ($word != '') {
 	$selsql = '*';
 	$query = "
 	  SELECT 
-  	    %COL%
-  	    FROM foltia_epg
-		  LEFT JOIN foltia_station ON foltia_epg.ontvchannel = foltia_station.ontvcode
-  	    WHERE (startdatetime >= ?
+	    %COL%
+	    FROM foltia_epg
+	       LEFT JOIN foltia_station ON foltia_epg.ontvchannel = foltia_station.ontvcode
+	    WHERE (startdatetime >= ?
 	      AND enddatetime    <= ?)
-          AND (startdatetime < enddatetime)
-  	      AND ((epgtitle LIKE ?) OR (epgdesc  LIKE ?))
-  	    ORDER BY startdatetime
+	      AND (startdatetime < enddatetime)
+	      AND ((epgtitle LIKE ?) OR (epgdesc  LIKE ?))
+	    ORDER BY startdatetime
 	";
 	$numsql = str_replace('%COL%', $numsql, $query);
 	$selsql = str_replace('%COL%', $selsql, $query);
@@ -81,6 +82,44 @@ function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid)
 	}
 	return $reservedClass;
 }
+
+$words = array(
+	'NHKスペシャル',
+	'凄(すご)ワザ',
+	'ダーウィン',
+	'歴史秘話ヒストリア',
+	'ドキュメント72時間',
+
+	'ETV特集',
+	'サイエンスZERO',
+	'地球ドラマチック',
+	'スーパープレゼンテーション',
+	'SWITCHインタビュー',
+	'大科学実験',
+	'すイエんサー',
+	'プロフェッショナル 仕事の流儀',
+	'独裁者の部屋',
+
+	'ザ!鉄腕!DASH!!',
+	'MotoGP',
+
+	'マツコの知らない世界',
+
+	'世界が驚いたニッポン',
+
+	'カンブリア',
+	'ガイア',
+	'未来世紀ジパング',
+	'和風総本家',
+	'マスカット',
+	'SUPER GT',
+	'美の巨人たち',
+
+	'水樹奈々',
+	'タモリ',
+	'所さん',
+	'',
+);
 ?>
 
   <p align="left"><font color="#494949" size="6">番組検索</font></p>
@@ -90,9 +129,18 @@ function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid)
     検索: <input name="word" type="text" id="word" size="60" value="<?php echo "$word"; ?>"/><br><br>
     <input type="submit" value="検索">
   </form>
+  <p>
+  <?php foreach($words as $val): ?>
+    <?php $val = trim($val); ?>
+    <?php if ($val == ''): continue; endif ?>
+    <a href="./searchepg.php?word=<?php echo urlencode($val)?>"><?php echo $val ?></a><br>
+  <?php endforeach ?>
+  </p>
 
-  <?php if($row > 0): ?>
+  <?php if ($word): ?>
     <?php  echo $row ?> 件ヒットしました
+  <?php endif ?>
+  <?php if($row > 0): ?>
     <table style="margin-bottom:10px; table-layout: fixed;">
       <tr>
         <th style="width:95px;" rowspan="2">epgid</th>
