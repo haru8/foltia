@@ -59,7 +59,7 @@ $lim = 300;
 //クエリ取得
 $p = getgetnumform(p);
 //ページ取得の計算
-list($st,$p,$p2) = number_page($p,$lim);
+list($st, $p, $p2) = number_page($p, $lim);
 //////////////////////////////////////////////////????
 
 $now = date("YmdHi");   
@@ -95,19 +95,19 @@ echo "<div id=contents class=autopagerize_page_element />";
 <form name="deletemovie" method="POST" action="./deletemovie.php"> 
 <p align="left"><input type="submit" value="項目削除" ></p>
 
-  <table BORDER="0" CELLPADDING="0" CELLSPACING="2" WIDTH="100%" style="">
+  <table border="0" cellpadding="0" cellspacing="2" width="100%" style="table-layout: fixed;">
 	<thead> 
 		<tr> 
-			<th align="left">削除</th>
-			<th align="left" style="width:150px;"><A HREF="./showplaylist.php">ファイル名</A></th>
-			<th align="left" style="width:350px;"><A HREF="./showplaylist.php?list=title">タイトル</A></th>
-			<th align="left">話数</th>
-			<th align="left">サブタイ</th>
-			<th align="left" style="width:30px;">Player</th>
+			<th align="left" style="width:20px;">削除</th>
+			<th align="left" style="width:270px;"><A HREF="./showplaylist.php">ファイル名</A></th>
+			<th align="left" style="width:300px;"><A HREF="./showplaylist.php?list=title">タイトル</A></th>
+			<th align="left" style="width:50px;">話数</th>
+			<th align="left" style="">サブタイ</th>
+			<th align="left" style="width:61px;">Player</th>
 
 <?php
 if (file_exists("./selectcaptureimage.php") ) {
-print "			<th align=\"left\">キャプ</th>\n";
+print "			<th align=\"left\" style=\"width:20px;\">キャプ</th>\n";
 }
 ?>
 		</tr>
@@ -423,7 +423,8 @@ if ($list == "raw") {
     foltia_subtitle.subtitle,
     foltia_m2pfiles.m2pfilename,
     foltia_subtitle.pid,
-    foltia_subtitle.pspfilename
+    foltia_subtitle.pspfilename,
+    foltia_subtitle.lengthmin
   FROM foltia_subtitle, foltia_program, foltia_m2pfiles 
   WHERE foltia_program.tid = foltia_subtitle.tid  
     AND foltia_subtitle.m2pfilename = foltia_m2pfiles.m2pfilename 
@@ -444,11 +445,11 @@ $query2 = "
       AND foltia_subtitle.m2pfilename = foltia_m2pfiles.m2pfilename
 ";
 $rs2 = sql_query($con, $query2, "DBクエリに失敗しました");
-$rowdata2 = $rs2->fetch();
+$rowdata2 = $rs2->fetch(PDO::FETCH_ASSOC);
 if (! $rowdata2) {
   die_exit("番組データがありません<br>");
 }
-$dtcnt =  $rowdata2[0];
+$dtcnt =  $rowdata2['cnt'];
 
 /////////////////////////////////////////
 
@@ -462,22 +463,38 @@ if ($rowdata) {
 		$fName        = htmlspecialchars($rowdata[4]);
 		$pid          = htmlspecialchars($rowdata[5]);
 		$mp4filename  = htmlspecialchars($rowdata[6]);
-		$mp4path      = "$recfolderpath/$tid.localized/mp4/$mp4filename" ;
+		$lengthmin    = htmlspecialchars($rowdata['lengthmin']);
 		
-		print "
-		<tr>
-		<td><INPUT TYPE='checkbox' NAME='delete[]' VALUE='$fName'><br></td>";
+		$m2pExists = false;
+		$m2pUrl    = $httpmediamappath . '/' . $fName;
+		$m2ppath   = $recfolderpath . '/' . $fName;
+		if (file_exists($m2ppath) && is_file($m2ppath) && filesize($m2ppath)) {
+			$m2pExists = true;
+		}
+
 		$mp4Exists = false;
+		$mp4Url    = $httpmediamappath . '/' . $tid . '.localized/mp4/' . $mp4filename;
+		$mp4path   = $recfolderpath .'/' . $tid . '.localized/mp4/' . $mp4filename ;
 		if (file_exists($mp4path) && is_file($mp4path)) {
 			$mp4Exists = true;
 			$mp4size = filesize($mp4path);
 			$mp4size = round($mp4size / 1024 / 1024);
 		}
+		print "
+		<tr>
+		<td><INPUT TYPE='checkbox' NAME='delete[]' VALUE='$fName'><br></td>";
 
-		if (ereg("syabas",$useragent)) {
+		if (ereg("syabas", $useragent)) {
 			print "<td><A HREF=\"./view_syabas.php?pid=$pid\" vod=playlist>$fName</td>";
 		} else {
-			print "<td><A HREF=\"$httpmediamappath/$fName\">$fName</A><br></td>";
+			echo '<td>';
+			if ($m2pExists) {
+				echo '<a href="'. $m2pUrl . '">' . $fName . '</a><br>';
+			}
+			if ($mp4Exists) {
+				echo '<a href="'. $mp4Url . '">' . $mp4filename . '</a>';
+			}
+			echo '</td>';
 		}
 		if ($tid > 0) {
 			print"<td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">$title</a><br><a href=\"./showlibc.php?tid=$tid\">[ライブラリ]</a></td>
@@ -491,7 +508,7 @@ if ($rowdata) {
 		
 		print "<td>";
 		if ($mp4Exists) {
-			print "<a href=\"./mp4player.php?p=$pid\" target=\"_blank\">Player</a><br />${mp4size}MB";
+			print "<a href=\"./mp4player.php?p=$pid\" target=\"_blank\">Player</a><br />${mp4size}MB<br>${lengthmin}分";
 		}
 		print "</td>";
 		
@@ -522,7 +539,7 @@ print "</tbody>
 //クエリ代入
 $query_st = $list;
 //Autopageing処理とページのリンクを表示
-list($p2,$page) = page_display($query_st,$p,$p2,$lim,$dtcnt,"");
+list($p2, $page) = page_display($query_st, $p, $p2, $lim, $dtcnt, "");
 //////////////////////////////////////////////////////////////////////
 print "</div>";	//Auto pager終わり
 
