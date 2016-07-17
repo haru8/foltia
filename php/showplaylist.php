@@ -99,11 +99,11 @@ echo "<div id=contents class=autopagerize_page_element />";
 	<thead> 
 		<tr> 
 			<th align="left" style="width:20px;">削除</th>
-			<th align="left" style="width:270px;"><A HREF="./showplaylist.php">ファイル名</A></th>
+			<th align="left" style="width:200px;"><A HREF="./showplaylist.php">ファイル名</A></th>
 			<th align="left" style="width:300px;"><A HREF="./showplaylist.php?list=title">タイトル</A></th>
 			<th align="left" style="width:50px;">話数</th>
 			<th align="left" style="">サブタイ</th>
-			<th align="left" style="width:61px;">Player</th>
+			<th align="left" style="width:50px;">Player</th>
 
 <?php
 if (file_exists("./selectcaptureimage.php") ) {
