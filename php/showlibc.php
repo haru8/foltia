@@ -178,7 +178,8 @@ $query = "
     foltia_subtitle.startdatetime,
     foltia_subtitle.m2pfilename,
     foltia_subtitle.pid,
-    foltia_mp4files.mp4filename
+    foltia_mp4files.mp4filename,
+    foltia_subtitle.lengthmin
   FROM foltia_mp4files
     LEFT JOIN foltia_subtitle ON foltia_mp4files.mp4filename = foltia_subtitle.pspfilename
     LEFT JOIN foltia_program  ON foltia_mp4files.tid = foltia_program.tid
@@ -228,6 +229,7 @@ if ($rowdataAll) {
 		$onairdate	= htmlspecialchars($onairdate);
 		$pid		= htmlspecialchars($rowdata['pid']);
 		$fName		= htmlspecialchars($rowdata['mp4filename']);
+		$lengthmin	= htmlspecialchars($rowdata['lengthmin']);
 		
 		$mp4path   = "$recfolderpath/$tid.localized/mp4/$fName" ;
 		$mp4Exists = false;
@@ -295,9 +297,9 @@ if ($rowdataAll) {
 			
 			if ($mp4Exists) {
 				if ($pid) {
-					print "<a href=\"./mp4player.php?p=$pid\" target=\"_blank\">Player</a> [${mp4size}MB] / ";
+					print "<a href=\"./mp4player.php?p=$pid\" target=\"_blank\">Player</a> [${mp4size}MB] [${lengthmin}分]/ ";
 				} else {
-					print "<a href=\"./mp4player.php?f=$fName\" target=\"_blank\">Player</a> [${mp4size}MB] / ";
+					print "<a href=\"./mp4player.php?f=$fName\" target=\"_blank\">Player</a> [${mp4size}MB] [${lengthmin}分] / ";
 				}
 			} else {
 			}
