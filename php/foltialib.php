@@ -241,7 +241,7 @@ function printhtmlpageheader() {
 	$serveruri = getserveruri();
 	$username = $_SERVER['PHP_AUTH_USER'];
 
-	print "<p align='left'><font color='#494949'><A HREF = 'http://www.dcc-jpl.com/soft/foltia/' target=\"_blank\">foltia</A>　| <A HREF = './index.php'>放映予定</A> | <A HREF = './index.php?mode=new'>新番組</A> | <A HREF = './listreserve.php'>予約一覧</A> | <A HREF = './titlelist.php'>番組一覧</A> | <A HREF = './viewepg.php'>番組表</A> | 録画一覧(<A HREF = './showplaylist.php'>録画順</A>・<A HREF = './showplaylist.php?list=title'>番組順</A>・<A HREF = './showplaylist.php?list=raw'>全</A>・<A HREF = './showplaylist.php?list=mp4'>全(mp4)</A>) | <A HREF = './showlib.php'>録画ライブラリ</A> |  <A HREF = './folcast.php'>Folcast</A>[<a href=\"itpc://$serveruri/folcast.php\">iTunesに登録</a>] | ";
+	print "<p align='left'><font color='#494949'><a href = 'http://www.dcc-jpl.com/soft/foltia/' target=\"_blank\">foltia</a>　| <a href = './index.php'>放映予定</a> | <a href = './index.php?mode=new'>新番組</a> | <a href = './listreserve.php'>予約一覧</A> | <a href = './titlelist.php'>番組一覧</a> | <a href = './viewepg.php'>番組表</a>(<a href = './searchepg.php'>検索</a>) | 録画一覧(<a href = './showplaylist.php'>録画順</a>・<a hreF = './showplaylist.php?list=title'>番組順</a>・<a href = './showplaylist.php?list=raw'>全</a>・<a href = './showplaylist.php?list=mp4'>全(mp4)</a>・<a href=\"./searchplaylist.php\">検索</a>) | <a href = './showlib.php'>録画ライブラリ</a> |  <a href = './folcast.php'>Folcast</a>[<a href=\"itpc://$serveruri/folcast.php\">iTunesに登録</a>] | ";
 	if ($useenvironmentpolicy == 1) {
 		print "【 $username 】";
 	}
