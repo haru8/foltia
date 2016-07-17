@@ -492,7 +492,7 @@ if ($rowdata) {
 				echo '<a href="'. $m2pUrl . '">' . $fName . '</a><br>';
 			}
 			if ($mp4Exists) {
-				echo '<a href="'. $mp4Url . '">' . $mp4filename . '</a>';
+				echo '<a href="'. $mp4Url . '" target="_blank">' . $mp4filename . '</a>';
 			}
 			echo '</td>';
 		}
