@@ -46,6 +46,7 @@ printhtmlpageheader();
 $word = getgetform('word');
 $word = trim($word);
 $nowdate = date('YmdHi');
+$strdate = date('YmdHi', strtotime('-1 week'));
 $enddate = date('YmdHi', strtotime('+1 week'));
 
 if ($word != '') {
@@ -65,21 +66,27 @@ if ($word != '') {
 	$numsql = str_replace('%COL%', $numsql, $query);
 	$selsql = str_replace('%COL%', $selsql, $query);
 	$searchword = '%' . $word . '%';
-	$rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($nowdate, $enddate, $searchword, $searchword));
+	$rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($strdate, $enddate, $searchword, $searchword));
 	$row  = $rows->fetchColumn();
-	$rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($nowdate, $enddate, $searchword, $searchword));
+	$rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($strdate, $enddate, $searchword, $searchword));
 }
 
-function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid)
+function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid, $nowdate)
 {
 	$reserve      = reserveCheck($con, $startdatetime, $enddatetime, $stationid);
 	$reservecheck = searchStartEndTime($reserve, $startdatetime, $enddatetime);
 	$reservedClass = '';
-	if ($reservecheck == 1) {
-		$reservedClass = ' class="reservedtitle"';
-	} else if($reservecheck == 2) {
-		$reservedClass = ' class="reservedtitle"';
-	}
+    if ($nowdate < $startdatetime) {
+		if ($reservecheck == 1 || $reservecheck == 2) {
+			$reservedClass = ' class="reservedtitle"';
+		}
+    } else {
+		if ($reservecheck == 1 || $reservecheck == 2) {
+			$reservedClass = ' class="pastreservedtitle"';
+		} else {
+			$reservedClass = ' class="pasttitle"';
+		}
+    }
 	return $reservedClass;
 }
 
@@ -125,7 +132,7 @@ $words = array(
   <p align="left"><font color="#494949" size="6">番組検索</font></p>
   <hr size="4">
 
-  <form name="searchepg" method="GET" action="searchepg.php" style="margin-bottom:20px;">
+  <form name="searchepg" method="GET" action="searchepg.php#result" style="margin-bottom:20px;">
     検索: <input name="word" type="text" id="word" size="60" value="<?php echo "$word"; ?>"/><br><br>
     <input type="submit" value="検索">
   </form>
@@ -133,12 +140,12 @@ $words = array(
   <?php foreach($words as $val): ?>
     <?php $val = trim($val); ?>
     <?php if ($val == ''): continue; endif ?>
-    <a href="./searchepg.php?word=<?php echo urlencode($val)?>"><?php echo $val ?></a><br>
+    <a href="./searchepg.php?word=<?php echo urlencode($val)?>#result"><?php echo $val ?></a><br>
   <?php endforeach ?>
   </p>
 
   <?php if ($word): ?>
-    <?php  echo $row ?> 件ヒットしました
+    <span id="result"><?php  echo $row ?> 件ヒットしました</span>
   <?php endif ?>
   <?php if($row > 0): ?>
     <table style="margin-bottom:10px; table-layout: fixed;">
@@ -154,7 +161,7 @@ $words = array(
         <th style="width:160px;">終了</th>
       </tr>
     <?php while($epg = $rs->fetch(PDO::FETCH_ASSOC)): ?>
-    <?php $reservedClass = reserveCheckClass($con, $epg['startdatetime'], $epg['enddatetime'], $epg['stationid']); ?>
+    <?php $reservedClass = reserveCheckClass($con, $epg['startdatetime'], $epg['enddatetime'], $epg['stationid'], $nowdate); ?>
       <tr <?php echo $reservedClass ?>>
         <td rowspan="2" style="text-align: center; vertical-align: middle;"><a href="./reserveepg.php?epgid=<?php echo htmlspecialchars($epg['epgid']) ?>"><?php echo htmlspecialchars($epg['epgid']) ?></a></td>
         <td rowspan="2" style="text-align: center; vertical-align: middle;"><?php echo htmlspecialchars($epg['stationname']) ?>(<?php echo htmlspecialchars($epg['stationid']) ?>)</td>

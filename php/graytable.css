@@ -30,6 +30,8 @@ tr.reserved{background-color: #FFDDDD;}
 tr.reservedtitle{background-color: #DDDDFF;}
 tr.overwraped{background-color: #FF0000;}
 tr.exoverwraped{background-color: #FF00FF;}
+tr.pastreservedtitle{background-color: #778899;}
+tr.pasttitle{background-color: #C0C0C0;}
 
 /* 全体共通 */
 
