@@ -175,6 +175,18 @@ $words = array(
       </tr>
     <?php endwhile ?>
     </table>
+    <hr>
+    <div style="margin:10px;">
+    凡例
+    <table style="margin-bottom:10px; table-layout: fixed;">
+      <tr>
+        <td class="pastreservedtitle">録画済み</td>
+        <td class="pasttitle">未予約で放送済み</td>
+        <td class="reservedtitle">予約済み</td>
+        <td class="">未予約</td>
+      </tr>
+    </table>
+    </div
   <?php endif ?>
 
 </body>
