@@ -49,35 +49,70 @@ $nowdate = date('YmdHi');
 $enddate = date('YmdHi', strtotime('+1 week'));
 
 if ($word != '') {
-	$numsql = 'count(*)';
-	$selsql = '
-		  foltia_program.tid,
-		  foltia_program.title,
-		  foltia_subtitle.countno,
-		  foltia_subtitle.subtitle,
-		  foltia_m2pfiles.m2pfilename,
-		  foltia_subtitle.pid,
-		  foltia_subtitle.pspfilename,
-		  foltia_subtitle.lengthmin
+	$numsql = '
+      SELECT
+        COUNT(foltia_program.tid) AS V
+      FROM
+        foltia_subtitle,
+        foltia_program,
+        foltia_m2pfiles
+      WHERE (foltia_program.tid = foltia_subtitle.tid
+        AND foltia_subtitle.m2pfilename = foltia_m2pfiles.m2pfilename)
+        AND (foltia_program.title LIKE ? OR foltia_subtitle.subtitle LIKE ?)
+      UNION
+      SELECT
+        COUNT(foltia_program.tid) AS V
+      FROM foltia_mp4files
+        LEFT JOIN foltia_subtitle ON foltia_mp4files.mp4filename = foltia_subtitle.pspfilename AND foltia_mp4files.tid = foltia_subtitle.tid
+        LEFT JOIN foltia_program  ON foltia_mp4files.tid         = foltia_program.tid
+      WHERE
+        foltia_program.title LIKE ? OR foltia_subtitle.subtitle LIKE ?
     ';
-	$query = "
-		SELECT
-		  %COL%
-		FROM
-		  foltia_subtitle,
-		  foltia_program,
-		  foltia_m2pfiles
-		WHERE (foltia_program.tid = foltia_subtitle.tid
-		  AND foltia_subtitle.m2pfilename = foltia_m2pfiles.m2pfilename)
-		  AND (foltia_program.title LIKE ? OR foltia_subtitle.subtitle LIKE ?)
-		ORDER BY foltia_subtitle.startdatetime DESC
-	";
-	$numsql = str_replace('%COL%', $numsql, $query);
-	$selsql = str_replace('%COL%', $selsql, $query);
+	$selsql = '
+      SELECT
+        foltia_program.tid,
+        foltia_program.title,
+        foltia_subtitle.countno,
+        foltia_subtitle.subtitle,
+        foltia_m2pfiles.m2pfilename,
+        foltia_subtitle.pid,
+        foltia_subtitle.pspfilename,
+        foltia_subtitle.startdatetime,
+        foltia_subtitle.lengthmin
+      FROM
+        foltia_subtitle,
+        foltia_program,
+        foltia_m2pfiles
+      WHERE (foltia_program.tid = foltia_subtitle.tid
+        AND foltia_subtitle.m2pfilename = foltia_m2pfiles.m2pfilename)
+        AND (foltia_program.title LIKE ? OR foltia_subtitle.subtitle LIKE ?)
+      UNION
+      SELECT
+        foltia_program.tid,
+        foltia_program.title,
+        foltia_subtitle.countno,
+        foltia_subtitle.subtitle,
+        foltia_subtitle.m2pfilename,
+        foltia_subtitle.pid,
+        foltia_mp4files.mp4filename,
+        foltia_subtitle.startdatetime,
+        foltia_subtitle.lengthmin
+      FROM foltia_mp4files
+        LEFT JOIN foltia_subtitle ON foltia_mp4files.mp4filename = foltia_subtitle.pspfilename AND foltia_mp4files.tid = foltia_subtitle.tid
+        LEFT JOIN foltia_program  ON foltia_mp4files.tid         = foltia_program.tid
+      WHERE 
+        foltia_program.title LIKE ? OR foltia_subtitle.subtitle LIKE ?
+      GROUP BY foltia_mp4files.mp4filename
+      ORDER BY foltia_subtitle.startdatetime DESC
+
+    ';
 	$searchword = '%' . $word . '%';
-	$rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($searchword, $searchword));
-	$row  = $rows->fetchColumn();
-	$rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($searchword, $searchword));
+	$rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($searchword, $searchword, $searchword, $searchword));
+	$row_sum = array();
+	while ($row = $rows->fetch(PDO::FETCH_ASSOC)) {
+		$row_sum[] += $row['V'];
+	}
+	$rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($searchword, $searchword, $searchword, $searchword));
 }
 
 $words = array('EPG録画');
@@ -99,9 +134,9 @@ $words = array('EPG録画');
   </p>
 
   <?php if ($word): ?>
-    <?php  echo $row ?> 件ヒットしました
+    <?php  echo implode(', ', $row_sum) ?> 件ヒットしました
   <?php endif ?>
-  <?php if($row > 0): ?>
+  <?php if(array_sum($row_sum) > 0): ?>
     <table border="0" cellpadding="0" cellspacing="2" width="100%" style="table-layout: fixed;">
       <tr>
         <th style="width:270px;">ファイル名</th>
