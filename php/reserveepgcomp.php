@@ -168,12 +168,12 @@ print "時刻が不正なために予約できませんでした。 <br>";
 }
 
 
-print "<table width=\"100%\" border=\"0\">\n";
-print "<tr><td>放送開始</td><td>".htmlspecialchars($startdatetime)."</td></tr>";
-print "<tr><td>放送終了</td><td>".htmlspecialchars($enddatetime)."</td></tr>\n";
-print "<tr><td>局コード</td><td>".htmlspecialchars($stationid)."</td></tr>\n";
-print "<tr><td>尺(分)</td><td>".htmlspecialchars($lengthmin)."</td></tr>\n";
-print "<tr><td>番組名</td><td>".htmlspecialchars($subtitle)."</td></tr>\n";
+print "<table width=\"100%\" border=\"0\" style=\"table-layout: fixed;\">\n";
+print "<tr><th style=\"width:100px;\">放送開始</th><td>".htmlspecialchars($startdatetime)."</td></tr>";
+print "<tr><th>放送終了</th><td>".htmlspecialchars($enddatetime)."</td></tr>\n";
+print "<tr><th>局コード</th><td>".htmlspecialchars($stationid)."</td></tr>\n";
+print "<tr><th>尺(分)</th><td>".htmlspecialchars($lengthmin)."</td></tr>\n";
+print "<tr><th>番組名</th><td>".htmlspecialchars($subtitle)."</td></tr>\n";
 print "</tbody>\n</table>";
 
 ?>
