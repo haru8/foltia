@@ -77,7 +77,8 @@ list($st, $p, $p2) = number_page($p, $lim);
 $now = date("YmdHi");   
 
 $query = "
-  SELECT foltia_program.title 
+  SELECT 
+    foltia_program.title 
     FROM  foltia_program 
     WHERE foltia_program.tid = ? 
 ";
@@ -153,9 +154,10 @@ $query = "
   SELECT
     COUNT(*) AS cnt
   FROM foltia_mp4files
-    LEFT JOIN foltia_subtitle ON   foltia_mp4files.mp4filename = foltia_subtitle.pspfilename
-    LEFT JOIN foltia_program  ON foltia_mp4files.tid = foltia_program.tid
+    LEFT JOIN foltia_subtitle ON foltia_mp4files.mp4filename = foltia_subtitle.pspfilename AND foltia_mp4files.tid = foltia_subtitle.tid
+    LEFT JOIN foltia_program  ON foltia_mp4files.tid         = foltia_program.tid
   WHERE foltia_mp4files.tid = ? 
+  ORDER BY foltia_subtitle.startdatetime DESC
 ";
 
 $rs = sql_query($con, $query, "DBクエリに失敗しました", array($tid));
@@ -181,9 +183,11 @@ $query = "
     foltia_mp4files.mp4filename,
     foltia_subtitle.lengthmin
   FROM foltia_mp4files
-    LEFT JOIN foltia_subtitle ON foltia_mp4files.mp4filename = foltia_subtitle.pspfilename
-    LEFT JOIN foltia_program  ON foltia_mp4files.tid = foltia_program.tid
+    LEFT JOIN foltia_subtitle ON foltia_mp4files.mp4filename = foltia_subtitle.pspfilename AND foltia_mp4files.tid = foltia_subtitle.tid
+    LEFT JOIN foltia_program  ON foltia_mp4files.tid         = foltia_program.tid
   WHERE foltia_mp4files.tid = ?  
+  GROUP BY foltia_mp4files.mp4filename
+  ORDER BY foltia_subtitle.startdatetime DESC
 ";
     //ORDER BY \"startdatetime\" DESC
     //LIMIT $lim OFFSET $st
@@ -194,7 +198,7 @@ $rowdataAll = $rs->fetchAll(PDO::FETCH_ASSOC);
 
 $rowSort = array();
 foreach ($rowdataAll as $key => $row) {
-    $date          = explode('-', $row['mp4filename']);
+	$date          = explode('-', $row['mp4filename']);
 	$rowSort[$key] = $date[3];
 }
 array_multisort($rowSort, SORT_DESC, SORT_NATURAL, $rowdataAll);
@@ -209,7 +213,7 @@ if ($rowdataAll) {
 	
 	foreach ($rowdataAll as $rowdata) {
 		$title = $rowdata['title'];
-		
+
 		if ($rowdata['countno'] == "" ) {
 			$count = "[話数]";
 		} else {
@@ -285,7 +289,7 @@ if ($rowdataAll) {
 				} else {
 					print "\n    <td><a href = \"http://cal.syoboi.jp/tid/$tid/time#$pid\" target=\"_blank\">$subtitle</a></td>";
 				} //if
-			
+
 			print "
 				</tr>
 				<tr>
@@ -294,7 +298,7 @@ if ($rowdataAll) {
 				<tr>
 					<td style=\"border-bottom-color: #222;\"><input type='checkbox' name='delete[]' value='$fName'>削除 /
 					<a href =\"$httpmediamappath/$tid.localized/mp4/$fName\" target=\"_blank\">$fName</A> / ";
-			
+
 			if ($mp4Exists) {
 				if ($pid) {
 					print "<a href=\"./mp4player.php?p=$pid\" target=\"_blank\">Player</a> [${mp4size}MB] [${lengthmin}分]/ ";
