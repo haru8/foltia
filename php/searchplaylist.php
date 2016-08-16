@@ -136,7 +136,7 @@ $words = array('EPG録画');
   <?php if ($word): ?>
     <?php  echo implode(', ', $row_sum) ?> 件ヒットしました
   <?php endif ?>
-  <?php if(array_sum($row_sum) > 0): ?>
+  <?php if(@array_sum($row_sum) > 0): ?>
     <table border="0" cellpadding="0" cellspacing="2" width="100%" style="table-layout: fixed;">
       <tr>
         <th style="width:270px;">ファイル名</th>
@@ -188,8 +188,13 @@ $words = array('EPG録画');
       <?php else: ?>
         <td><?php echo $subtitle ?><br></td>
       <?php endif ?>
+      <?php if($pid) :?>
         <td><?php if ($mp4Exists):?><a href="./mp4player.php?p=<?php echo $pid ?>" target="_blank">Player</a><br><?php echo $mp4size ?>MB<br><?php endif ?><?php echo $lengthmin ?>分</td>
         <td><a href="./selectcaptureimage.php?pid=<?php echo $pid ?>">キャプ</a></td>
+      <?php else: ?>
+        <td><?php if ($mp4Exists):?><a href="./mp4player.php?f=<?php echo $mp4filename ?>" target="_blank">Player</a><br><?php echo $mp4size ?>MB<br><?php endif ?>
+        <td><a href="./selectcaptureimage.php?f=<?php echo $mp4filename ?>">キャプ</a></td>
+      <?php endif ?>
       </tr>
     <?php endwhile ?>
     </table>
