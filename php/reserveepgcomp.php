@@ -169,7 +169,7 @@ print "時刻が不正なために予約できませんでした。 <br>";
 
 
 print "<table width=\"100%\" border=\"0\" style=\"table-layout: fixed;\">\n";
-print "<tr><th style=\"width:100px;\">放送開始</th><td>".htmlspecialchars($startdatetime)."</td></tr>";
+print "<tr><th style=\"width:130px;\">放送開始</th><td>".htmlspecialchars($startdatetime)."</td></tr>";
 print "<tr><th>放送終了</th><td>".htmlspecialchars($enddatetime)."</td></tr>\n";
 print "<tr><th>局コード</th><td>".htmlspecialchars($stationid)."</td></tr>\n";
 print "<tr><th>尺(分)</th><td>".htmlspecialchars($lengthmin)."</td></tr>\n";

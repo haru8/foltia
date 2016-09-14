@@ -175,7 +175,7 @@ if (! $chkoverwrap) {
 }
 
 print "<table width=\"100%\" border=\"0\">
-    <tr><th>放送局</th><td>$stationjname</td></tr>
+    <tr><th style=\"width:130px\">放送局</th><td>$stationjname</td></tr>
     <tr><th>放送開始</th><td>$startprinttime</td></tr>
     <tr><th>放送終了</th><td>$endprinttime</td></tr>
     <tr><th>尺(分)</th><td>$lengthmin</td></tr>
