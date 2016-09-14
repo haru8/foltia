@@ -228,6 +228,7 @@ if ($mode == "new") {
 <p align="left">放映番組リストを表示します。</p>
 
 <?php
+page_display("", $p, $p2, $lim, $dtcnt, $mode);
 // フィールド数
 $maxcols = $rs->columnCount();
 

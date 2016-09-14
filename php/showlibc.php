@@ -67,7 +67,7 @@ if ($tid == "") {
 <?php
 //////////////////////////////////////////////////////////
 //１ページの表示レコード数
-$lim = 53;
+$lim = 35;
 //クエリ取得
 $p = getgetnumform(p);
 //ページ取得の計算
@@ -164,10 +164,14 @@ $rs = sql_query($con, $query, "DBクエリに失敗しました", array($tid));
 $rowdata = $rs->fetch();
 $dtcnt = htmlspecialchars($rowdata[0]);
 //echo $dtcnt;
-//
+
 if (! $rowdata) {
 	die_exit("番組データがありません。<BR>");
 } //endif
+
+//クエリ代入
+$query_st =  $tid;
+page_display($query_st, $p, $p2, $lim, $dtcnt, "");
 
 //////////////////////////////////////////////////////////
 //レコード表示
@@ -327,8 +331,6 @@ if (ereg("iPhone", $useragent)) {
 }
 
 //////////////////////////////////////////////
-//クエリ代入
-$query_st =  $tid;
 //Autopager処理とページのリンク表示
 page_display($query_st, $p, $p2, $lim, $dtcnt, "");
 //////////////////////////////////////////////

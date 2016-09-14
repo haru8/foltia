@@ -99,6 +99,8 @@ printhtmlpageheader();
 <p align="left">全番組リストを表示します。</p>
 
 <?php
+page_display("", $p, $p2, $lim, $dtcnt, "");
+
 // フィールド数
 $maxcols = $rs->columnCount();
 
