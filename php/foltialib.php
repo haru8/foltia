@@ -707,19 +707,19 @@ function getmemberid2name($con,$memberid) {
 
 
 function number_page($p, $lim) {
-	//Autopager・ページリンクで使用している関数
-	//下記は関数をしているファイル名
-	//index.php  showplaylist.php  titlelist.php  showlib.php  showlibc.php
+	// Autopager・ページリンクで使用している関数
+	// 下記は関数をしているファイル名
+	//index.php, showplaylist.php, titlelist.php, showlib.php, showlibc.php
 	///////////////////////////////////////////////////////////////////////////
 	// ページ数の計算関係
-	// 第１引数 : $p       : 現在のページ数
-	// 第２引数 : $lim     : １ページあたりに表示するレコード数
+	// 第1引数 : $p       : 現在のページ数
+	// 第2引数 : $lim     : 1ページあたりに表示するレコード数
 	///////////////////////////////////////////////////////////////////////////
 
 	if($p == 0) {
-		$p2 = 2;        //$p2の初期値設定
+		$p2 = 2;        // $p2の初期値設定
 	} else {
-		$p2 = $p;       //次のページ数の値を$p2に代入する
+		$p2 = $p;       // 次のページ数の値を$p2に代入する
 		$p2++;
 	}
 
@@ -727,57 +727,77 @@ function number_page($p, $lim) {
 		$p = 1;
 	}
 	//表示するページの値を取得
-	$st = ($p -1) * $lim;
+	$st = ($p - 1) * $lim;
 
 	//
 	return array($st, $p, $p2);
 } //end number_page
 
 
-function page_display($query_st, $p, $p2, $lim, $dtcnt,$mode) {
-	//Autopager・ページリンクで使用している関数
-	//下記は関数を使用しているファイル名
-	//index.php　showplaylist.php　titlelist.php　showlib.php　showlibc.php
+function page_display($query_st, $p, $p2, $lim, $dtcnt, $mode) {
+	// Autopager・ページリンクで使用している関数
+	// 下記は関数を使用しているファイル名
+	// index.php, showplaylist.php, titlelist.php, showlib.php, showlibc.php
 	/////////////////////////////////////////////////////////////////////////////
 	// Autopager処理とページのリンクの表示
-	// 第１引数 ： $query_st        : クエリの値
-	// 第２引数 ： $p            : 現在のページ数の値
-	// 第３引数 ： $p2           : 次のページ数の値
-	// 第４引数 ： $lim          : 1ページあたりに表示するレコード数
-	// 第５引数 ： $dtcnt        : レコードの総数
-	// 第６引数 ： $mode         :【新番組】mode=newのときにリンクページを表示させないフラグ(index.phpのみで使用)
+	// 第1引数 ： $query_st     : クエリの値
+	// 第2引数 ： $p            : 現在のページ数の値
+	// 第3引数 ： $p2           : 次のページ数の値
+	// 第4引数 ： $lim          : 1ページあたりに表示するレコード数
+	// 第5引数 ： $dtcnt        : レコードの総数
+	// 第6引数 ： $mode         :【新番組】mode=newのときにリンクページを表示させないフラグ(index.phpのみで使用)
 	////////////////////////////////////////////////////////////////////////////
-	if($query_st == ""){
-		//ページ総数取得
-		$page = ceil($dtcnt / $lim);
-		//$modeのif文は【新番組】の画面のみで使用
-		if($mode == ''){
-			echo "$p/$page";         //  現在のページ数/ページ総数
+
+	$page = ceil($dtcnt / $lim);
+	if ($page > 1) {
+		($query_st != '') ?  $query_st = '&' . $_SERVER['QUERY_STRING'] : '';
+		$showPage = 5;
+		echo '<div class="pagenation">';
+		if ($p != 1) {
+			$prev_p = $p - 1;
+			echo '<a href="' . $_SERVER['PHP_SELF'] . '?p=' . $prev_p . $query_st . '">Prev</a>';
+			if (1 < $p - $showPage) {
+				echo '<a href="' . $_SERVER['PHP_SELF'] . '?p=1' . $query_st . '">1</a>';
+				if (1 != $p - $showPage - 1) {
+					echo '<span>..</span>';
+				}
+			}
 		}
-		//ページのリンク表示
-		for($i=1;$i <= $page; $i++){
-			print("<a href=\"".$_SERVER["PHP_SELF"]."?p=$i\" > $i </a>");
+		$contCnt = 0;
+		$startPage = $p - $showPage;
+		if ($startPage > $page - ($showPage * 2)) {
+			$startPage = $page - ($showPage * 2);
 		}
-		//Autopageingの処理
-		if($page >= $p2 ){
-			print("<a rel=next href=\"".$_SERVER["PHP_SELF"]."?p=$p2\" > </a>");
+		for ($i = $startPage; $i <= $p + $showPage + $contCnt; $i++) {
+			if ($i > $page) {
+				break;
+			}
+			if ($i < 1) {
+				$contCnt++;
+				continue;
+			}
+			$attribute = '';
+			if ($i == $p) {
+				$attribute .= ' class="current"';
+			} else if ($i == $p - 1) {
+				$attribute .= ' rel="prev"';
+			} else if ($i == $p + 1) {
+				$attribute .= ' rel="next"';
+			}
+			echo '<a href="' . $_SERVER['PHP_SELF'] . "?p=$i" . $query_st . '"' . $attribute .'>' . $i . '</a>';
 		}
-	} else {      //query_stに値が入っていれば
-		$query_st = $_SERVER['QUERY_STRING'];
-		$page = ceil($dtcnt / $lim);
-		echo "$p/$page";
-		//ページのリンク表示
-		for($i=1;$i <= $page; $i++) {
-			$query_st =  preg_replace('/p=[0-9]+&/','',$query_st);    //p=0〜9&を空欄にする正規表現
-			print("<a href=\"".$_SERVER["PHP_SELF"]."?p=$i&$query_st\" > $i </a>");
+		if ($p != $page) {
+			if ($p < $page - $showPage) {
+				if ($p != $page - $showPage - 1) {
+					echo '<span>..</span>';
+				}
+				echo '<a href="' . $_SERVER['PHP_SELF'] . "?p=$page" . $query_st . '">' . $page . '</a>';
+			}
+			echo '<a href="' . $_SERVER['PHP_SELF'] . "?p=$p2" . $query_st . '">Next</a>';
 		}
-		//Autopageingの処理
-		if($page >= $p2 ) {
-			$query_st =  preg_replace('/p=[0-9]+&/','',$query_st);
-			print("<a rel=next href=\"".$_SERVER["PHP_SELF"]."?p=$p2&$query_st\" > </a>");
-		}
+		echo '</div>';
 	}
-	return array($p2,$page);
+	return array($p2, $page);
 } // end page_display
 
 function getnextstationid($con) {

@@ -83,4 +83,33 @@ td#drama {background:#FFD0FF;} /* ドラマ */
  	cursor:pointer; 
  }
  
- 
+.pagenation {
+  text-align: center;
+  margin: 7px 0px;
+  font-size: 110%;
+}
+.pagenation span {
+  font: 13px Verdana,arial,helvetica,clean,sans-serif;
+}
+.pagenation  a:hover {
+  background-color: #FFFA4D;
+}
+.pagenation  a.current {
+  background-color: #b0c4de;
+  color: #696969;
+  text-decoration: underline;
+  font-size: 115%;
+}
+.pagenation a {
+  background-color: #F5F5F5;
+  display: inline-block;
+  margin: 5px;
+  text-decoration: none;
+  border: 1px solid #696969;
+  border-radius: 5px;
+  padding: 5px 10px;
+  color: #5f6061;
+  font-weight: 700;
+  line-height: 1.4em;
+}
+
