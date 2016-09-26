@@ -131,6 +131,7 @@ if ($rowdata) {
 	if (ereg("iPhone",$useragent)) {
 		print "<ul id=\"home\" title=\"録画ライブラリ表示\" selected=\"true\">";
 	} else {
+		page_display("", $p, $p2, $lim, $dtcnt, "");
 		print "
 		  <table BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"2\" WIDTH=\"100%\">
 			<thead>
@@ -154,7 +155,7 @@ if ($rowdata) {
 		
 		
 		if (ereg("iPhone",$useragent)) {
-		print "<li><a href=\"showlibc.php?tid=$tid\" target=\"_self\">$title</a></li>\n";
+			print "<li><a href=\"showlibc.php?tid=$tid\" target=\"_self\">$title</a></li>\n";
 		} else {
 			print "
 			<tr>

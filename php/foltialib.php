@@ -751,8 +751,10 @@ function page_display($query_st, $p, $p2, $lim, $dtcnt, $mode) {
 	$page = ceil($dtcnt / $lim);
 	if ($page > 1) {
 		($query_st != '') ?  $query_st = '&' . $_SERVER['QUERY_STRING'] : '';
+		$query_st   = preg_replace('/p=[0-9]+&/','',$query_st);	//p=0～9&を空欄にする正規表現
 		$showPage = 5;
 		echo '<div class="pagenation">';
+		// Prev, 1ページ を表示
 		if ($p != 1) {
 			$prev_p = $p - 1;
 			echo '<a href="' . $_SERVER['PHP_SELF'] . '?p=' . $prev_p . $query_st . '">Prev</a>';
@@ -786,12 +788,15 @@ function page_display($query_st, $p, $p2, $lim, $dtcnt, $mode) {
 			}
 			echo '<a href="' . $_SERVER['PHP_SELF'] . "?p=$i" . $query_st . '"' . $attribute .'>' . $i . '</a>';
 		}
+		// Next, 最終ページ を表示
 		if ($p != $page) {
 			if ($p < $page - $showPage) {
 				if ($p != $page - $showPage - 1) {
 					echo '<span>..</span>';
 				}
-				echo '<a href="' . $_SERVER['PHP_SELF'] . "?p=$page" . $query_st . '">' . $page . '</a>';
+				if (($i - 1) != $page) {
+					echo '<a href="' . $_SERVER['PHP_SELF'] . "?p=$page" . $query_st . '">' . $page . '</a>';
+				}
 			}
 			echo '<a href="' . $_SERVER['PHP_SELF'] . "?p=$p2" . $query_st . '">Next</a>';
 		}
