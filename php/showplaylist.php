@@ -123,9 +123,15 @@ print "			<th align=\"left\" style=\"width:20px;\">キャプ</th>\n";
 
 //旧仕様
 if ($list == "raw") {
-  exec ("ls -t  $recfolderpath/*.???", $m2pfiles);
-  
-  foreach($m2pfiles as $pathfName) {
+  exec ("ls -1t  $recfolderpath/*.???", $m2pfiles);
+
+  page_display($list, $p, $p2, $lim, count($m2pfiles), "");
+
+  $m2pfilesP  = array_chunk($m2pfiles, $lim);
+  $datas      = array();
+  $nodata     = array();
+  $mp4_exists = array();
+  foreach($m2pfilesP[$p - 1] as $pathfName) {
     
     $fNametmp = explode("/", $pathfName);
     $fName = array_pop($fNametmp);
@@ -137,42 +143,32 @@ if ($list == "raw") {
     if ((ereg(".m2.+", $fName))|| (ereg(".aac", $fName))) {
       $filesplit = explode("-", $fName);
       
-      if (preg_match("/^\d+$/", $filesplit[0])) {//	print "File is looks like good:preg<br>\n";
-        if ($filesplit[1] == "") {
+      if (preg_match("/^\d+$/", $filesplit[0])) {
+        if ($filesplit[1] == "") { // 話数, EPG録画
           $query = "
           SELECT 
             foltia_program.tid,
             foltia_program.title,
-            foltia_subtitle.subtitle ,
-            foltia_subtitle.pid ,
-            foltia_subtitle.m2pfilename ,
+            foltia_subtitle.countno,
+            foltia_subtitle.subtitle,
+            foltia_subtitle.pid,
+            foltia_subtitle.m2pfilename,
             foltia_subtitle.pspfilename
            FROM foltia_subtitle , foltia_program   
            WHERE foltia_program.tid = foltia_subtitle.tid  
              AND foltia_subtitle.tid = ? 
              AND foltia_subtitle.m2pfilename = ?
           ";
-          //$rs = m_query($con, $query, "DBクエリに失敗しました");
-          $rs = sql_query($con, $query, "DBクエリに失敗しました",array($filesplit[0], $fName));
-          $rall = $rs->fetchAll();
-          $rowdata = $rall[0];
-          //print" $fName./$rowdata[1]//$rowdata[2]<BR>\n";
-          $title = $rowdata[1];
-          $pid  = htmlspecialchars($rowdata[3]);
-          $mp4filename  = htmlspecialchars($rowdata[5]);
-          $subtitle = "";
-          $count = "";
-          
+          $rs = sql_query($con, $query, "DBクエリに失敗しました", array($filesplit[0], $fName));
         } else {
-          
           $query = "
           SELECT 
             foltia_program.tid,
             foltia_program.title,
             foltia_subtitle.countno,
-            foltia_subtitle.subtitle ,
-            foltia_subtitle.pid ,
-            foltia_subtitle.m2pfilename ,
+            foltia_subtitle.subtitle,
+            foltia_subtitle.pid,
+            foltia_subtitle.m2pfilename,
             foltia_subtitle.pspfilename
            FROM foltia_subtitle , foltia_program   
            WHERE foltia_program.tid = foltia_subtitle.tid  
@@ -180,37 +176,55 @@ if ($list == "raw") {
              AND foltia_subtitle.countno = ? 
              AND foltia_subtitle.m2pfilename = ?
           ";
-          //$rs = m_query($con, $query, "DBクエリに失敗しました");
-          $rs = sql_query($con, $query, "DBクエリに失敗しました",array($filesplit[0], $filesplit[1], $fName));
-          				$rall = $rs->fetchAll();
-          				$rowdata = $rall[0];
-          //print" $fName./$rowdata[1]/$rowdata[2]/$rowdata[3]<BR>\n";
-          $title = $rowdata[1];
-          $count = $rowdata[2];
-          $subtitle = $rowdata[3];
-          $pid  = htmlspecialchars($rowdata[4]);
-          $mp4filename  = htmlspecialchars($rowdata[6]);
-        }//if 話数あるかどうか
+          $rs = sql_query($con, $query, "DBクエリに失敗しました", array($filesplit[0], $filesplit[1], $fName));
+        } //if 話数あるかどうか
+
+        $rall    = $rs->fetchAll();
+        $rowdata = $rall[0];
+        $tid         = htmlspecialchars($rowdata[0]);
+        $title       = htmlspecialchars($rowdata[1]);
+        $count       = htmlspecialchars($rowdata[2]);
+        $subtitle    = htmlspecialchars($rowdata[3]);
+        $pid         = htmlspecialchars($rowdata[4]);
+        $mp4filename = htmlspecialchars($rowdata[6]);
         
-        $tid = htmlspecialchars($rowdata[0]);
-        $title = htmlspecialchars($title);
-        $count = htmlspecialchars($count);
-        $subtitle = htmlspecialchars($subtitle);
-        
-        $mp4path      = "$recfolderpath/$tid.localized/mp4/$mp4filename" ;
+        $m2pExists = false;
+        $m2pUrl    = $httpmediamappath . '/' . $fName;
+        $m2ppath   = $recfolderpath . '/' . $fName;
+        if (file_exists($m2ppath) && is_file($m2ppath) && filesize($m2ppath)) {
+            $m2pExists = true;
+        }
+
+        $mp4Url    = $httpmediamappath . '/' . $tid . '.localized/mp4/' . $mp4filename;
+        $mp4path   = "$recfolderpath/$tid.localized/mp4/$mp4filename" ;
         $mp4Exists = false;
         if (file_exists($mp4path) && is_file($mp4path)) {
           $mp4Exists = true;
           $mp4size = filesize($mp4path);
           $mp4size = round($mp4size / 1024 / 1024);
+          $mp4_exists[] = $mp4path;
+        } else {
+          $nodata[] = $fName;
         }
+        $datas[$fName]['mp4'] = $mp4path;
+        $datas[$fName]['mp4filename'] = $mp4filename;
+        $datas[$fName]['tid'] = $tid;
+        $datas[$fName]['pid'] = $pid;
         
         //--
         print "
         <tr>
         <td><INPUT TYPE='checkbox' NAME='delete[]' VALUE='$fName'><br></td>
-        <td><A HREF=\"$httpmediamappath/$fName\">$fName</A><br></td>
-        <td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">$title</a></td>
+        <td>";
+        if ($m2pExists) {
+            echo '<a href="'. $m2pUrl . '">' . $fName . '</a><br>';
+        }
+        if ($mp4Exists) {
+            echo '<a href="'. $mp4Url . '" target="_blank">' . $mp4filename . '</a>';
+        }
+
+        print "</td>
+        <td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">$title</a><br><a href=\"./showlibc.php?tid=$tid\">[ライブラリ]</a></td>
         <td>$count<br></td>
         <td>$subtitle<br></td>";
         
@@ -221,28 +235,42 @@ if ($list == "raw") {
         print "</td>";
         
         if (file_exists("./selectcaptureimage.php") ) {
-          //  $capimgpath = preg_replace("/.m2p/", "", $fName);
-          print "			<td align=\"left\"> N/A </td>\n";
+          print "         <td align=\"left\"><a href=\"./selectcaptureimage.php?pid=$pid\">キャプ</a></td>\n";
         }
         
         print "</tr>\n
         ";
       } else {
       	//print "File is looks like BAD:preg<br>\n";
-      }//
-       
-    }//ereg 
-  }//foreach
-  print "	</tbody>\n</table>\n</FORM>\n</body>\n</html>\n";
+      }
+    } //ereg
+  } //foreach
+  print "	</tbody>\n</table>\n</FORM>\n";
+  echo '<p align="left">';
+  echo '$datas=' . count($datas) . '  ';
+  echo '$nodata=' . count($nodata, COUNT_RECURSIVE) . '  ';
+  echo '$mp4_exists=' . count($mp4_exists) .  '<br />';
+  echo '</p>';
+  page_display($list, $p, $p2, $lim, count($m2pfiles), "");
+  print "</body>\n</html>\n";
   exit;
 
 } else if ($list== 'mp4') {
-  exec ("ls -t $recfolderpath/*.localized/mp4/*.MP4 | head -2000", $mp4files);
 
+  $head = getgetform('head');
+  if (!$head) {
+    $head = 300;
+  }
+  exec ("ls -1t $recfolderpath/*.localized/mp4/*.MP4", $mp4files);
+
+  $lim = $head;
+  page_display($list, $p, $p2, $lim, count($mp4files), "");
+
+  $mp4filesP  = array_chunk($mp4files, $lim);
   $datas      = array();
   $nodata     = array();
   $mp4_exists = array();
-  foreach($mp4files as $pathfName) {
+  foreach($mp4filesP[$p - 1] as $pathfName) {
     //echo "<pre>$pathfName</pre>";
     $fNametmp = explode('/', $pathfName);
     $fName    = array_pop($fNametmp);
@@ -254,12 +282,13 @@ if ($list == "raw") {
       $filesplit = explode('-', $fName);
       $tid       = $filesplit[1];
       $num       = $filesplit[2];
-      //echo "<pre>$fName, $filesplit[1], $filesplit[2]</pre>";
+      $tid       = htmlspecialchars($tid);
       if (preg_match("/^\d+$/", $tid)) {
-        if ($num == '') {
+        if ($num == '') { // 話数無し、EPG録画
           $query = ' SELECT 
                        foltia_program.tid,
                        foltia_program.title,
+                       foltia_subtitle.countno,
                        foltia_subtitle.subtitle,
                        foltia_subtitle.pid,
                        foltia_subtitle.m2pfilename,
@@ -269,15 +298,6 @@ if ($list == "raw") {
                        AND foltia_subtitle.tid = ? 
                        AND foltia_subtitle.PSPfilename = ? ';
           $rs      = sql_query($con, $query, 'DBクエリに失敗しました', array($tid, $fName));
-          $rall    = $rs->fetchAll();
-          $rowdata = $rall[0];
-          //print" $fName./$rowdata[1]//$rowdata[2]<BR>\n";
-          $title       = $rowdata[1];
-          $pid         = htmlspecialchars($rowdata[3]);
-          //$mp4filename = htmlspecialchars($rowdata[5]);
-          $mp4filename = htmlspecialchars($fName);
-          $subtitle    = $rowdata[2];
-          $count       = $num;
         } else {
           $query = ' SELECT 
                        foltia_program.tid,
@@ -293,22 +313,17 @@ if ($list == "raw") {
                         AND foltia_subtitle.countno = ? 
                         AND foltia_subtitle.PSPfilename = ? ';
           $rs      = sql_query($con, $query, "DBクエリに失敗しました", array($tid, $num, $fName));
-          $rall    = $rs->fetchAll();
-          $rowdata = $rall[0];
-          //print" $fName./$rowdata[1]/$rowdata[2]/$rowdata[3]<BR>\n";
-          $title       = $rowdata[1];
-          $count       = $rowdata[2];
-          $subtitle    = $rowdata[3];
-          $pid         = htmlspecialchars($rowdata[4]);
-          //$mp4filename = htmlspecialchars($rowdata[6]);
-          $mp4filename = htmlspecialchars($fName);
         }
 
-        $tid      = htmlspecialchars($tid);
-        $title    = htmlspecialchars($title);
-        $count    = $num;
-        $subtitle = htmlspecialchars($subtitle);
-        
+        $rall    = $rs->fetchAll();
+        $rowdata = $rall[0];
+        $title       = htmlspecialchars($rowdata[1]);
+        $count       = htmlspecialchars($rowdata[2]);
+        $subtitle    = htmlspecialchars($rowdata[3]);
+        $pid         = htmlspecialchars($rowdata[4]);
+        //$mp4filename = htmlspecialchars($rowdata[6]);
+        $mp4filename = htmlspecialchars($fName);
+
         $mp4path   = "$recfolderpath/$tid.localized/mp4/$mp4filename" ;
         $mp4Exists = false;
         if (file_exists($mp4path) && is_file($mp4path)) {
@@ -316,9 +331,12 @@ if ($list == "raw") {
           $mp4size   = filesize($mp4path);
           $mp4size   = round($mp4size / 1024 / 1024);
           if ($pid) {
-            $nodata[$tid][] = $count;
-            $mp4_exists[]   = $mp4path;
+            $mp4_exists[] = $mp4path;
+          } else {
+          $nodata[] = $mp4path;
           }
+        } else {
+          $nodata[] = $mp4path;
         }
 
         $ind   = explode('-', $fName);
@@ -356,9 +374,14 @@ if ($list == "raw") {
     <tr>
     <td><INPUT TYPE='checkbox' NAME='delete[]' VALUE='${data['fName']}'><br></td>
     <td><A HREF=\"$httpmediamappath/${data['tid']}.localized/mp4/${data['fName']}\">${data['fName']}</A><br></td>
-    <td><a href=\"http://cal.syoboi.jp/tid/${data['tid']}\" target=\"_blank\">${data['title']}</a></td>
-    <td>${data['count']}<br></td>
-    <td>${data['subtitle']}<br></td>";
+    <td><a href=\"http://cal.syoboi.jp/tid/${data['tid']}\" target=\"_blank\">${data['title']}</a><br><a href=\"./showlibc.php?tid=${data['tid']}\">[ライブラリ]</a></td>
+    ";
+    //if ($data['count']) {
+      echo "<td>${data['count']}<br></td>";
+    //} else {
+    //  echo '<td>' . abs($data['pid']) . '<br></td>';
+    //}
+    echo "<td>${data['subtitle']}<br></td>";
     
     print "<td>";
     if ($data['mp4Exists']) {
@@ -381,11 +404,16 @@ if ($list == "raw") {
     print "</tr>\n
     ";
   }
-  print "	</tbody>\n</table>\n</FORM>\n</body>\n</html>\n";
+  print "	</tbody>\n</table>\n</FORM>";
 
+  echo '<p align="left">';
   echo '$datas=' . count($datas) . '  ';
   echo '$nodata=' . count($nodata, COUNT_RECURSIVE) . '  ';
   echo '$mp4_exists=' . count($mp4_exists) .  '<br />';
+  echo '</p>';
+  page_display($list, $p, $p2, $lim, count($mp4files), "");
+
+  print "\n</body>\n</html>\n";
   //$cnt = 0;
   //foreach ($sort as $k => $v) {
   //  $cnt += count($v);
@@ -433,7 +461,6 @@ if ($list == "raw") {
   ";
 }
 
-//$rs = m_query($con, $query, "DBクエリに失敗しました");
 $rs = sql_query($con, $query, "DBクエリに失敗しました");
 $rowdata = $rs->fetch();
 
