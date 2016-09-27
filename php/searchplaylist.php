@@ -6,7 +6,7 @@
 searchepg.php
 
 目的
-EPG番組表を検索します
+録画済みの番組を検索します
 
 引数
 無し
@@ -43,10 +43,19 @@ if ($useenvironmentpolicy == 1) {
 <?php
 printhtmlpageheader();
 
+//１ページの表示レコード数
+$lim = 300;
+//クエリ取得
+$p = getgetnumform(p);
+//ページ取得の計算
+list($st, $p, $p2) = number_page($p, $lim);
+
 $word = getgetform('word');
 $word = trim($word);
 $nowdate = date('YmdHi');
 $enddate = date('YmdHi', strtotime('+1 week'));
+$datas   = 0;
+$nodata  = array();
 
 if ($word != '') {
 	$numsql = '
@@ -58,7 +67,7 @@ if ($word != '') {
         foltia_m2pfiles
       WHERE (foltia_program.tid = foltia_subtitle.tid
         AND foltia_subtitle.m2pfilename = foltia_m2pfiles.m2pfilename)
-        AND (foltia_program.title LIKE ? OR foltia_subtitle.subtitle LIKE ?)
+        AND (foltia_program.title LIKE ? OR foltia_subtitle.subtitle LIKE ? OR foltia_subtitle.m2pfilename LIKE ? OR foltia_subtitle.pspfilename LIKE ?)
       UNION
       SELECT
         COUNT(foltia_program.tid) AS V
@@ -66,9 +75,9 @@ if ($word != '') {
         LEFT JOIN foltia_subtitle ON foltia_mp4files.mp4filename = foltia_subtitle.pspfilename AND foltia_mp4files.tid = foltia_subtitle.tid
         LEFT JOIN foltia_program  ON foltia_mp4files.tid         = foltia_program.tid
       WHERE
-        foltia_program.title LIKE ? OR foltia_subtitle.subtitle LIKE ?
+        foltia_program.title LIKE ? OR foltia_subtitle.subtitle LIKE ? OR foltia_subtitle.m2pfilename LIKE ? OR foltia_mp4files.mp4filename LIKE ?
     ';
-	$selsql = '
+	$selsql = "
       SELECT
         foltia_program.tid,
         foltia_program.title,
@@ -85,7 +94,7 @@ if ($word != '') {
         foltia_m2pfiles
       WHERE (foltia_program.tid = foltia_subtitle.tid
         AND foltia_subtitle.m2pfilename = foltia_m2pfiles.m2pfilename)
-        AND (foltia_program.title LIKE ? OR foltia_subtitle.subtitle LIKE ?)
+        AND (foltia_program.title LIKE ? OR foltia_subtitle.subtitle LIKE ? OR foltia_subtitle.m2pfilename LIKE ? OR foltia_subtitle.pspfilename LIKE ?)
       UNION
       SELECT
         foltia_program.tid,
@@ -101,18 +110,19 @@ if ($word != '') {
         LEFT JOIN foltia_subtitle ON foltia_mp4files.mp4filename = foltia_subtitle.pspfilename AND foltia_mp4files.tid = foltia_subtitle.tid
         LEFT JOIN foltia_program  ON foltia_mp4files.tid         = foltia_program.tid
       WHERE 
-        foltia_program.title LIKE ? OR foltia_subtitle.subtitle LIKE ?
+        foltia_program.title LIKE ? OR foltia_subtitle.subtitle LIKE ? OR foltia_subtitle.m2pfilename LIKE ? OR foltia_mp4files.mp4filename LIKE ?
       GROUP BY foltia_mp4files.mp4filename
       ORDER BY foltia_subtitle.startdatetime DESC
-
-    ';
+      LIMIT $lim OFFSET $st
+    ";
 	$searchword = '%' . $word . '%';
-	$rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($searchword, $searchword, $searchword, $searchword));
+	$rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($searchword, $searchword, $searchword, $searchword, $searchword, $searchword, $searchword, $searchword));
 	$row_sum = array();
 	while ($row = $rows->fetch(PDO::FETCH_ASSOC)) {
 		$row_sum[] += $row['V'];
 	}
-	$rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($searchword, $searchword, $searchword, $searchword));
+	$rowMax = max($row_sum);
+	$rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($searchword, $searchword, $searchword, $searchword, $searchword, $searchword, $searchword, $searchword));
 }
 
 $words = array('EPG録画');
@@ -134,9 +144,10 @@ $words = array('EPG録画');
   </p>
 
   <?php if ($word): ?>
-    <?php  echo implode(', ', $row_sum) ?> 件ヒットしました
+    <?php  echo implode(', ', $row_sum), ', (', $rowMax, ')' ?> 件ヒットしました
   <?php endif ?>
   <?php if(@array_sum($row_sum) > 0): ?>
+    <?php page_display($word, $p, $p2, $lim, $rowMax, ""); ?>
     <table border="0" cellpadding="0" cellspacing="2" width="100%" style="table-layout: fixed;">
       <tr>
         <th style="width:270px;">ファイル名</th>
@@ -157,6 +168,7 @@ $words = array('EPG録画');
 		$pid          = htmlspecialchars($rowdata['pid']);
 		$mp4filename  = htmlspecialchars($rowdata['PSPfilename']);
 		$lengthmin    = htmlspecialchars($rowdata['lengthmin']);
+        $datas++;
 
 		$m2pExists = false;
 		$m2pUrl    = $httpmediamappath . '/' . $fName;
@@ -172,6 +184,9 @@ $words = array('EPG録画');
 			$mp4Exists = true;
 			$mp4size = filesize($mp4path);
 			$mp4size = round($mp4size / 1024 / 1024);
+		} else {
+			$nodata[$pid]['mp4'] = $mp4path;
+			$nodata[$pid]['tid'] = $tid;
 		}
     ?>
       <tr <?php echo $reservedClass ?>>
@@ -198,6 +213,8 @@ $words = array('EPG録画');
       </tr>
     <?php endwhile ?>
     </table>
+    <p>$datas=<?php echo $datas ?> $nodata=<?php echo count($nodata) ?></p>
+    <?php page_display($word, $p, $p2, $lim, $rowMax, ""); ?>
   <?php endif ?>
 
 </body>
