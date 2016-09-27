@@ -366,8 +366,10 @@ if (! $rowdata) {
 
       <table>
         <tr><td>エンコーダ数</td><td><?php print "$recunits"; ?></td></tr>
+    <?php if ($overlapCheck): ?>
         <tr class="overwraped"><td>チューナー重複</td><td><br /></td></tr>
         <tr class="exoverwraped"><td>外部入力重複</td><td><br /></td></tr>
+    <?php endif ?>
       </table>
 
 
