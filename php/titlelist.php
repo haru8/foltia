@@ -127,7 +127,7 @@ do {
 	} else {
 		echo("<tr>\n");
 	}
-	
+
 	// TID
 	echo("<td><a href=\"reserveprogram.php?tid=" .
 	htmlspecialchars($rowdata['tid'])  . "\">" .

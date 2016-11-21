@@ -159,10 +159,10 @@ if ($rowdata) {
 		} else {
 			print "
 			<tr>
-			<td>$tid<br></td>
+			<td>$tid</td>
 			<td><a href=\"showlibc.php?tid=$tid\">$title</a></td>
-			<td>$counts<br></td>
-			<td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">しょぼかる-$tid</a><br></td>
+			<td>$counts</td>
+			<td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">しょぼかる-$tid</a></td>
 			</tr>\n
 			";
 		}

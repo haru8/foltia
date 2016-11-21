@@ -113,3 +113,18 @@ td#drama {background:#FFD0FF;} /* ドラマ */
   line-height: 1.4em;
 }
 
+.manualRecord dl {
+}
+.manualRecord dt {
+  margin: 5px;
+  font-weight: bold;
+}
+.manualRecord dd {
+  margin-left: 25px;
+  margin-bottom: 2px;
+}
+.manualRecord dd.stations {
+  margin-left: 25px;
+  margin-bottom: 5px;
+}
+
