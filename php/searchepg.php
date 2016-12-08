@@ -52,13 +52,24 @@ $enddate = date('YmdHi', strtotime('+1 week'));
 if ($word != '') {
 	$numsql = 'count(*)';
 	$selsql = '*';
+	//$query = "
+	//  SELECT 
+	//    %COL%
+	//    FROM foltia_epg
+	//       LEFT JOIN foltia_station ON foltia_epg.ontvchannel = foltia_station.ontvcode
+	//    WHERE (startdatetime >= ?
+	//      AND enddatetime    <= ?)
+	//      AND (startdatetime < enddatetime)
+	//      AND ((epgtitle LIKE ?) OR (epgdesc  LIKE ?))
+	//    ORDER BY startdatetime
+	//";
 	$query = "
 	  SELECT 
 	    %COL%
 	    FROM foltia_epg
 	       LEFT JOIN foltia_station ON foltia_epg.ontvchannel = foltia_station.ontvcode
-	    WHERE (startdatetime >= ?
-	      AND enddatetime    <= ?)
+	    WHERE (startdatetime >= ?)
+	      
 	      AND (startdatetime < enddatetime)
 	      AND ((epgtitle LIKE ?) OR (epgdesc  LIKE ?))
 	    ORDER BY startdatetime
@@ -66,9 +77,11 @@ if ($word != '') {
 	$numsql = str_replace('%COL%', $numsql, $query);
 	$selsql = str_replace('%COL%', $selsql, $query);
 	$searchword = '%' . $word . '%';
-	$rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($strdate, $enddate, $searchword, $searchword));
+	//$rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($strdate, $enddate, $searchword, $searchword));
+	$rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($strdate, $searchword, $searchword));
 	$row  = $rows->fetchColumn();
-	$rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($strdate, $enddate, $searchword, $searchword));
+	//$rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($strdate, $enddate, $searchword, $searchword));
+	$rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($strdate, $searchword, $searchword));
 }
 
 function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid, $nowdate)
@@ -90,43 +103,6 @@ function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid, $nowd
 	return $reservedClass;
 }
 
-$words = array(
-	'NHKスペシャル',
-	'凄(すご)ワザ',
-	'ダーウィン',
-	'歴史秘話ヒストリア',
-	'ドキュメント72時間',
-
-	'ETV特集',
-	'サイエンスZERO',
-	'地球ドラマチック',
-	'スーパープレゼンテーション',
-	'SWITCHインタビュー',
-	'大科学実験',
-	'すイエんサー',
-	'プロフェッショナル 仕事の流儀',
-	'NNNドキュメント',
-
-	'ザ!鉄腕!DASH!!',
-	'MotoGP',
-
-	'マツコの知らない世界',
-
-	'世界が驚いたニッポン',
-
-	'カンブリア',
-	'ガイア',
-	'未来世紀ジパング',
-	'和風総本家',
-	'マスカット',
-	'SUPER GT',
-	'美の巨人たち',
-
-	'水樹奈々',
-	'タモリ',
-	'所さん',
-	'',
-);
 ?>
 
   <p align="left"><font color="#494949" size="6">番組検索</font></p>
@@ -137,9 +113,9 @@ $words = array(
     <input type="submit" value="検索">
   </form>
   <p>
-  <?php foreach($words as $val): ?>
+  <?php foreach($searc_words as $val): ?>
     <?php $val = trim($val); ?>
-    <?php if ($val == ''): continue; endif ?>
+    <?php //if ($val == ''): continue; endif ?>
     <a href="./searchepg.php?word=<?php echo urlencode($val)?>#result"><?php echo $val ?></a><br>
   <?php endforeach ?>
   </p>
@@ -154,7 +130,7 @@ $words = array(
         <th style="width:95px;" rowspan="2">局</th>
         <th style="width:160px;">開始</th>
         <th style="width:60px;" rowspan="2">尺(分)</th>
-        <th rowspan="2">番組名</th>
+        <th style="width:350px;" rowspan="2">番組名</th>
         <th rowspan="2">内容</th>
       </tr>
       <tr>
