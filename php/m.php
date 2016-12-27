@@ -285,7 +285,7 @@ print "<input name="useditial" type="radio" value="1" />  する　
 */
 ?>
     <dt><label for="pname">番組名:</label></dt>
-      <dd><input name="pname" type="text" id="pname" style="width:300px;" value="<?php print "$pname"; ?>" /></dd>
+      <dd><input name="pname" type="text" id="pname" style="width:450px;" value="<?php print "$pname"; ?>" /></dd>
   </dl>
 <!-- <p  style='background-color: #DDDDFF'>
 繰り返し指定-毎週以下の曜日に録画:
