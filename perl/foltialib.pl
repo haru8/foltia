@@ -10,11 +10,18 @@ require "foltia_conf1.pl";
 
 
 # foltia lib
+use utf8;
 use DBI;
 use DBD::Pg;
 use DBD::SQLite;
 use POSIX qw(strftime);
 use File::Basename;
+use LWP::UserAgent;
+use JSON;
+
+binmode(STDIN,  ':utf8');
+binmode(STDOUT, ':utf8');
+binmode(STDERR, ':utf8');
 
 $DSN=$main::DSN;
 $DBUser=$main::DBUser;
@@ -42,6 +49,41 @@ $DBPass="";
 
 
 #------------------------------
+sub slackSend {
+	$ENV{HTTPS_CA_DIR} = '/etc/ssl/certs';
+
+	binmode(STDIN,  ':utf8');
+	binmode(STDOUT, ':utf8');
+	binmode(STDERR, ':utf8');
+
+	if (!$slack_webhook_url) {
+    	return;
+	}
+
+	my $messages  = $_[0];
+	my $timestump = strftime("%Y/%m/%d %H:%M:%S", localtime);
+
+	#&writelog($messages);
+
+	# コンテンツの準備
+	my $values = {text => '```' . $timestump . "\n" . $messages . '```'};
+	my $content = JSON::to_json($values, {utf8 => 1});
+
+	# 組み立てたコンテンツ(=JSON)を Slack に送信
+	my $user_agent = LWP::UserAgent->new();
+    $user_agent->timeout(10);
+	my $response = $user_agent->post(
+		$slack_webhook_url,
+		Content_Type => 'application/json; charset=UTF-8',
+		Content => $content);
+	if(!$response->is_success) {
+		#print($response->status_line, "\n");
+		return;
+	}
+
+	#print($response->decoded_content, "\n");
+}
+
 sub writelog {
 	my $messages  = $_[0];
 	my $timestump = strftime("%Y/%m/%d_%H:%M:%S", localtime);
@@ -150,7 +192,7 @@ sub getstationid {
 	my $sth;
 	$sth = $dbh->prepare($stmt{'foltialib.getstationid.1'});
 	$sth->execute($item{'ChName'});
-	my  @stationcount;
+	my @stationcount;
 	@stationcount= $sth->fetchrow_array;
 	
 	if ($stationcount[0] == 1) {
@@ -169,20 +211,21 @@ sub getstationid {
 		$sth->execute();
 		@stationinfo= $sth->fetchrow_array;
 		my $stationid = $stationinfo[0] ;
-		$stationid  ++;
+		$stationid++;
 
 		##$DBQuery =  "insert into  foltia_station values ('$stationid'  ,'$item{ChName}','0','','','','','','')";
 		#新規局追加時は非受信局をデフォルトに
 		$sth = $dbh->prepare($stmt{'foltialib.getstationid.4'});
 		$sth->execute($stationid, $item{'ChName'}, -10);
 		#print "Add station;$DBQuery\n";
-		&writelog("foltialib Add station;$stmt{'foltialib.getstationid.4'}");
+		&writelog("foltialib Add station; $stmt{'foltialib.getstationid.4'}, $stationid, $item{'ChName'}, -10");
 
 	} else {
 		#print "Error  getstationid $stationcount[0] stations found. $DBQuery\n";
-		&writelog("foltialib [ERR]  getstationid $stationcount[0] stations found. $DBQuery");
+		&writelog("foltialib [ERR]  getstationid $stationcount[0] stations found. ChName=$item{'ChName'}, stationname=$stationname");
 	}
 	
+	#&writelog("foltialib [OK]  getstationid $stationcount[0] stations found. ChName=$item{'ChName'}, stationname=$stationname, stationid=$stationid");
 	return $stationid ;
 }
 

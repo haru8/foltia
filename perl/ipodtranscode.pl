@@ -10,6 +10,7 @@
 # DCC-JPL Japan/foltia project
 #
 
+use utf8;
 use DBI;
 use DBD::Pg;
 use DBD::SQLite;
@@ -32,10 +33,12 @@ if ($processes > 1 ) {
 	exit;
 } else {
 	&writelog("Normal launch.");
+	#slackSend("Normal launch.");
 }
 
 #DB初期化
-$dbh = DBI->connect($DSN,$DBUser,$DBPass) ||die $DBI::error;;
+$dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
+$dbh->{sqlite_unicode} = 1;
 
 # タイトル取得
 #トラコンフラグがたっていてステータス50以上150未満のファイルを古い順にひとつ探す
@@ -60,7 +63,7 @@ while ($counttranscodefiles >= 1) {
 	$sth->execute($FILESTATUSRECEND, $FILESTATUSTRANSCODECOMPLETE, );
 	@dbparam = $sth->fetchrow_array;
 	&writelog("DEBUG $stmt{'ipodtranscode.1'}");
-	&writelog("DEBUG $dbparam[0], $dbparam[1], $dbparam[2], $dbparam[3], $dbparam[4], $dbparam[5]");
+	&writelog("DEBUG pid=$dbparam[0], tid=$dbparam[1], m2pfilename=$dbparam[2], filestatus=$dbparam[3], aspect=$dbparam[4], countno=$dbparam[5], title=$dbparam[6], subtitle=$dbparam[7], startdatetime=$dbparam[8], enddatetime=$dbparam[9], lengthmin=$dbparam[10]");
 	$pid               = $dbparam[0];
 	$tid               = $dbparam[1];
 	$inputmpeg2        = $recfolderpath."/".$dbparam[2]; # path付き
@@ -68,7 +71,15 @@ while ($counttranscodefiles >= 1) {
 	$filestatus        = $dbparam[3];
 	$aspect            = $dbparam[4];# 16,1 (超額縁),4,3
 	$countno           = $dbparam[5];
+	$title             = $dbparam[6];
+	$subtitle          = $dbparam[7];
+	$startdatetime     = $dbparam[8];
+	$enddatetime       = $dbparam[9];
+	$lengthmin         = $dbparam[10];
 	$mp4filenamestring = &mp4filenamestringbuild($pid);
+
+	slackSend(sprintf("ts->mp4 エンコード開始\npid          = %s\ntid          = %s\ntitle        = %s\nsubtitle     = %s\ncountno      = %s\nstartdatetime= %s\nenddatetime  = %s\nlengthmin    = %s\nm2pfilename  = %s\n",
+        $pid, $tid, $title, $subtitle, $countno, $startdatetime, $enddatetime, $lengthmin, $mpeg2filename)); 
 
 	$mpeg2_tm_start = time();
 
@@ -176,7 +187,7 @@ while ($counttranscodefiles >= 1) {
                     if ($tid != 0) {
 					  $ffmpegencopt = " -threads 0 -s 640x360 -r 30000/1001 -vcodec libx264 -preset veryslow -crf 21 -bufsize 1152K -maxrate 1152K -refs 13 -tune animation -x264opts merange=32:no-dct-decimate -async 50 -vsync 1 -f h264 $filenamebody.264";
                     } else {
-					  $ffmpegencopt = " -threads 0 -s 640x360 -r 30000/1001 -vcodec libx264 -preset veryslow -crf 21 -bufsize 1152K -maxrate 1152K -refs 13 -tune film -x264opts merange=32:no-dct-decimate -async 50 -vsync 1 -f h264 $filenamebody.264";
+					  $ffmpegencopt = " -threads 0 -s 640x360 -r 30000/1001 -vcodec libx264 -preset veryslow -crf 22 -bufsize 1024K -maxrate 1024K -refs 13 -tune film -x264opts merange=32:no-dct-decimate -async 50 -vsync 1 -f h264 $filenamebody.264";
                     }
 				}
 
@@ -739,6 +750,9 @@ while ($counttranscodefiles >= 1) {
 	&writelog("=========================== TS to MP4 ENCODE RESULT End ===========================");
 	&writelog("");
 	&writelog("");
+
+	slackSend(sprintf("ts->mp4 エンコード完了\npid          = %s\ntid          = %s\ntitle        = %s\nsubtitle     = %s\ncountno      = %s\nstartdatetime= %s\nenddatetime  = %s\nlengthmin    = %s\nmp4filename / size = MAQ%s.MP4 / %s\ntsfilename  / size = %s / %s\nCOMPRESSION RATE   = %s%",
+        $pid, $tid, $title, $subtitle, $countno, $startdatetime, $enddatetime, $lengthmin, $mp4filenamestring, chomp($m4FileSizeF), $mpeg2filename, chomp($tsFileSizeF), $compRateF));
 		
 	} else { #ファイルがなければ
 		&writelog("NO $inputmpeg2 file.Skip.");

@@ -20,6 +20,7 @@
 #
 # DCC-JPL Japan/foltia project
 
+use utf8;
 
 $path = $0;
 $path =~ s/digitaltvrecording.pl$//i;
@@ -73,11 +74,11 @@ sub prepare {
 	
 	my $intval			= $recch % 10; # 0〜9 sec
 	my $startupsleep	= $startupsleeptime - $intval; #  18〜27 sec
-	$reclengthsec		= $lengthsec + (60 - $startupsleep) + 1; #
+	$reclengthsec		= $lengthsec + (60 - $startupsleep) + 1;
 	
 	if ( $sleeptype ne "N") {
 		&writelog("digitaltvrecording: DEBUG SLEEP $startupsleeptime:$intval:$startupsleep:$reclengthsec");
-		sleep ( $startupsleep);
+		sleep ($startupsleep);
 		#2008/08/12_06:39:00 digitaltvrecording: DEBUG SLEEP 17:23:-6:367
 	} else {
 		&writelog("digitaltvrecording: DEBUG RAPID START");
@@ -123,21 +124,21 @@ sub prepare {
 	# 二重録りなど既に同名ファイルがあったら中断
 	if ( -e "$outputfile" ) {
 		if ( -s "$outputfile" ) {
-			&writelog("digitaltvrecording :ABORT :recfile $outputfile exist.");
+			&writelog(":ABORT :recfile $outputfile exist.");
 			exit 1;
 		}
 	}
 	
-	} #end prepare
+} #end prepare
 
 
 #------------------------------------------------------------------------------------
 #
 sub calldigitalrecorder {
-	#
-	#白friioと黒friio、PT1対応
-	#2008/10/23 recfriio4仕様に変更 
-	#
+
+	# 白friioと黒friio、PT1対応
+	# 2008/10/23 recfriio4仕様に変更 
+
 	my $oserr = 0;
 	my $originalrecch = $recch;
 	my $pt1recch =  $recch;
@@ -146,7 +147,7 @@ sub calldigitalrecorder {
 		# 地デジ friio
 	} elsif($bandtype == 1) {
 		# BS/CS friio
-		#recfriiobs用チャンネルリマップ
+		# recfriiobs用チャンネルリマップ
 		if ($recch == 101) {
 			$bssplitflag = $recch;
 			$recch = "b10";#22 : NHK BS1/BS2 
@@ -178,7 +179,7 @@ sub calldigitalrecorder {
 		} else {
 			$recch = "b7";#19 : TwellV 
 		}
-#PT1はそのまま通る
+# PT1はそのまま通る
 
 	} elsif($bandtype == 2) {
 		# recpt1でのみ動作確認
@@ -317,27 +318,35 @@ sub calldigitalrecorder {
 		} # end if CSリマップ
 
 	} else {
-		&writelog("digitaltvrecording :ERROR :Unsupported and type (digital CS).");
+		&writelog(":ERROR :Unsupported and type (digital CS).");
 		exit 3;
 	}
 
 	# PT1
 	# b25,recpt1があるか確認
 	if  (-e "$toolpath/perl/tool/recpt1") {
-		if ($bandtype >= 1) { #BS/CSなら
-			&writelog("digitaltvrecording DEBUG recpt1 --b25 --sid $originalrecch  $pt1recch $reclengthsec $outputfile   ");
+		if ($bandtype >= 1) {
+			# BS/CSなら
+			&writelog("DEBUG recpt1 --b25 --sid $originalrecch  $pt1recch $reclengthsec $outputfile   ");
+			slackSend(sprintf("録画開始(recpt1 起動)\nsleeptype     = %s\ntid           = %s\noriginalrecch = %s\npt1recch      = %s\nstationid     = %s\nreclengthsec  = %s\ncountno       = %s\nfilename      = %s\n",
+                $sleeptype, $tid, $originalrecch, $pt1recch, $stationid, $reclengthsec, $countno, $filename));
+
 			$oserr = system("$toolpath/perl/tool/recpt1 --b25 --sid $originalrecch $pt1recch $reclengthsec $outputfile  ");
-		} else { #地デジ
-			&writelog("digitaltvrecording DEBUG recpt1 --b25  $originalrecch $reclengthsec $outputfile  ");
+		} else {
+			# 地デジ
+			&writelog("DEBUG recpt1 --b25  $originalrecch $reclengthsec $outputfile  ");
+			slackSend(sprintf("録画開始(recpt1 起動)\nsleeptype     = %s\ntid           = %s\noriginalrecch = %s\nstationid     = %s\nreclengthsec  = %s\ncountno       = %s\nfilename      = %s\n",
+                $sleeptype, $tid, $originalrecch, $stationid, $reclengthsec, $countno, $filename));
+
 			$oserr = system("$toolpath/perl/tool/recpt1 --b25  $originalrecch $reclengthsec $outputfile  ");
 		}
 		$oserr = $oserr >> 8;
 		if ($oserr > 0) {
-			&writelog("digitaltvrecording :ERROR :PT1 is BUSY.$oserr");
+			&writelog(":ERROR :PT1 is BUSY.$oserr");
 			$errorflag = 2;
 		}
 	} else { # エラー recpt1がありません
-		&writelog("digitaltvrecording :ERROR :recpt1  not found. You must install $toolpath/tool/b25 and $toolpath/tool/recpt1.");
+		&writelog(":ERROR :recpt1  not found. You must install $toolpath/tool/b25 and $toolpath/tool/recpt1.");
 		$errorflag = 1;
 	}
 
@@ -350,14 +359,14 @@ sub calldigitalrecorder {
 				system("touch $toolpath/perl/tool/friiodetect");
 				system("chown foltia:foltia $toolpath/perl/tool/friiodetect");
 				system("chmod 775 $toolpath/perl/tool/friiodetect");
-				&writelog("digitaltvrecording :DEBUG make lock file.$toolpath/perl/tool/friiodetect");
+				&writelog(":DEBUG make lock file.$toolpath/perl/tool/friiodetect");
 			}
-			&writelog("digitaltvrecording DEBUG recfriio --b25 --lockfile $toolpath/perl/tool/friiodetect $recch $reclengthsec $outputfile  ");
+			&writelog("DEBUG recfriio --b25 --lockfile $toolpath/perl/tool/friiodetect $recch $reclengthsec $outputfile  ");
 			$oserr = system("$toolpath/perl/tool/recfriio --b25 --lockfile $toolpath/perl/tool/friiodetect $recch $reclengthsec $outputfile  ");
 			$oserr = $oserr >> 8;
 
 			if ($oserr > 0) {
-				&writelog("digitaltvrecording :ERROR :friio is BUSY.$oserr");
+				&writelog(":ERROR :friio is BUSY.$oserr");
 				exit 2;
 			}
 	
@@ -370,12 +379,12 @@ sub calldigitalrecorder {
 				$splitfile =~ s/\.m2t$/_SD1.m2t/;
 				if (-e "$splitfile") {
 					system("rm -rf $outputfile ; mv $splitfile $outputfile");
-					&writelog("digitaltvrecording DEBUG rm -rf $outputfile ; mv $splitfile $outputfile: $?.");
+					&writelog("DEBUG rm -rf $outputfile ; mv $splitfile $outputfile: $?.");
 				} else {
-					&writelog("digitaltvrecording ERROR File not found:$splitfile.");
+					&writelog("ERROR File not found:$splitfile.");
 				}
 				} else {
-					&writelog("digitaltvrecording ERROR $toolpath/perl/tool/TsSplitter.exe not found.");
+					&writelog("ERROR $toolpath/perl/tool/TsSplitter.exe not found.");
 				}
 			} elsif($bssplitflag == 102) {
 				if (-e "$toolpath/perl/tool/TsSplitter.exe") {
@@ -385,19 +394,19 @@ sub calldigitalrecorder {
 					$splitfile =~ s/\.m2t$/_SD2.m2t/;
 					if (-e "$splitfile") {
 						system("rm -rf $outputfile ; mv $splitfile $outputfile");
-						&writelog("digitaltvrecording DEBUG rm -rf $outputfile ; mv $splitfile $outputfile: $?.");
+						&writelog("DEBUG rm -rf $outputfile ; mv $splitfile $outputfile: $?.");
 					} else {
-						&writelog("digitaltvrecording ERROR File not found:$splitfile.");
+						&writelog("ERROR File not found:$splitfile.");
 					}
 				} else {
-					&writelog("digitaltvrecording ERROR $toolpath/perl/tool/TsSplitter.exe not found.");
+					&writelog("ERROR $toolpath/perl/tool/TsSplitter.exe not found.");
 				}
 			} else {
-				&writelog("digitaltvrecording DEBUG not split TS.$bssplitflag");
+				&writelog("DEBUG not split TS.$bssplitflag");
 			}# endif #BS1/BS2などのスプリットを
 	
 		} else { # エラー recfriioがありません
-			&writelog("digitaltvrecording :ERROR :recfriio  not found. You must install $toolpath/perl/tool/b25 and $toolpath/perl/tool/recfriio:$errorflag");
+			&writelog(":ERROR :recfriio  not found. You must install $toolpath/perl/tool/b25 and $toolpath/perl/tool/recfriio:$errorflag");
 			#exit 1;
 			exit $errorflag;
 		}

@@ -40,7 +40,7 @@
 'getxml2db.8' => "INSERT into foltia_subtitle (pid, tid, stationid, countno, subtitle, startdatetime, enddatetime, startoffset, lengthmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 'getxml2db.9' => "INSERT into foltia_subtitle (pid, tid, stationid, countno, subtitle, startdatetime, enddatetime, startoffset, lengthmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 
-'ipodtranscode.1'               => "SELECT foltia_subtitle.pid,foltia_subtitle.tid,foltia_subtitle.m2pfilename,filestatus,foltia_program.aspect,foltia_subtitle.countno FROM foltia_subtitle, foltia_program, foltia_m2pfiles WHERE filestatus >= ? AND filestatus < ? AND foltia_program.tid = foltia_subtitle.TID AND foltia_program.PSP = 1 AND foltia_m2pfiles.m2pfilename = foltia_subtitle.m2pfilename ORDER BY enddatetime ASC LIMIT 1",
+'ipodtranscode.1'               => "SELECT foltia_subtitle.pid, foltia_subtitle.tid, foltia_subtitle.m2pfilename, filestatus, foltia_program.aspect, foltia_subtitle.countno, foltia_program.title, foltia_subtitle.subtitle, foltia_subtitle.startdatetime, foltia_subtitle.enddatetime, foltia_subtitle.lengthmin FROM foltia_subtitle, foltia_program, foltia_m2pfiles WHERE filestatus >= ? AND filestatus < ? AND foltia_program.tid = foltia_subtitle.TID AND foltia_program.PSP = 1 AND foltia_m2pfiles.m2pfilename = foltia_subtitle.m2pfilename ORDER BY enddatetime ASC LIMIT 1",
 'ipodtranscode.2'               => "SELECT title, countno, subtitle FROM foltia_program, foltia_subtitle WHERE foltia_program.tid = foltia_subtitle.tid AND foltia_subtitle.pid = ?",
 'ipodtranscode.updatemp4file.1' => "UPDATE foltia_subtitle SET PSPfilename = ? WHERE pid = ?",
 'ipodtranscode.updatemp4file.2' => "INSERT INTO foltia_mp4files VALUES (?, ?)",

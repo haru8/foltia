@@ -26,6 +26,9 @@ $trconqty = 2;
 #3:iPod H.264 高画質 30fps 300kbps / デジタル  640x352 29.97fps 600kbps
 $phptoolpath = $toolpath ;#php版の初期設定の位置。デフォルトではperlと同じ位置
 
+# Slack
+# $slack_webhook_url = '';
+
 #以下はデフォルトでインストールしてればいじらなくてもいい
 
 ## for postgresql
