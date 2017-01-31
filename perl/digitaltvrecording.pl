@@ -3,24 +3,23 @@
 # Anime recording system foltia
 # http://www.dcc-jpl.com/soft/foltia/
 #
-#digitaltvrecording.pl
-# PT1,PT2,friioをはじめとするデジタル録画プログラムを呼びだす録画モジュール。
-#
-#usage digitaltvrecording.pl bandtype ch length(sec) [stationid] [sleeptype] [filename] [TID] [NO] [unittype]
-#引数
-#bandtype : 0:地デジ 1:BSデジタル 2:CSデジタル
-#ch :録画チャンネル (地デジはそのまま渡す、BS/CSデジタルは基本的にチャンネル BS1/BS2など同じ数時に)
-#length(sec) :録画秒数 [必須項目]
-#[stationid] :foltia stationid
-#[sleeptype] :0かN Nならスリープなしで録画
-#[filename] :出力ファイル名
-#[TID] :しょぼかるタイトルID
-#[NO] :その番組の放送話数
-#[unittype] :friioかfriioBSかユニデンチューナかHDUSかなど(未使用)
+# digitaltvrecording.pl
+#  PT1,PT2,friioをはじめとするデジタル録画プログラムを呼びだす録画モジュール。
+# 
+# usage digitaltvrecording.pl bandtype ch length(sec) [stationid] [sleeptype] [filename] [TID] [NO] [unittype]
+# 引数
+# bandtype : 0:地デジ 1:BSデジタル 2:CSデジタル
+# ch :録画チャンネル (地デジはそのまま渡す、BS/CSデジタルは基本的にチャンネル BS1/BS2など同じ数時に)
+# length(sec) :録画秒数 [必須項目]
+# [stationid] :foltia stationid
+# [sleeptype] :0かN Nならスリープなしで録画
+# [filename] :出力ファイル名
+# [TID] :しょぼかるタイトルID
+# [NO] :その番組の放送話数
+# [unittype] :friioかfriioBSかユニデンチューナかHDUSかなど(未使用)
 #
 # DCC-JPL Japan/foltia project
-#
-#
+
 
 $path = $0;
 $path =~ s/digitaltvrecording.pl$//i;
@@ -29,8 +28,8 @@ if ($path ne "./") {
 }
 
 #tvConfig.pl -------------------------------
-$extendrecendsec = 10;							#recording end second. 
-	$startupsleeptime = 52;							#process wait(MAX60sec)
+$extendrecendsec  = 10;							#recording end second. 
+$startupsleeptime = 52;							#process wait(MAX60sec)
 $startupsleeptime = 32;							#process wait(MAX60sec)
 #-------------------------------
 
@@ -56,80 +55,80 @@ require 'foltialib.pl';
 
 sub prepare {
 
-#引数エラー処理
-$bandtype	= $ARGV[0] ;
-$recch		= $ARGV[1] ;
-$lengthsec	= $ARGV[2] ;
-$stationid	= $ARGV[3] ;
-$sleeptype	= $ARGV[4] ;
-$filename	= $ARGV[5] ;
-$tid		= $ARGV[6] ;
-$countno	= $ARGV[7] ;
-$unittype	= $ARGV[8] ; 
-
-if (($bandtype eq "" )|| ($recch eq "")|| ($lengthsec eq "")) {
-	print "usage digitaltvrecording.pl bandtype ch length(sec) [stationid] [sleeptype] [filename] [TID] [NO] [unittype]\n";
-	exit;
-}
-
-my $intval			= $recch % 10; # 0〜9 sec
-my $startupsleep	= $startupsleeptime - $intval; #  18〜27 sec
-$reclengthsec		= $lengthsec + (60 - $startupsleep) + 1; #
-
-if ( $sleeptype ne "N") {
-	&writelog("digitaltvrecording: DEBUG SLEEP $startupsleeptime:$intval:$startupsleep:$reclengthsec");
-	sleep ( $startupsleep);
-	#2008/08/12_06:39:00 digitaltvrecording: DEBUG SLEEP 17:23:-6:367
-} else {
-	&writelog("digitaltvrecording: DEBUG RAPID START");
-}
-## recfriio このへんどうなってるの?
-#if ($recunits > 1){
-#my $deviceno = $recunits - 1;#3枚差しのとき/dev/video2から使う
-#	$recdevice = "/dev/video$deviceno";
-#	$recch = $ARGV[0] ;
-#}else{
-##1枚差し
-#	$recdevice = "/dev/video0";
-#	$recch = $ARGV[0] ;
-#}
-
-$outputpath = "$recfolderpath"."/";
-
-if ($countno eq "0") {
-	$outputfile = $outputpath.$tid."--";
-} else {
-	$outputfile = $outputpath.$tid."-".$countno."-";
-}
-#2番目以降のクリップでファイル名指定があったら
-if ($filename  ne "") {
-	$outputfile				= $filename ;
-	$outputfile				= &filenameinjectioncheck($outputfile);
-	$outputfilewithoutpath	= $outputfile ;
-	$outputfile				= $outputpath.$outputfile ;
-	&writelog("digitaltvrecording: DEBUG FILENAME ne null \$outputfile $outputfile ");
-} else {
-	$outputfile				.= strftime("%Y%m%d-%H%M", localtime(time + 60));
-	chomp($outputfile);
-	$outputfile				.= ".m2t";
-	$outputfilewithoutpath	= $outputfile ;
-	&writelog("digitaltvrecording:  DEBUG FILENAME is null \$outputfile $outputfile ");
-}
-
-
-@wday_name = ("Sun","Mon","Tue","Wed","Thu","Fri","Sat");
-$sleepcounter = 0;
-$cmd="";
-
-#二重録りなど既に同名ファイルがあったら中断
-if ( -e "$outputfile" ) {
-	if ( -s "$outputfile" ) {
-		&writelog("digitaltvrecording :ABORT :recfile $outputfile exist.");
-		exit 1;
+	# 引数エラー処理
+	$bandtype	= $ARGV[0] ;
+	$recch		= $ARGV[1] ;
+	$lengthsec	= $ARGV[2] ;
+	$stationid	= $ARGV[3] ;
+	$sleeptype	= $ARGV[4] ;
+	$filename	= $ARGV[5] ;
+	$tid		= $ARGV[6] ;
+	$countno	= $ARGV[7] ;
+	$unittype	= $ARGV[8] ; 
+	
+	if (($bandtype eq "" )|| ($recch eq "")|| ($lengthsec eq "")) {
+		print "usage digitaltvrecording.pl bandtype ch length(sec) [stationid] [sleeptype] [filename] [TID] [NO] [unittype]\n";
+		exit;
 	}
-}
-
-}#end prepare
+	
+	my $intval			= $recch % 10; # 0〜9 sec
+	my $startupsleep	= $startupsleeptime - $intval; #  18〜27 sec
+	$reclengthsec		= $lengthsec + (60 - $startupsleep) + 1; #
+	
+	if ( $sleeptype ne "N") {
+		&writelog("digitaltvrecording: DEBUG SLEEP $startupsleeptime:$intval:$startupsleep:$reclengthsec");
+		sleep ( $startupsleep);
+		#2008/08/12_06:39:00 digitaltvrecording: DEBUG SLEEP 17:23:-6:367
+	} else {
+		&writelog("digitaltvrecording: DEBUG RAPID START");
+	}
+	## recfriio このへんどうなってるの?
+	#if ($recunits > 1){
+	#my $deviceno = $recunits - 1;#3枚差しのとき/dev/video2から使う
+	#	$recdevice = "/dev/video$deviceno";
+	#	$recch = $ARGV[0] ;
+	#}else{
+	##1枚差し
+	#	$recdevice = "/dev/video0";
+	#	$recch = $ARGV[0] ;
+	#}
+	
+	$outputpath = "$recfolderpath"."/";
+	
+	if ($countno eq "0") {
+		$outputfile = $outputpath.$tid."--";
+	} else {
+		$outputfile = $outputpath.$tid."-".$countno."-";
+	}
+	# 2番目以降のクリップでファイル名指定があったら
+	if ($filename  ne "") {
+		$outputfile				= $filename ;
+		$outputfile				= &filenameinjectioncheck($outputfile);
+		$outputfilewithoutpath	= $outputfile ;
+		$outputfile				= $outputpath.$outputfile ;
+		&writelog("digitaltvrecording: DEBUG FILENAME ne null \$outputfile $outputfile ");
+	} else {
+		$outputfile				.= strftime("%Y%m%d-%H%M", localtime(time + 60));
+		chomp($outputfile);
+		$outputfile				.= ".m2t";
+		$outputfilewithoutpath	= $outputfile ;
+		&writelog("digitaltvrecording:  DEBUG FILENAME is null \$outputfile $outputfile ");
+	}
+	
+	
+	@wday_name = ("Sun","Mon","Tue","Wed","Thu","Fri","Sat");
+	$sleepcounter = 0;
+	$cmd="";
+	
+	# 二重録りなど既に同名ファイルがあったら中断
+	if ( -e "$outputfile" ) {
+		if ( -s "$outputfile" ) {
+			&writelog("digitaltvrecording :ABORT :recfile $outputfile exist.");
+			exit 1;
+		}
+	}
+	
+	} #end prepare
 
 
 #------------------------------------------------------------------------------------
@@ -144,7 +143,7 @@ sub calldigitalrecorder {
 	my $pt1recch =  $recch;
 	my $errorflag = 0;
 	if ($bandtype == 0) {
-	# 地デジ friio
+		# 地デジ friio
 	} elsif($bandtype == 1) {
 		# BS/CS friio
 		#recfriiobs用チャンネルリマップ
