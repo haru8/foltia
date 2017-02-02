@@ -21,7 +21,7 @@
 # DCC-JPL Japan/foltia project
 #
 #
-
+use utf8;
 
 #use Time::HiRes qw(usleep);
 

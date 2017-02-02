@@ -13,6 +13,7 @@
 #
 #
 
+use utf8;
 use DBI;
 use DBD::Pg;
 use DBD::SQLite;
@@ -38,7 +39,8 @@ if (($tid eq "" )|| ($station eq "")) {
 }
 
 #DB検索(TIDとStationIDからPIDへ)
-$dbh = DBI->connect($DSN, $DBUser, $DBPass) ||die $DBI::error;;
+$dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
+$dbh->{sqlite_unicode} = 1;
 
 if ($station == 0) {
 	$sth = $dbh->prepare($stmt{'addatq.1'});

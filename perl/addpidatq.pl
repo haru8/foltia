@@ -11,6 +11,7 @@
 #
 #
 
+use utf8;
 use DBI;
 use DBD::Pg;
 use DBD::SQLite;
@@ -34,7 +35,8 @@ if ($pid eq "" ){
 }
 
 #DB検索(PID)
-$dbh = DBI->connect($DSN,$DBUser,$DBPass) ||die $DBI::error;;
+$dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
+$dbh->{sqlite_unicode} = 1;
 
 $sth = $dbh->prepare($stmt{'addpidatq.1'});
 $sth->execute($pid);

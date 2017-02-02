@@ -17,6 +17,7 @@
 # DCC-JPL Japan/foltia project
 #
 
+use utf8;
 use DBI;
 use DBD::Pg;
 use DBD::SQLite;
@@ -84,7 +85,8 @@ if ($processes > 1 ) {
 }
 
 
-$dbh = DBI->connect($DSN,$DBUser,$DBPass) ||die $DBI::error;;
+$dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
+$dbh->{sqlite_unicode} = 1;
 
 #局指定があるなら、単一放送局指定モード
 if ($stationid > 0) {

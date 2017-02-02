@@ -11,6 +11,7 @@
 #
 #
 
+use utf8;
 use DBI;
 use DBD::Pg;
 use DBD::SQLite;
@@ -37,6 +38,7 @@ $checkrangetime = $now + 15*60; #15分後まで
 $checkrangetime = &epoch2foldate($checkrangetime);
 
 $dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
+$dbh->{sqlite_unicode} = 1;
 
 $sth = $dbh->prepare($stmt{'schedulecheck.1'});
 $sth->execute();

@@ -15,6 +15,7 @@
 # DCC-JPL Japan/foltia project
 #
 #
+use utf8;
 
 $path = $0;
 $path =~ s/digitalradiorecording.pl$//i;

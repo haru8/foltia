@@ -18,6 +18,7 @@ use POSIX qw(strftime);
 use File::Basename;
 use LWP::UserAgent;
 use JSON;
+use Encode;
 
 binmode(STDIN,  ':utf8');
 binmode(STDOUT, ':utf8');
@@ -87,6 +88,10 @@ sub slackSend {
 }
 
 sub writelog {
+	binmode(STDIN,  ':utf8');
+	binmode(STDOUT, ':utf8');
+	binmode(STDERR, ':utf8');
+
 	my $messages  = $_[0];
 	my $timestump = strftime("%Y/%m/%d_%H:%M:%S", localtime);
 	chomp($timestump);
@@ -102,6 +107,7 @@ sub writelog {
 	$_line = sprintf("%-4d", $_line);
 	$_file = basename($_file);
 	$_file = sprintf("%-21s", $_file);
+	$messages = encode('utf-8', $messages);
 	print DEBUGLOG "$timestump $_processid: $_file:$_line $messages\n";
 	close (DEBUGLOG);
 } #end writelog

@@ -11,6 +11,7 @@
 # DCC-JPL Japan/foltia project
 #
 
+use utf8;
 #use DBI;
 #use DBD::Pg;
 #use DBD::SQLite;

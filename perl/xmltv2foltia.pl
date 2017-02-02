@@ -19,13 +19,13 @@
 #use Encode qw(from_to);
 #use encoding 'euc-jp', STDIN=>'utf8', STDOUT=>'euc-jp' ; # 標準入力:utf8 
 # http://www.lr.pi.titech.ac.jp/~abekawa/perl/perl_unicode.html
+use utf8;
 use Jcode;
 #use Data::Dumper; 
 use Time::Local;
 use DBI;
 use DBD::Pg;
 use DBD::SQLite;
-use utf8;
 
 binmode STDIN, ':utf8';
 binmode STDOUT, ':utf8';
@@ -46,6 +46,7 @@ $todaytime = strftime("%Y%m%d%H%M", localtime);
 
 # DB Connect
 $dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
+$dbh->{sqlite_unicode} = 1;
 
 while(<>) {
 	#print $_;

@@ -14,45 +14,49 @@
 # DCC-JPL Japan/foltia project
 #
 #
+use utf8;
 use DBI;
 use DBD::Pg;
 use Schedule::At;
 use Time::Local;
 
-
 $path = $0;
 $path =~ s/folprep.pl$//i;
-if ($path ne "./"){
+if ($path ne "./") {
 	push( @INC, "$path");
 }
 
 require "foltialib.pl";
 
-
-#PID探し
+# PID探し
 my $pid = $ARGV[0];
 
-#引き数がアルか?
-if ($pid eq "" ){
-	#引き数なし出実行されたら、終了
+# 引き数がアルか?
+if ($pid eq "" ) {
+	# 引き数なし出実行されたら、終了
 	print "usage;folprep.pl <PID>\n";
 	exit;
 }
 
 my $stationid = "";
-if ($pid <= 0){ #EPG録画/キーワード録画
-	#EPG更新 & DB更新
-	$dbh = DBI->connect($DSN, $DBUser, $DBPass) ||die $DBI::error;;
+if ($pid <= 0) {
+	# EPG録画/キーワード録画
+
+	# EPG更新 & DB更新
+	$dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
+	$dbh->{sqlite_unicode} = 1;
 	$stationid = &pid2sid($pid);
 	&writelog("folprep DEBUG epgimport.pl $stationid");
 	system("$toolpath/perl/epgimport.pl $stationid");
-} else { #しょぼかる録画
-	#XMLゲット & DB更新
+} else {
+	# しょぼかる録画
+
+	# XMLゲット & DB更新
 	&writelog("folprep DEBUG getxml2db.pl");
 	system("$toolpath/perl/getxml2db.pl");
 }
 
-#キュー再投入
+# キュー再投入
 &writelog("folprep  $toolpath/perl/addpidatq.pl $pid");
 system("$toolpath/perl/addpidatq.pl $pid");
 

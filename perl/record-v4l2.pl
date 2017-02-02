@@ -112,6 +112,7 @@
 
 
 use strict;
+use utf8;
 use Getopt::Long qw(:config no_ignore_case bundling);
 use Fcntl;
 use Video::Frequencies 0.03;

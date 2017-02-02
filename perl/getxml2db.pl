@@ -12,7 +12,7 @@
 # DCC-JPL Japan/foltia project
 #
 #
-
+use utf8;
 use LWP::Simple;
 use Jcode;
 use Time::Local;
@@ -52,7 +52,8 @@ if ($processes > 1 ) {
 $uri = "http://cal.syoboi.jp/cal_chk.php?days=";
 $uri .= ($ARGV[0] eq "long")? 14: 7;
 
-$dbh = DBI->connect($DSN,$DBUser,$DBPass) ||die $DBI::error;;
+$dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
+$dbh->{sqlite_unicode} = 1;
 
 $dbh->{AutoCommit} = 0;
 

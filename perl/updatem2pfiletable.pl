@@ -12,14 +12,14 @@
 #
 # DCC-JPL Japan/foltia project
 #
-
+use utf8;
 use DBI;
 use DBD::Pg;
 use DBD::SQLite;
 
 $path = $0;
 $path =~ s/updatem2pfiletable.pl$//i;
-if ($path ne "./")	{
+if ($path ne "./") {
 	push( @INC, "$path");
 }
 
@@ -28,7 +28,8 @@ require "foltialib.pl";
 &writelog("updatem2pfiletable.pl START.");
 
 
-$dbh = DBI->connect($DSN,$DBUser,$DBPass) ||die $DBI::error;;
+$dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
+$dbh->{sqlite_unicode} = 1;
 
 $dbh->{AutoCommit} = 0;
 #　ひとまず消す

@@ -24,7 +24,7 @@
 #
 #
 
-
+use utf8;
 use DBI;
 use DBD::Pg;
 use DBD::SQLite;
@@ -63,7 +63,8 @@ $mp4newstylefilename = "-".$outputfile ;
 # -- recwrapからほとんどコピー
 
 #PSPトラコン必要かどうか
-$dbh = DBI->connect($DSN,$DBUser,$DBPass) ||die $DBI::error;;
+$dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
+$dbh->{sqlite_unicode} = 1;
 
 if ($ARGV[1] != "") {
 	$pid = $ARGV[1] ;
