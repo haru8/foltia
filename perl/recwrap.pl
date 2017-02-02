@@ -150,8 +150,15 @@ if ($recch == -2 ) { #ラジオ局
 	if ($usedigital == 1) {
 		#デジタルなら
 		&writelog("RECSTART DIGITAL $digitalstationband $digitalch $reclength $stationid 0 $outputfilename $tid $countno friio");
-		slackSend(sprintf("録画開始(digitaltvrecording.pl起動)\npid            = %s\ntid            = %s\ncountno        = %s\ndigitalch      = %s\nstationid      = %s\nreclength      = %s\noutputfilename = %s\n",
-            $pid, $tid, $countno, $digitalch, $stationid, $reclength, $outputfilename));
+		$mes = "録画開始(digitaltvrecording.pl起動)\n";
+		$mes .= sprintf("pid            = %s\n", $pid);
+		$mes .= sprintf("tid            = %s\n", $tid);
+		$mes .= sprintf("countno        = %s\n", $countno);
+		$mes .= sprintf("digitalch      = %s\n", $digitalch);
+		$mes .= sprintf("stationid      = %s\n", $stationid);
+		$mes .= sprintf("reclength      = %s\n", $reclength);
+		$mes .= sprintf("outputfilename = %s\n", $outputfilename);
+		slackSend($mes);
 
 		#録画
 		$starttime = time();
@@ -179,8 +186,15 @@ if ($recch == -2 ) { #ラジオ局
 			exit ;
 		}
 
-		slackSend(sprintf("録画完了(digitaltvrecording.pl終了)\npid            = %s\ntid            = %s\ncountno        = %s\ndigitalch      = %s\nstationid      = %s\nreclength      = %s\noutputfilename = %s\n",
-            $pid, $tid, $countno, $digitalch, $stationid, $reclength, $outputfilename));
+		$mes = "録画完了(digitaltvrecording.pl終了)\n";
+		$mes .= sprintf("pid            = %s\n", $pid);
+		$mes .= sprintf("tid            = %s\n", $tid);
+		$mes .= sprintf("countno        = %s\n", $countno);
+		$mes .= sprintf("digitalch      = %s\n", $digitalch);
+		$mes .= sprintf("stationid      = %s\n", $stationid);
+		$mes .= sprintf("reclength      = %s\n", $reclength);
+		$mes .= sprintf("outputfilename = %s\n", $outputfilename);
+		slackSend($mes);
 
 	} else { # NOT $usedigital == 1
 		if ($recunits > 0 ) {

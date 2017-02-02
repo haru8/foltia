@@ -328,15 +328,30 @@ sub calldigitalrecorder {
 		if ($bandtype >= 1) {
 			# BS/CSなら
 			&writelog("DEBUG recpt1 --b25 --sid $originalrecch  $pt1recch $reclengthsec $outputfile   ");
-			slackSend(sprintf("録画開始(recpt1 起動)\nsleeptype     = %s\ntid           = %s\noriginalrecch = %s\npt1recch      = %s\nstationid     = %s\nreclengthsec  = %s\ncountno       = %s\nfilename      = %s\n",
-                $sleeptype, $tid, $originalrecch, $pt1recch, $stationid, $reclengthsec, $countno, $filename));
+			$mes = "BS/CS 録画開始(recpt1 起動)\n";
+			$mes .= sprintf("sleeptype     = %s\n", $sleeptype);
+			$mes .= sprintf("tid           = %s\n", $tid);
+			$mes .= sprintf("originalrecch = %s\n", $originalrecch);
+			$mes .= sprintf("pt1recch      = %s\n", $pt1recch);
+			$mes .= sprintf("stationid     = %s\n", $stationid);
+			$mes .= sprintf("reclengthsec  = %s\n", $reclengthsec);
+			$mes .= sprintf("countno       = %s\n", $countno);
+			$mes .= sprintf("filename      = %s\n", $filename);
+			slackSend($mes);
 
 			$oserr = system("$toolpath/perl/tool/recpt1 --b25 --sid $originalrecch $pt1recch $reclengthsec $outputfile  ");
 		} else {
 			# 地デジ
 			&writelog("DEBUG recpt1 --b25  $originalrecch $reclengthsec $outputfile  ");
-			slackSend(sprintf("録画開始(recpt1 起動)\nsleeptype     = %s\ntid           = %s\noriginalrecch = %s\nstationid     = %s\nreclengthsec  = %s\ncountno       = %s\nfilename      = %s\n",
-                $sleeptype, $tid, $originalrecch, $stationid, $reclengthsec, $countno, $filename));
+			$mes = "地デジ 録画開始(recpt1 起動)\n";
+			$mes .= sprintf("sleeptype     = %s\n", $sleeptype);
+			$mes .= sprintf("tid           = %s\n", $tid);
+			$mes .= sprintf("originalrecch = %s\n", $originalrecch);
+			$mes .= sprintf("stationid     = %s\n", $stationid);
+			$mes .= sprintf("reclengthsec  = %s\n", $reclengthsec);
+			$mes .= sprintf("countno       = %s\n", $countno);
+			$mes .= sprintf("filename      = %s\n", $filename);
+			slackSend($mes);
 
 			$oserr = system("$toolpath/perl/tool/recpt1 --b25  $originalrecch $reclengthsec $outputfile  ");
 		}

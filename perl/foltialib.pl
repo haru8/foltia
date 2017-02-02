@@ -66,12 +66,14 @@ sub slackSend {
 	#&writelog($messages);
 
 	# コンテンツの準備
-	my $values = {text => '```' . $timestump . "\n" . $messages . '```'};
+	my $values =	{text     => '```' . $timestump . "\n" . $messages . '```',
+					 username => 'foltiaBot'};
 	my $content = JSON::to_json($values, {utf8 => 1});
 
 	# 組み立てたコンテンツ(=JSON)を Slack に送信
 	my $user_agent = LWP::UserAgent->new();
-    $user_agent->timeout(10);
+    $user_agent->timeout(5);
+
 	my $response = $user_agent->post(
 		$slack_webhook_url,
 		Content_Type => 'application/json; charset=UTF-8',
