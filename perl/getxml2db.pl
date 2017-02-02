@@ -57,7 +57,7 @@ $dbh->{sqlite_unicode} = 1;
 
 $dbh->{AutoCommit} = 0;
 
-# If-Modified-Since使うように変更#2008/11/14 
+# If-Modified-Since使うように変更#2008/11/14
 my  $CacheDir = '/tmp/shobocal';
 if (! -e $CacheDir) {
 	mkdir $CacheDir or die "cannot create $CacheDir: $!";
@@ -79,10 +79,10 @@ foreach(@line) {
 	s/\xef\xbc\x8d/\xe2\x88\x92/g; #hyphenminus
 	s/&#([0-9A-Fa-f]{2,6});/(chr($1))/eg; #'遊戯王5D&#039;s'とかの数値参照対応を
 	
-	Jcode::convert(\$_, 'utf8'); 
+	Jcode::convert(\$_, 'utf8');
 	
 	#<ProgItem PID="21543" TID="528" StTime="20041114213000" EdTime="20041114220000" ChName="AT-X" Count="4" StOffset="0" SubTitle="いやだよ、サヨナラ…" Title="おとぎストーリー 天使のしっぽ" ProgComment=""/>
-	if (/^<ProgItem /) { 
+	if (/^<ProgItem /) {
 		s/<ProgItem //i;
 		s/\"\/>/\" /i;
 		s/\"[\s]/\";\n/gio;
@@ -134,7 +134,7 @@ foreach(@line) {
 		$sth = $dbh->prepare($stmt{'getxml2db.1'});
 		$sth->execute($item{TID});
 		@titlecount= $sth->fetchrow_array;
-		 
+
 		if ($titlecount[0] == 0) {
 			#なければ追加
 		
@@ -145,7 +145,7 @@ foreach(@line) {
 			$oserr = $sth->execute($item{TID}, $programtitle, '', $nomalstarttime, $length, '', '', 3, 1, '', '');
 			&writelog("getxml2db  ADD TV Progtam:$item{TID}:$programtitle");
 		} else {
-			#2006/2/26 
+			#2006/2/26
 			#あったら、タイトル確認して
 			$sth = $dbh->prepare($stmt{'getxml2db.3'});
 			$sth->execute($item{TID});
@@ -162,26 +162,26 @@ foreach(@line) {
 		
 		#PIDがあるか確認
 		$sth = $dbh->prepare($stmt{'getxml2db.5'});
-		$sth->execute($item{'TID'}, $item{'PID'});
+		$sth->execute($item{'PID'});
 		@subticount= $sth->fetchrow_array;
 		if ($subticount[0]  >= 1) {
 			#PIDあったら上書き更新
 			#ここでこんなエラー出てる
 			#	DBD::Pg::st execute failed: ERROR:  invalid input syntax for type bigint: "" at /home/foltia/perl/getxml2db.pl line 147.
-			#UPDATE  foltia_subtitle  SET stationid = '42',countno = '8',subtitle = '京都行きます' ,startdatetime = '200503010035'  ,enddatetime = '200503010050',startoffset  = '0' ,lengthmin = '15' WHERE tid = '550' AND pid =  '26000' 
+			#UPDATE  foltia_subtitle  SET stationid = '42',countno = '8',subtitle = '京都行きます' ,startdatetime = '200503010035'  ,enddatetime = '200503010050',startoffset  = '0' ,lengthmin = '15' WHERE tid = '550' AND pid =  '26000'
 			if ($item{Count} == "") {
 				$sth = $dbh->prepare($stmt{'getxml2db.6'});
-				$oserr = $sth->execute($stationid, undef, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length, $item{'TID'}, $item{'PID'});
+				$oserr = $sth->execute($item{'TID'}, $stationid, undef, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length, $item{'PID'});
 				if (!$oserr) {
-					&writelog("getxml2db.6 Error. $stationid, undef, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length, $item{'TID'}, $item{'PID'}");
-					printf("getxml2db.6: $stationid, undef, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length, $item{'TID'}, $item{'PID'}\n");
+					&writelog("getxml2db.6 Error. $item{'TID'}, $stationid, undef, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length, $item{'PID'}");
+					printf("getxml2db.6: $item{'TID'}, $stationid, undef, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length, $item{'PID'}\n");
 				}
 			} else {
 				$sth = $dbh->prepare($stmt{'getxml2db.7'});
-				$oserr = $sth->execute($stationid, $item{'Count'}, $programSubTitle,  $recstartdate, $recenddate, $offsetmin, $length, $item{'TID'}, $item{'PID'});
+				$oserr = $sth->execute($item{'TID'}, $stationid, $item{'Count'}, $programSubTitle, $recstartdate, $recenddate, $offsetmin, $length, $item{'PID'});
 				if (!$oserr) {
-					&writelog("getxml2db.7 Error. $stationid, $item{'Count'}, $programSubTitle,  $recstartdate, $recenddate, $offsetmin, $length, $item{'TID'}, $item{'PID'}");
-					printf("getxml2db.7: $stationid, $item{'Count'}, $programSubTitle,  $recstartdate, $recenddate, $offsetmin, $length, $item{'TID'}, $item{'PID'}\n");
+					&writelog("getxml2db.7 Error. $item{'TID'}, $stationid, $item{'Count'}, $programSubTitle,  $recstartdate, $recenddate, $offsetmin, $length, $item{'PID'}");
+					printf("getxml2db.7: $item{'TID'}, $stationid, $item{'Count'}, $programSubTitle,  $recstartdate, $recenddate, $offsetmin, $length, $item{'PID'}\n");
 				}
 			}
 		} else {

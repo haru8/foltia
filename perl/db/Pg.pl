@@ -34,9 +34,9 @@
 'getxml2db.2' => "INSERT into foltia_program VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?)",
 'getxml2db.3' => "SELECT title FROM foltia_program WHERE tid = ?",
 'getxml2db.4' => "UPDATE foltia_program SET title = ? where tid = ?",
-'getxml2db.5' => "SELECT count(*) FROM foltia_subtitle WHERE tid = ? AND pid = ?",
-'getxml2db.6' => "UPDATE foltia_subtitle SET stationid = ?, countno = ?, subtitle = ?, startdatetime = ?, enddatetime = ?, startoffset = ?, lengthmin = ? WHERE tid = ? AND pid = ?",
-'getxml2db.7' => "UPDATE foltia_subtitle SET stationid = ?, countno = ?, subtitle = ?, startdatetime = ?, enddatetime = ?, startoffset = ?, lengthmin = ? WHERE tid = ? AND pid = ?",
+'getxml2db.5' => "SELECT count(*) FROM foltia_subtitle WHERE pid = ?",
+'getxml2db.6' => "UPDATE foltia_subtitle SET tid = ?, stationid = ?, countno = ?, subtitle = ?, startdatetime = ?, enddatetime = ?, startoffset = ?, lengthmin = ? WHERE pid = ?",
+'getxml2db.7' => "UPDATE foltia_subtitle SET tid = ?, stationid = ?, countno = ?, subtitle = ?, startdatetime = ?, enddatetime = ?, startoffset = ?, lengthmin = ? WHERE pid = ?",
 'getxml2db.8' => "INSERT into foltia_subtitle (pid, tid, stationid, countno, subtitle, startdatetime, enddatetime, startoffset, lengthmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 'getxml2db.9' => "INSERT into foltia_subtitle (pid, tid, stationid, countno, subtitle, startdatetime, enddatetime, startoffset, lengthmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 
