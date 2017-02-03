@@ -155,6 +155,16 @@ values ( ?,'0',?,?,?,?,?,'0',?,?)";
 
 	$oserr = system("$toolpath/perl/addatq.pl 0 0");
 	print "下記予約を完了いたしました。<br>";
+
+	$head  = '下記予約を完了いたしました。';
+	//$mesg  = sprintf("放送局         : %s\n", $stationjname);
+	$mesg  = sprintf("放送開始   : %s\n", foldate2print($startdatetime));
+	$mesg .= sprintf("放送終了   : %s\n", foldate2print($enddatetime));
+	$mesg .= sprintf("尺(分)     : %s\n", $lengthmin);
+	$mesg .= sprintf("局コード   : %s\n", $stationid);
+	$mesg .= sprintf("番組名     : %s\n", $subtitle);
+	slackSend($head, $mesg);
+
 }else{
 	print "EPG予約を行う権限がありません。";
 }// end if $userclass <= 2

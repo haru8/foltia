@@ -117,6 +117,17 @@ if ($delflag == "1") {
 		WHERE foltia_subtitle.pid = ? AND  foltia_subtitle.tid = 0 ";
 //			$rs = m_query($con, $query, "DBクエリに失敗しました");
 			$rs = sql_query($con, $query, "DBクエリに失敗しました",array($pid));
+
+			$head  = "EPG予約「pid = " . $pid . "」の録画予約を解除しました。";
+			$mesg  = sprintf("放送局         : %s\n", $stationjname);
+			$mesg .= sprintf("放送開始       : %s\n", $startprinttime);
+			$mesg .= sprintf("放送終了       : %s\n", $endprinttime);
+			$mesg .= sprintf("尺(分)         : %s\n", $lengthmin);
+			$mesg .= sprintf("放送チャンネル : %s\n", $recch);
+			$mesg .= sprintf("局コード       : %s\n", $stationid);
+			$mesg .= sprintf("番組名         : %s\n", $subtitle);
+			$mesg .= sprintf("番組ID         : %s\n", $pid);
+			slackSend($head, $mesg);
 		}
 	}else{
 		print "<strong>過去番組は予約削除出来ません。</strong>";

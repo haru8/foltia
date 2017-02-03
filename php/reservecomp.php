@@ -204,6 +204,18 @@ WHERE tid = ?  AND stationid = ?
 //引数　TID チャンネルID
 //echo("$toolpath/perl/addatq.pl $tid $station");
 $oserr = system("$toolpath/perl/addatq.pl $tid $station");
+
+$head  = '「' . $title . '」を番組予約モードで予約しました。';
+$mesg  = sprintf("PID          : %s\n", $rowdata[0]);
+$mesg .= sprintf("放送局       : %s\n", $rowdata[1]);
+$mesg .= sprintf("話数         : %s\n", $rowdata[2]);
+$mesg .= sprintf("タイトル     : %s\n", $title);
+$mesg .= sprintf("サブタイトル : %s\n", $rowdata[3]);
+$mesg .= sprintf("開始時刻     : %s\n", foldate2print($rowdata[4]));
+$mesg .= sprintf("総尺         : %s\n", $rowdata[5]);
+$mesg .= sprintf("時刻ずれ     : %s\n", $rowdata[6]);
+slackSend($head, $mesg);
+
 }//end if demomode
 ?>
 

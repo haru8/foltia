@@ -14,6 +14,56 @@ http://www.hizlab.net/app/
 //error_reporting(0);
 
 
+function slackSend($head, $mesg='') {
+	global $slack_webhook_url;
+	if (!$slack_webhook_url) {
+		return false;
+	}
+
+	$channel    = '';
+	$username   = 'foltiaBot';
+	$icon_emoji = '';
+
+	$timestump	= date("Y/m/d H:i:s");
+	$message	= '`' . $head . "`\n" . '```' . $timestump . "\n" . $mesg . '```';
+
+	$info = array(
+		'url'  => $slack_webhook_url,
+		'body' => array(
+			'payload' => json_encode(array(
+				'channel'    => $channel,
+				'username'   => $username,
+				'icon_emoji' => $icon_emoji,
+				'text'       => $message,
+				)),
+			),
+		);
+
+	$options = array(
+			CURLOPT_URL            => $info['url'],
+			CURLOPT_POST           => true,
+			CURLOPT_POSTFIELDS     => $info['body'],
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_HEADER         => true,
+			CURLOPT_TIMEOUT        => 5,
+		);
+
+	$ch = curl_init();
+	curl_setopt_array($ch, $options);
+	$result      = curl_exec($ch);
+	$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+	$header      = substr($result, 0, $header_size);
+	$result      = substr($result, $header_size);
+	curl_close($ch);
+
+	//var_dump($header);
+	//var_dump($result);
+	//return array(
+    //        'Header' => $header,
+    //        'Result' => $result,
+    //    );
+}
+
 //GET用フォームデコード
 function getgetform($key) {
 	if ($_GET["{$key}"] != "") {
