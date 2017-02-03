@@ -51,8 +51,9 @@ $DBPass="";
 
 #------------------------------
 sub slackSend {
-	$ENV{HTTPS_CA_DIR} = '/etc/ssl/certs';
+	my ($head, $mesg) = @_;
 
+	$ENV{HTTPS_CA_DIR} = '/etc/ssl/certs';
 	binmode(STDIN,  ':utf8');
 	binmode(STDOUT, ':utf8');
 	binmode(STDERR, ':utf8');
@@ -61,13 +62,12 @@ sub slackSend {
     	return;
 	}
 
-	my $messages  = $_[0];
 	my $timestump = strftime("%Y/%m/%d %H:%M:%S", localtime);
 
-	#&writelog($messages);
+	#&writelog($head . ":" . $mesg);
 
 	# コンテンツの準備
-	my $values =	{text     => '```' . $timestump . "\n" . $messages . '```',
+	my $values =	{text     => "`" . $head . "`\n" . '```' . $timestump . "\n" . $mesg . '```',
 					 username => 'foltiaBot'};
 	my $content = JSON::to_json($values, {utf8 => 1});
 
@@ -81,6 +81,7 @@ sub slackSend {
 		Content => $content);
 	if(!$response->is_success) {
 		#print($response->status_line, "\n");
+		&writelog("[ERR]" . $response->status_line);
 		return;
 	}
 
@@ -88,11 +89,12 @@ sub slackSend {
 }
 
 sub writelog {
+	my $messages  = $_[0];
+
 	binmode(STDIN,  ':utf8');
 	binmode(STDOUT, ':utf8');
 	binmode(STDERR, ':utf8');
 
-	my $messages  = $_[0];
 	my $timestump = strftime("%Y/%m/%d_%H:%M:%S", localtime);
 	chomp($timestump);
 	my ($_pkg, $_file, $_line) = caller;

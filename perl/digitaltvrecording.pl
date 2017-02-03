@@ -328,30 +328,30 @@ sub calldigitalrecorder {
 		if ($bandtype >= 1) {
 			# BS/CSなら
 			&writelog("DEBUG recpt1 --b25 --sid $originalrecch  $pt1recch $reclengthsec $outputfile   ");
-			$mes = "BS/CS 録画開始(recpt1 起動)\n";
-			$mes .= sprintf("sleeptype     = %s\n", $sleeptype);
-			$mes .= sprintf("tid           = %s\n", $tid);
-			$mes .= sprintf("originalrecch = %s\n", $originalrecch);
-			$mes .= sprintf("pt1recch      = %s\n", $pt1recch);
-			$mes .= sprintf("stationid     = %s\n", $stationid);
-			$mes .= sprintf("reclengthsec  = %s\n", $reclengthsec);
-			$mes .= sprintf("countno       = %s\n", $countno);
-			$mes .= sprintf("filename      = %s\n", $filename);
-			slackSend($mes);
+			$head  = "BS/CS 録画開始(recpt1 起動)";
+			$mesg  = sprintf("sleeptype     = %s\n", $sleeptype);
+			$mesg .= sprintf("tid           = %s\n", $tid);
+			$mesg .= sprintf("originalrecch = %s\n", $originalrecch);
+			$mesg .= sprintf("pt1recch      = %s\n", $pt1recch);
+			$mesg .= sprintf("stationid     = %s\n", $stationid);
+			$mesg .= sprintf("reclengthsec  = %s\n", $reclengthsec);
+			$mesg .= sprintf("countno       = %s\n", $countno);
+			$mesg .= sprintf("filename      = %s\n", $filename);
+			slackSend($head, $mesg);
 
 			$oserr = system("$toolpath/perl/tool/recpt1 --b25 --sid $originalrecch $pt1recch $reclengthsec $outputfile  ");
 		} else {
 			# 地デジ
 			&writelog("DEBUG recpt1 --b25  $originalrecch $reclengthsec $outputfile  ");
-			$mes = "地デジ 録画開始(recpt1 起動)\n";
-			$mes .= sprintf("sleeptype     = %s\n", $sleeptype);
-			$mes .= sprintf("tid           = %s\n", $tid);
-			$mes .= sprintf("originalrecch = %s\n", $originalrecch);
-			$mes .= sprintf("stationid     = %s\n", $stationid);
-			$mes .= sprintf("reclengthsec  = %s\n", $reclengthsec);
-			$mes .= sprintf("countno       = %s\n", $countno);
-			$mes .= sprintf("filename      = %s\n", $filename);
-			slackSend($mes);
+			$head  = "地デジ 録画開始(recpt1 起動)";
+			$mesg  = sprintf("sleeptype     = %s\n", $sleeptype);
+			$mesg .= sprintf("tid           = %s\n", $tid);
+			$mesg .= sprintf("originalrecch = %s\n", $originalrecch);
+			$mesg .= sprintf("stationid     = %s\n", $stationid);
+			$mesg .= sprintf("reclengthsec  = %s\n", $reclengthsec);
+			$mesg .= sprintf("countno       = %s\n", $countno);
+			$mesg .= sprintf("filename      = %s\n", $filename);
+			slackSend($head, $mesg);
 
 			$oserr = system("$toolpath/perl/tool/recpt1 --b25  $originalrecch $reclengthsec $outputfile  ");
 		}

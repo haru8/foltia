@@ -77,17 +77,17 @@ while ($counttranscodefiles >= 1) {
 	$lengthmin         = $dbparam[10];
 	$mp4filenamestring = &mp4filenamestringbuild($pid);
 
-	$mes = "ts->mp4 エンコード開始\n";
-	$mes .= sprintf("pid          = %s\n", $pid);
-	$mes .= sprintf("tid          = %s\n", $tid);
-	$mes .= sprintf("title        = %s\n", $title);
-	$mes .= sprintf("subtitle     = %s\n", $subtitle);
-	$mes .= sprintf("countno      = %s\n", $countno);
-	$mes .= sprintf("startdatetime= %s\n", $startdatetime);
-	$mes .= sprintf("enddatetime  = %s\n", $enddatetime);
-	$mes .= sprintf("lengthmin    = %s\n", $lengthmin);
-	$mes .= sprintf("m2pfilename  = %s\n", $mpeg2filename);
-	slackSend($mes);
+	$head  = "ts->mp4 エンコード開始";
+	$mesg  = sprintf("pid          = %s\n", $pid);
+	$mesg .= sprintf("tid          = %s\n", $tid);
+	$mesg .= sprintf("title        = %s\n", $title);
+	$mesg .= sprintf("subtitle     = %s\n", $subtitle);
+	$mesg .= sprintf("countno      = %s\n", $countno);
+	$mesg .= sprintf("startdatetime= %s\n", $startdatetime);
+	$mesg .= sprintf("enddatetime  = %s\n", $enddatetime);
+	$mesg .= sprintf("lengthmin    = %s\n", $lengthmin);
+	$mesg .= sprintf("m2pfilename  = %s\n", $mpeg2filename);
+	slackSend($head, $mesg);
 
 	$mpeg2_tm_start = time();
 
@@ -759,19 +759,19 @@ while ($counttranscodefiles >= 1) {
 	&writelog("");
 	&writelog("");
 
-	$mes = "ts->mp4 エンコード完了\n";
-	$mes .= sprintf("pid              = %s\n", $pid);
-	$mes .= sprintf("tid              = %s\n", $tid);
-	$mes .= sprintf("title            = %s\n", $title);
-	$mes .= sprintf("subtitle         = %s\n", $subtitle);
-	$mes .= sprintf("countno          = %s\n", $countno);
-	$mes .= sprintf("startdatetime    = %s\n", $startdatetime);
-	$mes .= sprintf("enddatetima      = %s\n", $enddatetime);
-	$mes .= sprintf("lengthmin        = %s\n", $lengthmin);
-	$mes .= sprintf("mp4filename      = MAQ%s.MP4 : %s", $mp4filenamestring, $m4FileSize);
-	$mes .= sprintf("tsfilename       = %s : %s", $mpeg2filename, $tsFileSize);
-	$mes .= sprintf("COMPRESSION RATE = %s%", int($m4FileSize2 / $tsFileSize2 * 100 * 100) / 100);
-	slackSend($mes);
+	$head  = "ts->mp4 エンコード完了";
+	$mesg  = sprintf("pid              = %s\n", $pid);
+	$mesg .= sprintf("tid              = %s\n", $tid);
+	$mesg .= sprintf("title            = %s\n", $title);
+	$mesg .= sprintf("subtitle         = %s\n", $subtitle);
+	$mesg .= sprintf("countno          = %s\n", $countno);
+	$mesg .= sprintf("startdatetime    = %s\n", $startdatetime);
+	$mesg .= sprintf("enddatetima      = %s\n", $enddatetime);
+	$mesg .= sprintf("lengthmin        = %s\n", $lengthmin);
+	$mesg .= sprintf("mp4filename      = MAQ%s.MP4 : %s", $mp4filenamestring, $m4FileSize);
+	$mesg .= sprintf("tsfilename       = %s : %s", $mpeg2filename, $tsFileSize);
+	$mesg .= sprintf("COMPRESSION RATE = %s%", int($m4FileSize2 / $tsFileSize2 * 100 * 100) / 100);
+	slackSend($head, $mesg);
 
 	} else { #ファイルがなければ
 		&writelog("NO $inputmpeg2 file.Skip.");

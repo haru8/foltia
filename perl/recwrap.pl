@@ -150,15 +150,15 @@ if ($recch == -2 ) { #ラジオ局
 	if ($usedigital == 1) {
 		#デジタルなら
 		&writelog("RECSTART DIGITAL $digitalstationband $digitalch $reclength $stationid 0 $outputfilename $tid $countno friio");
-		$mes = "録画開始(digitaltvrecording.pl起動)\n";
-		$mes .= sprintf("pid            = %s\n", $pid);
-		$mes .= sprintf("tid            = %s\n", $tid);
-		$mes .= sprintf("countno        = %s\n", $countno);
-		$mes .= sprintf("digitalch      = %s\n", $digitalch);
-		$mes .= sprintf("stationid      = %s\n", $stationid);
-		$mes .= sprintf("reclength      = %s\n", $reclength);
-		$mes .= sprintf("outputfilename = %s\n", $outputfilename);
-		slackSend($mes);
+		$head  = "録画開始(digitaltvrecording.pl起動)";
+		$mesg  = sprintf("pid            = %s\n", $pid);
+		$mesg .= sprintf("tid            = %s\n", $tid);
+		$mesg .= sprintf("countno        = %s\n", $countno);
+		$mesg .= sprintf("digitalch      = %s\n", $digitalch);
+		$mesg .= sprintf("stationid      = %s\n", $stationid);
+		$mesg .= sprintf("reclength      = %s\n", $reclength);
+		$mesg .= sprintf("outputfilename = %s\n", $outputfilename);
+		slackSend($head, $mesg);
 
 		#録画
 		$starttime = time();
@@ -186,15 +186,15 @@ if ($recch == -2 ) { #ラジオ局
 			exit ;
 		}
 
-		$mes = "録画完了(digitaltvrecording.pl終了)\n";
-		$mes .= sprintf("pid            = %s\n", $pid);
-		$mes .= sprintf("tid            = %s\n", $tid);
-		$mes .= sprintf("countno        = %s\n", $countno);
-		$mes .= sprintf("digitalch      = %s\n", $digitalch);
-		$mes .= sprintf("stationid      = %s\n", $stationid);
-		$mes .= sprintf("reclength      = %s\n", $reclength);
-		$mes .= sprintf("outputfilename = %s\n", $outputfilename);
-		slackSend($mes);
+		$head  = "録画完了(digitaltvrecording.pl終了)";
+		$mesg  = sprintf("pid            = %s\n", $pid);
+		$mesg .= sprintf("tid            = %s\n", $tid);
+		$mesg .= sprintf("countno        = %s\n", $countno);
+		$mesg .= sprintf("digitalch      = %s\n", $digitalch);
+		$mesg .= sprintf("stationid      = %s\n", $stationid);
+		$mesg .= sprintf("reclength      = %s\n", $reclength);
+		$mesg .= sprintf("outputfilename = %s\n", $outputfilename);
+		slackSend($head, $mesg);
 
 	} else { # NOT $usedigital == 1
 		if ($recunits > 0 ) {
