@@ -192,9 +192,21 @@ if (($startdate == "") || ($starttime == "")) {
 			echo foldate2print($enddatetime);
 			print "<br />
 			録画尺: $lengthmin 分<br />
-			録画局:$recstationname[0]<br />
-			番組名:$pname<br />
+			録画局: $recstationname[0]<br />
+			番組名: $pname<br />
 			";
+
+			$head  = "番組手動予約 を完了しました";
+			$mesg  = sprintf("放送局         : %s\n", $recstationname[0]);
+			$mesg .= sprintf("録画開始       : %s\n", foldate2print($startdatetime));
+			$mesg .= sprintf("録画終了       : %s\n", foldate2print($enddatetime));
+			$mesg .= sprintf("尺(分)         : %s\n", $lengthmin);
+			//$mesg .= sprintf("放送チャンネル : %s\n", $recch);
+			//$mesg .= sprintf("局コード       : %s\n", $stationid);
+			$mesg .= sprintf("番組名         : %s\n", $pname);
+			//$mesg .= sprintf("番組ID         : %s\n", $pid);
+			slackSend($head, $mesg);
+
 			exit();
 		} else {
 			print "時刻が不正なために予約できませんでした。 <br>";

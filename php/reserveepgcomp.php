@@ -156,7 +156,7 @@ values ( ?,'0',?,?,?,?,?,'0',?,?)";
 	$oserr = system("$toolpath/perl/addatq.pl 0 0");
 	print "下記予約を完了いたしました。<br>";
 
-	$head  = '下記予約を完了いたしました。';
+	$head  = 'EPG予約 を完了いたしました。';
 	//$mesg  = sprintf("放送局         : %s\n", $stationjname);
 	$mesg  = sprintf("放送開始   : %s\n", foldate2print($startdatetime));
 	$mesg .= sprintf("放送終了   : %s\n", foldate2print($enddatetime));
@@ -179,8 +179,8 @@ print "時刻が不正なために予約できませんでした。 <br>";
 
 
 print "<table width=\"100%\" border=\"0\" style=\"table-layout: fixed;\">\n";
-print "<tr><th style=\"width:130px;\">放送開始</th><td>".htmlspecialchars($startdatetime)."</td></tr>";
-print "<tr><th>放送終了</th><td>".htmlspecialchars($enddatetime)."</td></tr>\n";
+print "<tr><th style=\"width:130px;\">放送開始</th><td>".htmlspecialchars(foldate2print($startdatetime))."</td></tr>";
+print "<tr><th>放送終了</th><td>".htmlspecialchars(foldate2print($enddatetime))."</td></tr>\n";
 print "<tr><th>局コード</th><td>".htmlspecialchars($stationid)."</td></tr>\n";
 print "<tr><th>尺(分)</th><td>".htmlspecialchars($lengthmin)."</td></tr>\n";
 print "<tr><th>番組名</th><td>".htmlspecialchars($subtitle)."</td></tr>\n";
