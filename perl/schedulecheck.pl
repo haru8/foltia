@@ -9,7 +9,6 @@
 #
 # DCC-JPL Japan/foltia project
 #
-#
 
 use utf8;
 use DBI;
@@ -31,10 +30,12 @@ require "foltialib.pl";
 # しょぼかる XMLゲット&更新
 system("$toolpath/perl/getxml2db.pl");
 
-#予約番組探し
+# 予約番組探し
 $now = &epoch2foldate(time());
 $now = &epoch2foldate($now);
-$checkrangetime = $now + 15*60; #15分後まで
+
+# 15分後まで
+$checkrangetime = $now + 15 * 60;
 $checkrangetime = &epoch2foldate($checkrangetime);
 
 $dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
@@ -50,12 +51,12 @@ if ($titlecount[0]  == 0 ) {
 	$sth = $dbh->prepare($stmt{'schedulecheck.2'});
 	$sth->execute();
 	while (($tid, $stationid) = $sth->fetchrow_array()) {
-		#キュー再投入
-		system ("$toolpath/perl/addatq.pl $tid $stationid  ");
-		&writelog("schedulecheck  $toolpath/perl/addatq.pl $tid $stationid ");
-	} #while
+		# キュー再投入
+		system ("$toolpath/perl/addatq.pl $tid $stationid");
+		&writelog("$toolpath/perl/addatq.pl $tid $stationid");
+	} # while
 
-	#EPG更新
+	# EPG更新
 	system("$toolpath/perl/epgimport.pl");
 }
 

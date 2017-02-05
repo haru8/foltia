@@ -13,7 +13,7 @@
 #
 # DCC-JPL Japan/foltia project
 #
-#
+
 use utf8;
 use DBI;
 use DBD::Pg;
@@ -46,17 +46,17 @@ if ($pid <= 0) {
 	$dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
 	$dbh->{sqlite_unicode} = 1;
 	$stationid = &pid2sid($pid);
-	&writelog("folprep DEBUG epgimport.pl $stationid");
+	&writelog("DEBUG epgimport.pl $stationid");
 	system("$toolpath/perl/epgimport.pl $stationid");
 } else {
 	# しょぼかる録画
 
 	# XMLゲット & DB更新
-	&writelog("folprep DEBUG getxml2db.pl");
+	&writelog("DEBUG getxml2db.pl");
 	system("$toolpath/perl/getxml2db.pl");
 }
 
 # キュー再投入
-&writelog("folprep  $toolpath/perl/addpidatq.pl $pid");
+&writelog("$toolpath/perl/addpidatq.pl $pid");
 system("$toolpath/perl/addpidatq.pl $pid");
 

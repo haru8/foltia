@@ -29,24 +29,24 @@ $DBUser=$main::DBUser;
 $DBPass="";
 
 
-  $FILESTATUSRESERVINGLONG = 10;
-  $FILESTATUSRESERVINGSHORT = 20;
-  $FILESTATUSRECORDING = 30;
-  $FILESTATUSRECTSSPLITTING = 40;
-  $FILESTATUSRECEND = 50;
-  $FILESTATUSWAITINGCAPTURE = 55;
-  $FILESTATUSCAPTURE = 60;
-  $FILESTATUSCAPEND = 70;
-  $FILESTATUSTHMCREATE = 72;
-  $FILESTATUSWAITINGTRANSCODE = 80;
-  $FILESTATUSTRANSCODETSSPLITTING = 90;
-  $FILESTATUSTRANSCODEFFMPEG = 100;
-  $FILESTATUSTRANSCODEWAVE = 110;
-  $FILESTATUSTRANSCODEAAC = 120;
-  $FILESTATUSTRANSCODEMP4BOX = 130;
-  $FILESTATUSTRANSCODEATOM = 140;
-  $FILESTATUSTRANSCODECOMPLETE = 150;
-  $FILESTATUSALLCOMPLETE = 200;
+$FILESTATUSRESERVINGLONG		=  10;
+$FILESTATUSRESERVINGSHORT		=  20;
+$FILESTATUSRECORDING			=  30;
+$FILESTATUSRECTSSPLITTING		=  40;
+$FILESTATUSRECEND				=  50;
+$FILESTATUSWAITINGCAPTURE		=  55;
+$FILESTATUSCAPTURE				=  60;
+$FILESTATUSCAPEND				=  70;
+$FILESTATUSTHMCREATE			=  72;
+$FILESTATUSWAITINGTRANSCODE		=  80;
+$FILESTATUSTRANSCODETSSPLITTING	=  90;
+$FILESTATUSTRANSCODEFFMPEG		= 100;
+$FILESTATUSTRANSCODEWAVE		= 110;
+$FILESTATUSTRANSCODEAAC			= 120;
+$FILESTATUSTRANSCODEMP4BOX		= 130;
+$FILESTATUSTRANSCODEATOM		= 140;
+$FILESTATUSTRANSCODECOMPLETE	= 150;
+$FILESTATUSALLCOMPLETE			= 200;
 
 
 #------------------------------
@@ -228,14 +228,14 @@ sub getstationid {
 		$sth = $dbh->prepare($stmt{'foltialib.getstationid.4'});
 		$sth->execute($stationid, $item{'ChName'}, -10);
 		#print "Add station;$DBQuery\n";
-		&writelog("foltialib Add station; $stmt{'foltialib.getstationid.4'}, $stationid, $item{'ChName'}, -10");
+		&writelog("Add station; $stmt{'foltialib.getstationid.4'}, $stationid, $item{'ChName'}, -10");
 
 	} else {
 		#print "Error  getstationid $stationcount[0] stations found. $DBQuery\n";
-		&writelog("foltialib [ERR]  getstationid $stationcount[0] stations found. ChName=$item{'ChName'}, stationname=$stationname");
+		&writelog("[ERR] getstationid $stationcount[0] stations found. ChName=$item{'ChName'}, stationname=$stationname");
 	}
 	
-	#&writelog("foltialib [OK]  getstationid $stationcount[0] stations found. ChName=$item{'ChName'}, stationname=$stationname, stationid=$stationid");
+	#&writelog("[OK] getstationid $stationcount[0] stations found. ChName=$item{'ChName'}, stationname=$stationname, stationid=$stationid");
 	return $stationid ;
 }
 
@@ -365,7 +365,7 @@ sub changefilestatus {
 		$sth->execute($updatestatus, $pid);
 		return 1;
 	} else {
-		&writelog("foltialib changefilestatus ERR Sttus invalid:$updatestatus");
+		&writelog("changefilestatus ERR Sttus invalid:$updatestatus");
 		return  0 ;
 	}
 } # end sub changefilestatus
@@ -425,14 +425,14 @@ sub makemp4dir {
 	#なければ作る
 	unless (-e $pspdirname ) {
 		system("$toolpath/perl/mklocalizeddir.pl $tid");
-		#&writelog("recwrap mkdir $pspdirname");
+		#&writelog("mkdir $pspdirname");
 	}
 	$pspdirname = "$tid.localized/mp4/";
 	$pspdirname = $recfolderpath."/".$pspdirname;
 	#なければ作る
 	unless (-e $pspdirname ) {
 		mkdir $pspdirname ,0777;
-		#&writelog("recwrap mkdir $pspdirname");
+		#&writelog("mkdir $pspdirname");
 	}
 	return ("$pspdirname");
 } #endsub makemp4dir

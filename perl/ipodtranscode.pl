@@ -9,6 +9,7 @@
 #
 # DCC-JPL Japan/foltia project
 #
+
 use utf8;
 use DBI;
 use DBD::Pg;
@@ -40,7 +41,7 @@ $dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
 $dbh->{sqlite_unicode} = 1;
 
 # タイトル取得
-#トラコンフラグがたっていてステータス50以上150未満のファイルを古い順にひとつ探す
+# トラコンフラグがたっていてステータス50以上150未満のファイルを古い順にひとつ探す
 # 数数える
 #$DBQuery =  "SELECT count(*) FROM foltia_subtitle, foltia_program, foltia_m2pfiles 
 #WHERE filestatus >= $FILESTATUSRECEND AND filestatus < $FILESTATUSTRANSCODECOMPLETE  AND foltia_program.tid = foltia_subtitle.TID AND foltia_program.PSP = 1  AND foltia_m2pfiles.m2pfilename = foltia_subtitle.m2pfilename  ";
@@ -78,23 +79,24 @@ while ($counttranscodefiles >= 1) {
 	$mp4filenamestring = &mp4filenamestringbuild($pid);
 
 	$head  = "ts->mp4 エンコード開始";
-	$mesg  = sprintf("pid          = %s\n", $pid);
-	$mesg .= sprintf("tid          = %s\n", $tid);
-	$mesg .= sprintf("title        = %s\n", $title);
-	$mesg .= sprintf("subtitle     = %s\n", $subtitle);
-	$mesg .= sprintf("countno      = %s\n", $countno);
-	$mesg .= sprintf("startdatetime= %s\n", $startdatetime);
-	$mesg .= sprintf("enddatetime  = %s\n", $enddatetime);
-	$mesg .= sprintf("lengthmin    = %s\n", $lengthmin);
-	$mesg .= sprintf("m2pfilename  = %s\n", $mpeg2filename);
+	$mesg  = sprintf("pid           : %s\n", $pid);
+	$mesg .= sprintf("tid           : %s\n", $tid);
+	$mesg .= sprintf("タイトル      : %s\n", $title);
+	$mesg .= sprintf("サブタイトル  : %s\n", $subtitle);
+	$mesg .= sprintf("話数          : %s\n", $countno);
+	$mesg .= sprintf("放送開始日時  : %s\n", $startdatetime);
+	$mesg .= sprintf("放送終了日時  : %s\n", $enddatetime);
+	$mesg .= sprintf("尺(分)        : %s\n", $lengthmin);
+	$mesg .= sprintf("TSファイル名  : %s\n", $mpeg2filename);
 	slackSend($head, $mesg);
 
 	$mpeg2_tm_start = time();
 
-	if (-e $inputmpeg2) { #MPEG2ファイルが存在していれば
+	if (-e $inputmpeg2) {
+		# MPEG2ファイルが存在していれば
 
 		&writelog("DEBUG mp4filenamestring $mp4filenamestring");
-		#展開ディレクトリ作成
+		# 展開ディレクトリ作成
 		$pspdirname = &makemp4dir($tid);
 		$mp4outdir = $pspdirname ;
 
@@ -116,11 +118,11 @@ while ($counttranscodefiles >= 1) {
 					$movietitleeuc = " -t \"$programtitle[0] $programtitle[2]\" ";
 				}
 			} elsif($pid < 0) {
-				#EPG
+				# EPG
 				$movietitle    = " -title \"$programtitle[2]\" ";
 				$movietitleeuc = " -t \"$programtitle[2]\" ";
 			} else {# 0
-				#空白
+				# 空白
 				$movietitle    = "";
 				$movietitleeuc = "";
 			}
@@ -134,7 +136,7 @@ while ($counttranscodefiles >= 1) {
 		}
 
 		if ($filestatus <= $FILESTATUSWAITINGCAPTURE) {
-			#なにもしない
+			# なにもしない
 		}
 
 		if ($filestatus <= $FILESTATUSCAPTURE) {
@@ -160,7 +162,7 @@ while ($counttranscodefiles >= 1) {
 		$filenamebody = $inputmpeg2 ;
 		$filenamebody =~ s/.m2t$|.ts$|.m2p$|.mpg$|.aac$//gi;
 
-		#デジタル
+		# デジタル
 		if ($inputmpeg2 =~ /m2t$|ts$|aac$/i) {
 
 			if ($filestatus <= $FILESTATUSTRANSCODETSSPLITTING){
@@ -175,11 +177,14 @@ while ($counttranscodefiles >= 1) {
 				$trcnmpegfile = $inputmpeg2 ;
 
 				# アスペクト比
-				if ($aspect == 1) { #超額縁
+				if ($aspect == 1) {
+					# 超額縁
 					$cropopt = " -vf crop=in_w-400:in_h-300:200:150 ";
-				} elsif($aspect == 4) { #SD 
+				} elsif($aspect == 4) {
+					# SD 
 					$cropopt = " -vf crop=in_w-16:in_h-12:8:6 ";
-				} else { #16:9
+				} else {
+					# 16:9
 					$cropopt = " -vf crop=in_w-16:in_h-12:8:6 ";
 				}
 				$cropopt = "";
@@ -282,9 +287,9 @@ while ($counttranscodefiles >= 1) {
 				#			}
 						} else {
 							&writelog("WINE TsSplitter.exe; Not exist ${filenamebody}_HD.m2t");
-						} #endif -e ${filenamebody}_HD.m2t
+						} # endif -e ${filenamebody}_HD.m2t
 
-					} #endif $trcnmpegfile eq $inputmpeg2
+					} # endif $trcnmpegfile eq $inputmpeg2
 
 					# TsSplitter.exeでも失敗してたならSDファイルを抽出してみる。
 					if($trcnmpegfile eq $inputmpeg2) {
@@ -353,7 +358,7 @@ while ($counttranscodefiles >= 1) {
 
 				# もしエラーになったらcropやめる
 				if (! -e "$filenamebody.264") {
-					#再ffmpeg
+					# 再ffmpeg
 					&changefilestatus($pid, $FILESTATUSTRANSCODEFFMPEG);
 					&writelog("ffmpeg retry no crop $filenamebody.264  :start.");
 					&writelog("CMD: $toolpath/perl/tool/ffmpeg -y -i $trcnmpegfile $sstime $ffmpegencopt");
@@ -369,11 +374,11 @@ while ($counttranscodefiles >= 1) {
 					&writelog("ffmpeg PROCESS TIME : $tm_process sec, $ftm_process");
 				}
 
-				#強制的にWINEでTsSplit.exe
+				# 強制的にWINEでTsSplit.exe
 				if (! -e "$filenamebody.264") {
 				}
 
-				#それでもエラーならsplitしてないファイルをターゲットに
+				# それでもエラーならsplitしてないファイルをターゲットに
 				if (! -e "$filenamebody.264") {
 					# 不安定なので頭2秒は捨てる
 					$sstime = " -ss 00:00:02.000 ";
@@ -679,17 +684,17 @@ while ($counttranscodefiles >= 1) {
 			system ("nice -n 15 $toolpath/perl/tool/ffmpeg  $encodeoption ");
 			&writelog("FFEND $inputmpeg2");
 			&changefilestatus($pid, $FILESTATUSTRANSCODECOMPLETE);
-			#もう要らなくなった #2008/11/14 
+			# もう要らなくなった #2008/11/14 
 			#&writelog("mp4psp -p $mp4file $movietitleeuc");
 			#system("/usr/local/bin/mp4psp -p $mp4file '$movietitleeuc' ");
 			#&writelog("mp4psp COMPLETE  $mp4file ");
 		
 			&updatemp4file();
-		} #endif #デジタルかアナログか
+		} # endif #デジタルかアナログか
 
 		$counttranscodefiles = &counttranscodefiles();
 		############################
-		#一回で終らせるように
+		# 一回で終らせるように
 		#exit;
 		
 
@@ -735,6 +740,11 @@ while ($counttranscodefiles >= 1) {
 	$thDireSize     = `du -sh $thumbnailDir | awk '{print \$1}'`;
 	$thDireSizeF    = sprintf("%6s", $thDireSize);
 	$thCount        = `ls -1 $thumbnailDir | wc -l`;
+
+	$recDirAvail    = `df -h $recfolderpath | tail -1`;
+	chomp($recDirAvail);
+	$recDirAvail =~ s/\s+/ /g;
+	my @recDirAvailSp = split(/ /, $recDirAvail);
 	
 	&writelog("");
 	&writelog("=========================== TS to MP4 ENCODE RESULT Start =========================");
@@ -744,6 +754,7 @@ while ($counttranscodefiles >= 1) {
 	&writelog("  AUDIO FILE      : $auFileSizeF : $filenamebody.aac");
 	&writelog("  MP4   FILE      : $m4FileSizeF : ${mp4outdir}MAQ${mp4filenamestring}.MP4");
 	&writelog("  THUMBNAIL DIR   : $thDireSizeF : $thCount files : $thumbnailDir");
+	&writelog("  REC DIR AVAIL   : @recDirAvailSp[3] @recDirAvailSp[4] @recDirAvailSp[5]");
 	&writelog("  COMPRESSION RATE: $compRateF%");
 	&writelog("  START   TIME    : $stDateF");
 	&writelog("  END     TIME    : $edDateF");
@@ -759,27 +770,32 @@ while ($counttranscodefiles >= 1) {
 	&writelog("");
 	&writelog("");
 
+	chomp($m4FileSize);
+	chomp($tsFileSize);
 	$head  = "ts->mp4 エンコード完了";
-	$mesg  = sprintf("pid              = %s\n", $pid);
-	$mesg .= sprintf("tid              = %s\n", $tid);
-	$mesg .= sprintf("title            = %s\n", $title);
-	$mesg .= sprintf("subtitle         = %s\n", $subtitle);
-	$mesg .= sprintf("countno          = %s\n", $countno);
-	$mesg .= sprintf("startdatetime    = %s\n", $startdatetime);
-	$mesg .= sprintf("enddatetima      = %s\n", $enddatetime);
-	$mesg .= sprintf("lengthmin        = %s\n", $lengthmin);
-	$mesg .= sprintf("mp4filename      = MAQ%s.MP4 : %s", $mp4filenamestring, $m4FileSize);
-	$mesg .= sprintf("tsfilename       = %s : %s", $mpeg2filename, $tsFileSize);
-	$mesg .= sprintf("COMPRESSION RATE = %s%", int($m4FileSize2 / $tsFileSize2 * 100 * 100) / 100);
+	$mesg  = sprintf("pid          : %s\n", $pid);
+	$mesg .= sprintf("tid          : %s\n", $tid);
+	$mesg .= sprintf("タイトル     : %s\n", $title);
+	$mesg .= sprintf("サブタイトル : %s\n", $subtitle);
+	$mesg .= sprintf("話数         : %s\n", $countno);
+	$mesg .= sprintf("放送開始日時 : %s\n", $startdatetime);
+	$mesg .= sprintf("放送終了日時 : %s\n", $enddatetime);
+	$mesg .= sprintf("尺(分)       : %s\n", $lengthmin);
+	$mesg .= sprintf("MP4ファル名  : %6s : MAQ%s.MP4\n", $m4FileSize, $mp4filenamestring);
+	$mesg .= sprintf("TSファイル名 : %6s : %s\n", $tsFileSize, $mpeg2filename);
+	$mesg .= sprintf("圧縮率       : %s%\n", int($m4FileSize2 / $tsFileSize2 * 100 * 100) / 100);
+	$mesg .= sprintf("処理時間     : %ssec %s\n", $mpeg2_tm_process, $fmpeg2_tm_process);
+	$mesg .= sprintf("空き容量     : %s %s %s \n", @recDirAvailSp[3], @recDirAvailSp[4], $recfolderpath);
 	slackSend($head, $mesg);
 
-	} else { #ファイルがなければ
+	} else {
+		# ファイルがなければ
 		&writelog("NO $inputmpeg2 file.Skip.");
-	} #end if
+	} # end if
 
 } # end while
 
-#残りファイルがゼロなら
+# 残りファイルがゼロなら
 &writelog("ALL COMPLETE");
 exit;
 
@@ -839,7 +855,7 @@ sub updatemp4file() {
 		# MP4ファイル名をfoltia_mp4files挿入
 		$sth = $dbh->prepare($stmt{'ipodtranscode.updatemp4file.2'});
 		$sth->execute($tid, $mp4filename);
-		&writelog("UPDATEmp4DB $stmt{'ipodtranscode.updatemp4file.2'}");
+		&writelog("UPDATEmp4DB: $stmt{'ipodtranscode.updatemp4file.2'}: $tid, $mp4filename");
 
 		&changefilestatus($pid, $FILESTATUSALLCOMPLETE);
 	} else {

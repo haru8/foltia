@@ -3,14 +3,13 @@
 # Anime recording system foltia
 # http://www.dcc-jpl.com/soft/foltia/
 #
-#addatq.pl
+# addatq.pl
 #
-#TIDと局IDを受け取りatqに入れる
+# TIDと局IDを受け取りatqに入れる
 # addatq.pl <TID> <StationID> [DELETE]
 # DELETEフラグがつくと削除のみ行う
 #
 # DCC-JPL Japan/foltia project
-#
 #
 
 use utf8;
@@ -28,17 +27,17 @@ if ($path ne "./") {
 
 require "foltialib.pl";
 
-#引き数がアルか?
+# 引き数がアルか?
 $tid = $ARGV[0] ;
 $station = $ARGV[1];
 
 if (($tid eq "" )|| ($station eq "")) {
-	#引き数なし出実行されたら、終了
+	# 引き数なし出実行されたら、終了
 	print "usage;addatq.pl <TID> <StationID> [DELETE]\n";
 	exit;
 }
 
-#DB検索(TIDとStationIDからPIDへ)
+# DB検索(TIDとStationIDからPIDへ)
 $dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
 $dbh->{sqlite_unicode} = 1;
 
@@ -51,38 +50,39 @@ if ($station == 0) {
 }
 
 @titlecount = $sth->fetchrow_array;
-#件数数える
+# 件数数える
 
-#2以上だったら
+# 2以上だったら
 if ($titlecount[0]  >= 2) {
-	#全局録りが含まれているか調べる
+	# 全局録りが含まれているか調べる
 	$kth = $dbh->prepare($stmt{'addatq.3'});
 	$kth->execute($tid);
 	@reservecounts = $kth->fetchrow_array;
 
-	if($reservecounts[0] >= 1 ) { #含まれていたら
+	if($reservecounts[0] >= 1 ) {
+		#含まれていたら
 		if($tid == 0) {
-			#今回の引き数がSID 0だったら
-			#全局録りだけ予約
-			#&writelog("addatq  DEBUG; ALL STATION RESERVE. TID=$tid SID=$station $titlecount[0] match:$stmt{'addatq.3'}");
+			# 今回の引き数がSID 0だったら
+			# 全局録りだけ予約
+			#&writelog("DEBUG; ALL STATION RESERVE. TID=$tid SID=$station $titlecount[0] match:$stmt{'addatq.3'}");
 			&addcue;
 		} else {
-			#ほかの全局録画addatqが予約入れてくれるからなにもしない
-			#&writelog("addatq  DEBUG; SKIP OPERSTION. TID=$tid SID=$station $titlecount[0] match:$stmt{'addatq.3'}");
+			# ほかの全局録画addatqが予約入れてくれるからなにもしない
+			#&writelog("DEBUG; SKIP OPERSTION. TID=$tid SID=$station $titlecount[0] match:$stmt{'addatq.3'}");
 			exit;
-		} #end if ふくまれていたら
-	} #endif 2つ以上
+		} # end if ふくまれていたら
+	} # endif 2つ以上
 } elsif($titlecount[0]  == 1) {
 	&addcue;
 } else {
-	&writelog("addatq  error; reserve impossible . TID=$tid SID=$station $titlecount[0] match:$stmt{'addatq.3'}");
+	&writelog("error; reserve impossible . TID=$tid SID=$station $titlecount[0] match:$stmt{'addatq.3'}");
 }
 
-#旧処理
+# 旧処理
 # if ($titlecount[0]  == 1 ){
 # 	& addcue;
 # }else{
-#&writelog("addatq  error record TID=$tid SID=$station $titlecount[0] match:$stmt{'addatq.3'}");
+#&writelog("error record TID=$tid SID=$station $titlecount[0] match:$stmt{'addatq.3'}");
 #}
 
 sub addcue {
@@ -95,17 +95,19 @@ sub addcue {
 		$sth->execute($tid, $station);
 	}
 	@titlecount= $sth->fetchrow_array;
-	$bitrate = $titlecount[2];#ビットレート取得
+
+	# ビットレート取得
+	$bitrate = $titlecount[2];
 	
-	#PID抽出
+	# PID抽出
 	$now = &epoch2foldate(time());
 	$twodaysafter = &epoch2foldate(time() + (60 * 60 * 24 * 2));
-	#キュー入れは直近2日後まで
+	# キュー入れは直近2日後まで
 	if ($station == 0 ) {
 		$sth = $dbh->prepare($stmt{'addatq.addcue.3'});
 		$sth->execute($tid, $now, $twodaysafter);
 	} else {
-		#stationIDからrecch
+		# stationIDからrecch
 		$stationh = $dbh->prepare($stmt{'addatq.addcue.4'});
 		$stationh->execute($station);
 		@stationl =  $stationh->fetchrow_array;
@@ -127,30 +129,30 @@ sub addcue {
 		$atid ) = $sth->fetchrow_array()) {
 	
 		if ($station == 0 ) {
-			#stationIDからrecch
+			# stationIDからrecch
 			$stationh = $dbh->prepare($stmt{'addatq.addcue.6'});
 			$stationh->execute($stationid);
 			@stationl =  $stationh->fetchrow_array;
 			$recch = $stationl[1];
 		}
-		#キュー入れ
-		#プロセス起動時刻は番組開始時刻の-1分
+		# キュー入れ
+		# プロセス起動時刻は番組開始時刻の-1分
 		$atdateparam = &calcatqparam(300);
 		$reclength = $lengthmin * 60;
 		#&writelog("TIME $atdateparam COMMAND $toolpath/perl/tvrecording.pl $recch $reclength 0 0 $bitrate $tid $countno");
-		#
-		#キュー削除
+
+		# キュー削除
 		Schedule::At::remove ( TAG => "$pid"."_X");
-		&writelog("addatq remove $pid");
+		&writelog("remove $pid");
 		if ( $ARGV[2] eq "DELETE") {
-			&writelog("addatq remove  only $pid");
+			&writelog("remove  only $pid");
 		} else {
 			Schedule::At::add (TIME => "$atdateparam", COMMAND => "$toolpath/perl/folprep.pl $pid\n\n" , TAG => "$pid"."_X");
-			&writelog("addatq TIME $atdateparam   COMMAND $toolpath/perl/folprep.pl $pid ");
+			&writelog("TIME $atdateparam   COMMAND $toolpath/perl/folprep.pl $pid ");
 		}
-		##processcheckdate 
-		#&writelog("addatq TIME $atdateparam COMMAND $toolpath/perl/schedulecheck.pl");
-	} #while
+		## processcheckdate 
+		#&writelog("TIME $atdateparam COMMAND $toolpath/perl/schedulecheck.pl");
+	} # while
 
 } # endsub
 

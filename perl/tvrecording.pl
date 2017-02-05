@@ -49,7 +49,7 @@ $startupsleeptime = 37;					#process wait(MAX60sec)
 
 require 'foltialib.pl';
 
- &writelog("tvrecording:  DEBUG $ARGV[0] $ARGV[1] $ARGV[2] $ARGV[3] $ARGV[4] $ARGV[5] $ARGV[6]  $ARGV[7] ");
+ &writelog("DEBUG $ARGV[0] $ARGV[1] $ARGV[2] $ARGV[3] $ARGV[4] $ARGV[5] $ARGV[6]  $ARGV[7] ");
 
 sub getChCallsign {
 if ($ARGV[5]  ne ""){
@@ -76,7 +76,7 @@ $reclengthsec = $reclengthsec + $extendrecendsec ;
 
 &callrecordv4l;
 
-&writelog("tvrecording:$recch:$reclengthsec:$outputfile:$recdevice:$capturedeviceinputnum:$ivtvrecch:$stdbitrate:$peakbitrate");
+&writelog("$recch:$reclengthsec:$outputfile:$recdevice:$capturedeviceinputnum:$ivtvrecch:$stdbitrate:$peakbitrate");
 
 # -- これ以下サブルーチン ----------------------------
 sub chkextinput{
@@ -116,7 +116,7 @@ if($recch > 12){
 }else{
 	$frequencyTable = "ntsc-bcast-jp";
 }#if
-	&writelog ("tvrecording DEBUG $frequencyTable $recch");
+	&writelog ("DEBUG $frequencyTable $recch");
 
 }#chkextinput
 
@@ -134,7 +134,7 @@ if ($mencoderkillcmd != ""){
 	$mencoderkillcmd  = "kill ".$mencoderkillcmd;
 	system ($mencoderkillcmd);
 	chomp($mencoderkillcmd);
-	&writelog ("tvrecording Killed current recording process. process:$mencoderkillcmd");
+	&writelog ("Killed current recording process. process:$mencoderkillcmd");
 		sleep(1);
 		 my $videodevice =`/usr/sbin/lsof $recdevice`;
 
@@ -144,7 +144,7 @@ if ($mencoderkillcmd != ""){
 		sleep(1);
 		$sleepcounter++;
 		$reclengthsec = $reclengthsec - $sleepcounter;
-		&writelog ("tvrecording videodevice wait:$sleepcounter");
+		&writelog ("videodevice wait:$sleepcounter");
 		}
 		$sleepcounter = 0;		
 }#if ($mencoderkillcmd != "")
@@ -174,10 +174,10 @@ $mencoderkillcmd =`/usr/sbin/lsof -Fp $testrecdevice`;
 $mencoderkillcmd =~ s/p//;
 if ($mencoderkillcmd != ""){
 	push (@usedevices ,  $testrecdevice);
-	&writelog ("tvrecording now using:$testrecdevice");
+	&writelog ("now using:$testrecdevice");
 }else{
 	push (@unusedevices ,  $testrecdevice);
-	&writelog ("tvrecording unused:$testrecdevice");
+	&writelog ("unused:$testrecdevice");
 }#if
 }#for
 
@@ -192,7 +192,7 @@ $mencoderkillcmd =~ s/p//;
 	$mencoderkillcmd  = "kill ".$mencoderkillcmd;
 	system ($mencoderkillcmd);
 	chomp($mencoderkillcmd);
-	&writelog ("tvrecording Killed current recording process. $recdevice:$mencoderkillcmd");
+	&writelog ("Killed current recording process. $recdevice:$mencoderkillcmd");
 		sleep(1);
 	}
 }else{
@@ -204,11 +204,11 @@ $mencoderkillcmd =~ s/p//;
 		$mencoderkillcmd  = "kill ".$mencoderkillcmd;
 		system ($mencoderkillcmd);
 		chomp($mencoderkillcmd);
-		&writelog ("tvrecording Killed current recording process. /dev/video$i:$mencoderkillcmd");
+		&writelog ("Killed current recording process. /dev/video$i:$mencoderkillcmd");
 			sleep(1);
 		}
 	$recdevice = "/dev/video$i"; #→最低位$i
-		&writelog ("tvrecording select device:$recdevice");
+		&writelog ("select device:$recdevice");
 
 }elsif ($recch <= 0) { # 外部入力なら
 	#外部入力だけどデバイス指定されていないときも
@@ -219,7 +219,7 @@ $mencoderkillcmd =~ s/p//;
 		$mencoderkillcmd  = "kill ".$mencoderkillcmd;
 		system ($mencoderkillcmd);
 		chomp($mencoderkillcmd);
-		&writelog ("tvrecording Killed current recording process. /dev/video$j:$mencoderkillcmd");
+		&writelog ("Killed current recording process. /dev/video$j:$mencoderkillcmd");
 			sleep(1);
 		}
 	$recdevice = "/dev/video$j"; #　外部入力は最高位デバイス
@@ -256,7 +256,7 @@ if (($recch eq "" )|| ($reclengthsec eq "")){
 #my $intval = int ($useconds  / 1000000);
 #my $startupsleeptimemicro = ($startupsleeptime * 1000000) - $useconds;
 #$reclengthsec = $reclengthsec + $intval + 1;
-#&writelog("tvrecording:  DEBUG SLEEP $startupsleeptime:$useconds:$intval:$startupsleeptimemicro");
+#&writelog("DEBUG SLEEP $startupsleeptime:$useconds:$intval:$startupsleeptimemicro");
 #	usleep ( $startupsleeptimemicro );
 
 # $recch でウェイト調整入れましょう
@@ -269,10 +269,10 @@ my $startupsleep = $startupsleeptime - $intval; #  3-37 (VHF 25-36,tvk 30)
 $reclengthsec = $reclengthsec + (60 - $startupsleep) + 1; #
 
 if ( $ARGV[2] ne "N"){
-	&writelog("tvrecording: DEBUG SLEEP $startupsleeptime:$intval:$startupsleep:$reclengthsec");
+	&writelog("DEBUG SLEEP $startupsleeptime:$intval:$startupsleep:$reclengthsec");
 	sleep ( $startupsleep);
 }else{
-	&writelog("tvrecording: DEBUG RAPID START");
+	&writelog("DEBUG RAPID START");
 
 }
 if ($recunits > 1){
@@ -308,13 +308,13 @@ if ($ARGV[6] eq "0"){
 		$outputfile = $outputpath.$outputfile ;
 #		$outputfile .= "$ARGV[3]";		
 #		$outputfile .= strftime("%Y%m%d-%H%M", localtime(time + 60));
-		&writelog("tvrecording:  DEBUG ARGV[2] ne null  \$outputfile $outputfile ");
+		&writelog("DEBUG ARGV[2] ne null  \$outputfile $outputfile ");
 	}else{
 	$outputfile .= strftime("%Y%m%d-%H%M", localtime(time + 60));
 		chomp($outputfile);
 		$outputfile .= ".m2p";
 		$outputfilewithoutpath = $outputfile ;
-		&writelog("tvrecording:  DEBUG ARGV[2] is null  \$outputfile $outputfile ");
+		&writelog("DEBUG ARGV[2] is null  \$outputfile $outputfile ");
 	}
 
 
@@ -325,7 +325,7 @@ $cmd="";
 #二重録りなど既に同名ファイルがあったら中断
 if ( -e "$outputfile" ){
 	if ( -s "$outputfile" ){
-	&writelog("tvrecording :ABORT :recfile $outputfile exist.");
+	&writelog("ABORT :recfile $outputfile exist.");
 	exit 1;
 	}
 }
@@ -352,22 +352,22 @@ if ($frequencyTable eq "ntsc-cable-jp"){
 	$ivtvtuneftype = 'japan-bcast';
 }
 #print "ivtv-tune -d $recdevice -t $ivtvtuneftype -c $ivtvrecch\n";
-&writelog("tvrecording DEBUG ivtv-tune -d $recdevice -t $ivtvtuneftype -c $ivtvrecch");
-&writelog("tvrecording DEBUG $ENV{PATH}");
+&writelog("DEBUG ivtv-tune -d $recdevice -t $ivtvtuneftype -c $ivtvrecch");
+&writelog("DEBUG $ENV{PATH}");
 
 $frequency = `env PATH=PATH=/usr/kerberos/bin:/usr/lib/ccache:/usr/local/bin:/bin:/usr/bin:/home/foltia/bin ivtv-tune -d $recdevice -t $ivtvtuneftype -c $ivtvrecch`;
-&writelog("tvrecording DEBUG frequency:$frequency");
+&writelog("DEBUG frequency:$frequency");
 @frequency = split(/\s/,$frequency);
 $frequency[1] =~ s/\.//gi;
 $frequency = $frequency[1] ;
-&writelog("tvrecording DEBUG frequency:$frequency");
+&writelog("DEBUG frequency:$frequency");
 
 my $recordv4lcallstring = "$toolpath/perl/record-v4l2.pl --frequency $frequency --duration $reclengthsec --input $recdevice --directory $recfolderpath --inputnum $capturedeviceinputnum --inputname '$capturedeviceinputName' --freqtable $frequencyTable --bitrate $stdbitrate --peakbitrate $peakbitrate --output $outputfilewithoutpath ";
 
-&writelog("tvrecording $recordv4lcallstring");
-&writelog("tvrecording DEBUG $ENV{HOME}/.ivtvrc");
+&writelog("$recordv4lcallstring");
+&writelog("DEBUG $ENV{HOME}/.ivtvrc");
 $oserr = `env HOME=$toolpath $recordv4lcallstring`;
-&writelog("tvrecording DEBUG $oserr");
+&writelog("DEBUG $oserr");
 
 }#end callrecordv4l
 

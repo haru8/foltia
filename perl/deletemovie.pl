@@ -4,7 +4,7 @@
 # http://www.dcc-jpl.com/soft/foltia/
 #
 #
-#deletemovie.pl
+# deletemovie.pl
 #
 #ファイル名を受け取り、削除処理をする
 #とりあえずは./mita/へ移動
@@ -12,6 +12,7 @@
 #
 # DCC-JPL Japan/foltia project
 #
+
 use utf8;
 use DBI;
 use DBD::Pg;
@@ -38,7 +39,7 @@ if ($fname =~ /.m2p$|.m2t$|.MP4$|.aac$/) {
 
 } else {
 	#print "deletemovie invalid filetype.\n";
-	&writelog("deletemovie invalid filetype:$fname.");
+	&writelog("invalid filetype: $fname.");
 	exit (1);
 }
 
@@ -55,17 +56,17 @@ if (-e "$recfolderpath/$fname") {
 	$filemovepath = $mp4dirname;
 } else {
 	#print "deletemovie file not found.$recfolderpath/$fname\n";
-	&writelog("deletemovie file not found:$fname.");
+	&writelog("file not found: $fname.");
 	exit (1);
 }
 
 # 既読削除処理 
 if ($rapidfiledelete  > 0) { #./mita/へ移動
 	system ("mv $filemovepath/$fname $recfolderpath/mita/");
-	&writelog("deletemovie mv filemovepath/$fname $recfolderpath/mita/.");
+	&writelog("mv filemovepath/$fname $recfolderpath/mita/.");
 } else {
 	# 即時削除
 	system ("rm $filemovepath/$fname ");
-	&writelog("deletemovie rm $filemovepath/$fname ");
+	&writelog("rm $filemovepath/$fname ");
 }
 

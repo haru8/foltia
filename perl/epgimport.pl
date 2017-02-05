@@ -52,9 +52,9 @@ my $cs1rectime = 0;
 my $cs2rectime = 0;
 
 
-#引き数がアルか?
+# 引き数がアルか?
 if ( $ARGV[0] eq "long" ) {
-	#長期番組表取得
+	# 長期番組表取得
 	$rectime = 60;
 	$bsrectime = 120;
 	$cs1rectime = 60;
@@ -66,21 +66,21 @@ if ( $ARGV[0] eq "long" ) {
 	$cs1rectime = 15;
 	$cs2rectime = 5;
 } else {
-	#短期番組表取得
+	# 短期番組表取得
 	$rectime = 3;
 	$bsrectime = 36;
 	$cs1rectime = 15;
 	$cs2rectime = 5;
 }
-#データ量比較
-#3秒   16350 Aug 10 16:21 __27-epg-short.xml
-#12秒  56374 Aug 10 16:21 __27-epg-long.xml
-#60秒 127735 Aug 10 16:23 __27-epg-velylong.xml
+# データ量比較
+#  3秒  16350 Aug 10 16:21 __27-epg-short.xml
+# 12秒  56374 Aug 10 16:21 __27-epg-long.xml
+# 60秒 127735 Aug 10 16:23 __27-epg-velylong.xml
 
-#重複起動確認
+# 重複起動確認
 $processes =  &processfind("epgimport.pl");
 if ($processes > 1 ) {
-	&writelog("epgimport processes exist. exit:");
+	&writelog("processes exist. exit:");
 	exit;
 }
 
@@ -88,13 +88,14 @@ if ($processes > 1 ) {
 $dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
 $dbh->{sqlite_unicode} = 1;
 
-#局指定があるなら、単一放送局指定モード
+# 局指定があるなら、単一放送局指定モード
 if ($stationid > 0) {
 	$sth = $dbh->prepare($stmt{'epgimport.1'});
 	$sth->execute($stationid);
 	@data = $sth->fetchrow_array();
-	unless($data[0] == 1){#局の数が1でなければ異常終了
-		&writelog("epgimport ERROR Invalid station id ($stationid).");
+	unless($data[0] == 1) {
+		# 局の数が1でなければ異常終了
+		&writelog("ERROR Invalid station id ($stationid).");
 		exit 1;
 	} else {
 		$sth = $dbh->prepare($stmt{'epgimport.2'});
@@ -103,30 +104,33 @@ if ($stationid > 0) {
 		$channel = $data[0];
 		$ontvcode = $data[1];
 		if ($channel > 0) {
-			&writelog("epgimport DEBUG Single station mode (ch:$channel / $ontvcode).");
-		} else {#ラジオ局などの場合
-			&writelog("epgimport ABORT SID $stationid is not Digital TV ch.");
+			&writelog("DEBUG Single station mode (ch:$channel / $ontvcode).");
+		} else {
+			# ラジオ局などの場合
+			&writelog("ABORT SID $stationid is not Digital TV ch.");
 			exit;
-		} #endif ラジオ局かどうか
-	} #end unless($data[0] == 1
-} #endif $stationid > 0
+		} # endif ラジオ局かどうか
+	} # end unless($data[0] == 1
+} # endif $stationid > 0
 
-#地デジ----------------------------------------
-#受信局確認
-if ($channel >= 13 && $channel <= 62) { #局指定があるなら
+# 地デジ ----------------------------------------
+# 受信局確認
+if ($channel >= 13 && $channel <= 62) {
+	# 局指定があるなら
 	$stations{$channel} = $ontvcode;
 	$uset = 1;
 } elsif($channel >= 100) {
-	$uset = 0; #地デジ範囲外の局
+	# 地デジ範囲外の局
+	$uset = 0;
 } else {
 	$sth = $dbh->prepare($stmt{'epgimport.3'});
 	$sth->execute();
 	
 	while (@data = $sth->fetchrow_array()) {
 		$stations{$data[0]} = $data[1];
-	} #end while 
+	} # end while 
 	$uset = 1;
-}#end if
+} # end if
 
 if ($uset == 1) {
 	foreach $channel ( keys %stations ) {
@@ -146,17 +150,20 @@ if ($uset == 1) {
 		unlink "$recfolderpath/__$channel.m2t";
 		unlink "$xmloutpath/__$channel-epg.xml";
         print "\n";
-	} #end foreach
-} #endif
+	} # end foreach
+} # endif
 
-#BS----------------------------------------
-#受信局確認
-if ($channel >= 100 && $channel <= 222 ) { #局指定があるなら
+# BS ----------------------------------------
+# 受信局確認
+if ($channel >= 100 && $channel <= 222 ) {
+	# 局指定があるなら
 	$usebs = 1;
 } elsif($channel >= 13 && $channel <= 62) {
-	$usebs = 0;	#地デジ局指定の場合、スキップ。
+	# 地デジ局指定の場合、スキップ。
+	$usebs = 0;
 } elsif($channel >= 223) {
-	$usebs = 0;	#CS局指定の場合もスキップ
+	# CS局指定の場合もスキップ
+	$usebs = 0;
 } else {
 	$sth = $dbh->prepare($stmt{'epgimport.4'});
 	$sth->execute();
@@ -164,7 +171,7 @@ if ($channel >= 100 && $channel <= 222 ) { #局指定があるなら
 	if ($data[0] > 0 ) {
 		$usebs = 1;
 	}
-}#end if
+} # end if
 
 if ($usebs == 1) {
 	#$ontvcode = $stations{$channel};
@@ -180,15 +187,16 @@ if ($usebs == 1) {
 	unlink "$recfolderpath/__$channel.m2t";
 	unlink "$xmloutpath/__$channel-epg.xml";
 } else {
-	&writelog("epgimport DEBUG Skip BS.$channel:$usebs");
+	&writelog("DEBUG Skip BS.$channel:$usebs");
 }
 
 
 
-#CS----------------------------------------
-#if ( $ARGV[0] eq "long" ){ #短時間録画なら異常に重くはならないことを発見した
-#受信局確認
-if ($channel >= 223  ) { #局指定があるなら
+# CS ----------------------------------------
+# if ( $ARGV[0] eq "long" ){ #短時間録画なら異常に重くはならないことを発見した
+# 受信局確認
+if ($channel >= 223  ) {
+	#局指定があるなら
 	$usecs = 1;
 } else {
 	$sth = $dbh->prepare($stmt{'epgimport.5'});
@@ -197,10 +205,10 @@ if ($channel >= 223  ) { #局指定があるなら
 	if ($data[0] > 0 ) {
 		$usecs = 1;
 	}
-}#end if
+} #end if
 
 if ($usecs == 1) {
-#一気に録画して
+	# 一気に録画して
 	$channela = "CS8";
 	#print "$ontvcode $digitalch\n";
 	&chkrecordingschedule;
@@ -212,7 +220,7 @@ if ($usecs == 1) {
 	#print "$recpt1path $channelb $bsrectime $recfolderpath/__$channelb.m2t\n";
 	$oserr = `$recpt1path $channelb $cs2rectime $recfolderpath/__$channelb.m2t`;
 
-#時間のかかるepgdumpまとめてあとまわし
+	# 時間のかかるepgdumpまとめてあとまわし
 	#print "nice -n 19 $epgdumppath/epgdump /CS $recfolderpath/__$channela.m2t $xmloutpath/__$channela-epg.xml\n";
 	$oserr = `$epgdumppath/epgdump /CS $recfolderpath/__$channela.m2t $xmloutpath/__$channela-epg.xml`;
 	#print "cat $xmloutpath/__$channela-epg.xml | $toolpath/perl/xmltv2foltia.pl\n";
@@ -227,7 +235,7 @@ if ($usecs == 1) {
 	unlink "$recfolderpath/__$channelb.m2t";
 	unlink "$xmloutpath/__$channelb-epg.xml";
 } else {
-	&writelog("epgimport DEBUG Skip CS.");
+	&writelog("DEBUG Skip CS.");
 } #endif use 
 #}else{
 #	if ($channel >= 223  ){#局指定があるなら
@@ -238,29 +246,29 @@ if ($usecs == 1) {
 &writelog("epgimport.pl END.");
 
 sub chkrecordingschedule {
-	#放送予定まで近くなったら、チューナー使いつづけないようにEPG取得中断
+	# 放送予定まで近くなったら、チューナー使いつづけないようにEPG取得中断
 	my $now = time() ;
 	my $fiveminitsafter = time() + 60 * 4;
 	my $rows = -2;
 	$now = &epoch2foldate($now);
 	$fiveminitsafter = &epoch2foldate($fiveminitsafter);
 	
-	#録画予定取得
+	# 録画予定取得
 	$sth = $dbh->prepare($stmt{'epgimport.6'});
 	#&writelog("$now, $fiveminitsafter, $now, $fiveminitsafter");
 	$sth->execute($now, $fiveminitsafter, $now, $fiveminitsafter);
 	
 	while (@data = $sth->fetchrow_array()) {
-	#
+		#
 	} #end while 
 	
 	$rows = $sth->rows;
 	
 	if ($rows > 2 ) {
-		&writelog("epgimport ABORT The recording schedule had approached. $rows.:$now:$fiveminitsafter");
+		&writelog("ABORT The recording schedule had approached. $rows.:$now:$fiveminitsafter");
 		exit ;
 	} else {
-		&writelog("epgimport DEBUG Near rec program is $rows.:$now:$fiveminitsafter");
-	} #end if 
-} #endsub chkrecordingschedule
+		&writelog("DEBUG Near rec program is $rows.:$now:$fiveminitsafter");
+	} # end if 
+} # endsub chkrecordingschedule
 

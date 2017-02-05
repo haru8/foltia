@@ -11,7 +11,7 @@
 #
 # DCC-JPL Japan/foltia project
 #
-#
+
 use utf8;
 use DBI;
 use DBD::Pg;
@@ -64,7 +64,7 @@ if ($useenvironmentpolicy == 1) {
 
 		$oserr = `htpasswd -b $toolpath/.htpasswd $ref[1] $htpasswd`;
 	} # end while
-	&writelog("envpolicyupdate htpasswd updated.");
+	&writelog("htpasswd updated.");
 
 } # endif 
 

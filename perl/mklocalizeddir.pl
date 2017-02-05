@@ -3,13 +3,13 @@
 # Anime recording system foltia
 # http://www.dcc-jpl.com/soft/foltia/
 #
-#usage ;mklocalizeddir.pl [TID]
-# Mac OS X Localizedフォーマットに準拠した構造の録画ディレクトリを作る。
-# 参考:[Mac OS X 10.2のローカライズ機能] http://msyk.net/macos/jaguar-localize/
+# usage ;mklocalizeddir.pl [TID]
+#  Mac OS X Localizedフォーマットに準拠した構造の録画ディレクトリを作る。
+#  参考:[Mac OS X 10.2のローカライズ機能] http://msyk.net/macos/jaguar-localize/
 #
 # DCC-JPL Japan/foltia project
 #
-#
+
 use utf8;
 use Jcode;
 use DBI;
@@ -58,7 +58,7 @@ if (-e "$recfolderpath/$tid.localized") {
 	print JASTRING "\"$tid\"=\"$title\";\n";
 	close(JASTRING);
 
-	&writelog("mklocalizeddir $tid $titleeuc");
+	&writelog("$tid $titleeuc");
 
 } # unless 引き数がアルか?
 

@@ -3,17 +3,17 @@
 # Anime recording system foltia
 # http://www.dcc-jpl.com/soft/foltia/
 #
-#usage singletranscode.pl [563-1-20051022-1830.m2p] (PATHなしで)
+# usage singletranscode.pl [563-1-20051022-1830.m2p] (PATHなしで)
 #
-#トラコンラッパ
-#おもにメンテナンス用
+# トラコンラッパ
+# おもにメンテナンス用
 # ファイル名が古いまま
 #
-#faacで刺さる場合はffmpegつかった別のトラコンを試してみてもよいでしょう
+# faacで刺さる場合はffmpegつかった別のトラコンを試してみてもよいでしょう
 #
-#./ffmpeg -i ~/php/tv/962-2-20061014-0209.m2p -vcodec xvid -croptop 8 -cropbottom 8 -cropleft 8 -cropright 14 -s 320x240 -b 300 -bt 128 -r 14.985 -bufsize 192 -maxrate 512 -minrate 0 -deinterlace -acodec aac -ab 128 -ar 24000 -ac 2 ~/php/tv/962.localized/mp4/M4V-962-2-20061014-0209.MP4
+# ./ffmpeg -i ~/php/tv/962-2-20061014-0209.m2p -vcodec xvid -croptop 8 -cropbottom 8 -cropleft 8 -cropright 14 -s 320x240 -b 300 -bt 128 -r 14.985 -bufsize 192 -maxrate 512 -minrate 0 -deinterlace -acodec aac -ab 128 -ar 24000 -ac 2 ~/php/tv/962.localized/mp4/M4V-962-2-20061014-0209.MP4
 #
-#古い
+# 古い
 # ffmpeg -i  ../../563-1-20051022-1830.m2p  -f psp -r 14.985 -s 320x240 -b  300 -ar 24000 -ab 32 M4V00001.MP4 
 #
 # 現行トラコンの前段階コマンド
@@ -21,7 +21,6 @@
 #
 #
 # DCC-JPL Japan/foltia project
-#
 #
 
 use utf8;
@@ -75,7 +74,7 @@ if ($ARGV[1] != "") {
 	unless ($pidarray[0]  == "" ) {
 		$pid = $pidarray[0]
 	} else {
-		&writelog("singletranscode undefined ; PID (Not found m2p file $ARGV[0])");
+		&writelog("undefined ; PID (Not found m2p file $ARGV[0])");
 	}
 
 } #endif pid
@@ -104,7 +103,7 @@ sleep(10);
 
 # Starlight breaker向けキャプチャ画像作成
 if (-e "$toolpath/perl/captureimagemaker.pl") {
-	&writelog("singletranscode Call captureimagemaker $outputfilename");
+	&writelog("Call captureimagemaker $outputfilename");
 	system ("$toolpath/perl/captureimagemaker.pl $outputfilename");
 }
 
@@ -128,14 +127,14 @@ if ($psptrcn[0]  == 1 ) { #トラコン番組
 	#なければ作る
 	unless (-e $pspdirname ) {
 		system("$toolpath/perl/mklocalizeddir.pl $tid");
-		#&writelog("singletranscode mkdir $pspdirname");
+		#&writelog("mkdir $pspdirname");
 	}
 	$pspdirname = "$tid.localized/mp4/";
 	$pspdirname = $recfolderpath."/".$pspdirname;
 	#なければ作る
 	unless (-e $pspdirname ) {
 		mkdir $pspdirname ,0777;
-		#&writelog("singletranscode mkdir $pspdirname");
+		#&writelog("mkdir $pspdirname");
 	}
 	
 	#ファイル名決定
@@ -240,11 +239,11 @@ if ($psptrcn[0]  == 1 ) { #トラコン番組
 		# print "$pspfilname($pspfilnamehd/$pspfilnameft)\n";
 	} # endif MP4ファイル名が新styleなら
 	
-	&writelog("singletranscode TRCNSTART vfr4psp.sh $recfolderpath/$outputfilename $pspfilname $pspdirname $psptrcn[1]");
+	&writelog("TRCNSTART vfr4psp.sh $recfolderpath/$outputfilename $pspfilname $pspdirname $psptrcn[1]");
 	#トラコン開始
 	system("$toolpath/perl/transcode/vfr4psp.sh $recfolderpath/$outputfilename $pspfilname $pspdirname $psptrcn[1]");
 	
-	&writelog("singletranscode TRCNEND  vfr4psp.sh $recfolderpath/$outputfilename $pspfilname $pspdirname $psptrcn[1]");
+	&writelog("TRCNEND  vfr4psp.sh $recfolderpath/$outputfilename $pspfilname $pspdirname $psptrcn[1]");
 	
 	#最適化
 	
@@ -257,7 +256,7 @@ if ($psptrcn[0]  == 1 ) { #トラコン番組
 	} else {
 		$pspcountno = $countno ;
 	}
-	&writelog("singletranscode OPTIMIZE  mp4psp -p $pspdirname/M4V$pspfilname.MP4   -t  '$psptrcn[2] $pspcountno $programtitle[0]' ");
+	&writelog("OPTIMIZE  mp4psp -p $pspdirname/M4V$pspfilname.MP4   -t  '$psptrcn[2] $pspcountno $programtitle[0]' ");
 	Jcode::convert(\$programtitle[0],'utf8');
 	system ("/usr/local/bin/mp4psp -p $pspdirname/M4V$pspfilname.MP4   -t  '$psptrcn[2] $pspcountno $programtitle[0]'") ;
 	
@@ -266,9 +265,9 @@ if ($psptrcn[0]  == 1 ) { #トラコン番組
 	
 	# mplayer -ss 00:01:20 -vo jpeg:outdir=/home/foltia/php/tv/443MNV01 -ao null -sstep 1 -frames 3  -v 3 /home/foltia/php/tv/443-07-20050218-0030.m2p
 	#2005/02/22_18:30:05 singletranscode TRCNSTART vfr4psp.sh /home/foltia/php/tv/447-21-20050222-1800.m2p 44721 /home/foltia/php/tv/447MNV01 3
-	&writelog("singletranscode THAMJ  $toolpath/perl/tool/mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -ao null -sstep 1 -frames 3  -v 3 $recfolderpath/$outputfilename ");
+	&writelog("THAMJ  $toolpath/perl/tool/mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -ao null -sstep 1 -frames 3  -v 3 $recfolderpath/$outputfilename ");
 	system ("$toolpath/perl/tool/mplayer -ss 00:01:20 -vo jpeg:outdir=$pspdirname -ao null -sstep 1 -frames 3  -v 3 $recfolderpath/$outputfilename");
-	&writelog("singletranscode THAMI  convert -crop 160x120+1+3 -resize 165x126\! $pspdirname/00000002.jpg $pspdirname/M4V$pspdirname.THM ");
+	&writelog("THAMI  convert -crop 160x120+1+3 -resize 165x126\! $pspdirname/00000002.jpg $pspdirname/M4V$pspdirname.THM ");
 	
 	if (-e "$pspdirname/M4V".$pspfilname.".THM") {
 		$timestamp = strftime("%Y%m%d-%H%M%S", localtime);
@@ -287,14 +286,14 @@ if ($psptrcn[0]  == 1 ) { #トラコン番組
 	unless ($pid eq "") {
 		$sth = $dbh->prepare($stmt{'singletranscode.6'});
 		$sth->execute("M4V$pspfilname.MP4", $pid);
-		&writelog("singletranscode UPDATEsubtitleDB $stmt{'singletranscode.6'}");
+		&writelog("UPDATEsubtitleDB $stmt{'singletranscode.6'}");
 	} else {
-		&writelog("singletranscode PID not found");
+		&writelog("PID not found: $pid");
 	}
 	# MP4ファイル名をfoltia_mp4files挿入
 	$sth = $dbh->prepare($stmt{'singletranscode.7'});
 	$sth->execute($tid, "M4V$pspfilname.MP4");
-	&writelog("singletranscode UPDATEmp4DB $stmt{'singletranscode.7'}");
+	&writelog("UPDATEmp4DB $stmt{'singletranscode.7'}");
 	
 } #PSPトラコンあり
 

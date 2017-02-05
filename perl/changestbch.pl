@@ -3,16 +3,16 @@
 # Anime recording system foltia
 # http://www.dcc-jpl.com/soft/foltia/
 #
-#changestbch.pl
-#
+# changestbch.pl
+# 
 # リモコンユニットを操作して外部チューナの信号を切り替える。
-#対応ユニット
-# Tira-2.1: Remote Control Receiver/Transmitter
-#http://www.home-electro.com/tira2.php
-#
-#usage :changestbch.pl  [PID]
-#引数
-#[PID]番組プログラムID
+# 対応ユニット
+#  Tira-2.1: Remote Control Receiver/Transmitter
+# http://www.home-electro.com/tira2.php
+# 
+# usage :changestbch.pl  [PID]
+#  引数
+#  [PID]番組プログラムID
 #
 # チャンネル切り替えの流れ
 # changestbch.pl :局から送出信号を調べて transfer.pl にチャンネル変更引き数を渡す。
@@ -22,6 +22,7 @@
 #
 # DCC-JPL Japan/foltia project
 #
+
 use utf8;
 use DBI;
 use DBD::Pg;
@@ -34,14 +35,14 @@ if ($path ne "./") {
 }
 require 'foltialib.pl';
 
-#&writelog("changestbch DEBUG START");
+&writelog("DEBUG START");
 
 # 引き数がアルか?
 $pid = $ARGV[0] ;
 if ($pid eq "" ) {
 	# 引き数なし出実行されたら、終了
-	print "usage :changestbch.pl  [PID]\n";
-	&writelog("changestbch ERR PID null");
+	print "usage :changestbch.pl [PID] $pid\n";
+	&writelog("ERR PID null $pid");
 	exit;
 }
 
@@ -64,7 +65,7 @@ if ($haveirdaunit == 1) {
 		$stationid =  $chstatus[3];
 		$cmdjoined = "$tunertype"."$tunercmd";
 
-		&writelog("changestbch DEBUG  $cmdjoined :$recch:$stationid");
+		&writelog("DEBUG $cmdjoined :$recch:$stationid");
 
 		$length = length($cmdjoined);
 		$sendcmdfile = "";
@@ -76,12 +77,10 @@ if ($haveirdaunit == 1) {
 		
 		#if (-e "$toolpath/perl/irda/$sendcmdfile"){
 		system("$toolpath/perl/irda/transfer.pl $sendcmdfile");
-		&writelog("changestbch DEBUG  $toolpath/perl/irda/transfer.pl $toolpath/perl/irda/$sendcmdfile");
+		&writelog("DEBUG $toolpath/perl/irda/transfer.pl $toolpath/perl/irda/$sendcmdfile");
 		#}else{
-		#	&writelog("changestbch ERR cmd file not found:$toolpath/perl/irda/$sendcmdfile");
+		#	&writelog("ERR cmd file not found:$toolpath/perl/irda/$sendcmdfile");
 		#}#if -e
-		
-		
 		
 		# BS-hi b x103 || b 3
 		# キッズステーション c x264 || c 2 
@@ -89,8 +88,7 @@ if ($haveirdaunit == 1) {
 		# コマンドから実行するコマンド組み立て
 	} else {
 		# デバイス見えない
-		&writelog("changestbch ERR Tira2 Not found.");
+		&writelog("ERR Tira2 Not found.");
 	} # end if (-e "/dev/ttyUSB0")
 } # endif if ($haveirdaunit == 1
-
 

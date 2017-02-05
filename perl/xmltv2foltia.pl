@@ -19,6 +19,7 @@
 #use Encode qw(from_to);
 #use encoding 'euc-jp', STDIN=>'utf8', STDOUT=>'euc-jp' ; # 標準入力:utf8 
 # http://www.lr.pi.titech.ac.jp/~abekawa/perl/perl_unicode.html
+
 use utf8;
 use Jcode;
 #use Data::Dumper; 
@@ -194,7 +195,7 @@ while(<>) {
 	
 	} elsif(/<\/programme>/) {
 	#登録処理はココで
-	#&writelog("xmltv2foltia DEBUG call chkerase $item{'start'},$item{'channel'}");
+	#&writelog("DEBUG call chkerase $item{'start'},$item{'channel'}");
 	#旧仕様	#&chkerase($item{'start'}, $item{'channel'});
 		&replaceepg($item{'start'}, $item{'channel'}, $item{'stop'});
 		if ($item{'subtitle'} ne "" ) {
@@ -245,7 +246,7 @@ sub replaceepg {
 	$sth->execute($foltiastarttime , $foltiaendtime , $ontvepgchannel);
 	while (@data = $sth->fetchrow_array()) {
 		push(@deleteepgid,$data[0]);
-		#&writelog("xmltv2foltia DEBUG push(\@deleteepgid,$data[0]);");
+		#&writelog("DEBUG push(\@deleteepgid,$data[0]);");
 	} #end while 
 	
 	# 上書きを消す
@@ -253,7 +254,7 @@ sub replaceepg {
 	$sth->execute($foltiastarttime , $foltiaendtime , $ontvepgchannel);
 	while (@data = $sth->fetchrow_array()) {
 		push(@deleteepgid,$data[0]);
-		#&writelog("xmltv2foltia DEBUG push(\@deleteepgid,$data[0]);");
+		#&writelog("DEBUG push(\@deleteepgid,$data[0]);");
 	} #end while 
 	
 } #endsub replaceepg
@@ -275,7 +276,7 @@ sub registdb {
     $title =~ tr/Ａ-Ｚａ-ｚ０-９！＃＄％＆（）＊＋，－．／：；＜＝＞？＠［＼］＾＿｀｛｜｝　/A-Za-z0-9!#$%&()*+,-.\/:;<=>?@[\]^_`{|} /;
     $desc  =~ tr/Ａ-Ｚａ-ｚ０-９！＃＄％＆（）＊＋，－．／：；＜＝＞？＠［＼］＾＿｀｛｜｝　/A-Za-z0-9!#$%&()*+,-.\/:;<=>?@[\]^_`{|} /;
 	
-	#&writelog("xmltv2foltia DEBUG $foltiastarttime:$foltiaendtime");
+	#&writelog("DEBUG $foltiastarttime:$foltiaendtime");
 	$foltiastarttime	= substr($foltiastarttime, 0, 12);
 	$foltiaendtime		= substr($foltiaendtime, 0, 12);
 
@@ -293,7 +294,7 @@ sub registdb {
 	#		$newepgid = $currentepgid[0]; 
 	#		$newepgid++; 
 	#	}
-	#&writelog("xmltv2foltia DEBUG $currentepgid[0] /  $newepgid");
+	#&writelog("DEBUG $currentepgid[0] /  $newepgid");
 	my $lengthmin = &calclength($foltiastarttime , $foltiaendtime);
 	
 	#print "xmltv2foltia DEBUG :INSERT INTO foltia_epg VALUES ($newepgid, $foltiastarttime, $foltiaendtime, $lengthmin, $channel, $title, $desc, $category)\n";
@@ -306,9 +307,9 @@ sub registdb {
 	push (@category, $category);
 	#	$sth = $dbh->prepare($stmt{'xmltv2foltia.registdb.2'});
 	#	$sth->execute($newepgid, $foltiastarttime, $foltiaendtime, $lengthmin, $channel, $title, $desc, $category) || warn "error: $newepgid, $foltiastarttime, $foltiaendtime, $lengthmin, $channel, $title, $desc, $category\n";
-	# &writelog("xmltv2foltia DEBUG $DBQuery");
+	# &writelog("DEBUG $DBQuery");
 	#}else{
-	#&writelog("xmltv2foltia DEBUG SKIP $foltiastarttime:$foltiaendtime");
+	#&writelog("DEBUG SKIP $foltiastarttime:$foltiaendtime");
 	#}#未来じゃなければ挿入しない
 	
 } #end sub registdb
@@ -323,7 +324,7 @@ sub commitdb {
 	foreach $delid (@deleteepgid) {
 		$sth = $dbh->prepare($stmt{'xmltv2foltia.commitdb.1'});
 		$sth->execute( $delid ) || warn "$delid\n";
-		#&writelog("xmltv2foltia DEBUG $stmt{'xmltv2foltia.commitdb.1'}/$delid");
+		#&writelog("DEBUG $stmt{'xmltv2foltia.commitdb.1'}/$delid");
 	}
 	# 追加
 	for ($i = 0; $i < $loopcount; $i++) {
