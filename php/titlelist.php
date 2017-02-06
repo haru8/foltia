@@ -36,7 +36,7 @@ if ($useenvironmentpolicy == 1) {
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<link rel="stylesheet" type="text/css" href="graytable.css"> 
+<link rel="stylesheet" type="text/css" href="graytable.css">
 <title>foltia</title>
 </head>
 
@@ -54,18 +54,18 @@ list($st, $p, $p2) = number_page($p, $lim);
 
 ///////////////////////////////////////////////////////////
 
-$now = date("YmdHi");   
+$now = date("YmdHi");
 
 $query = "
-	SELECT 
-	  foltia_program.tid,
-	  foltia_program.title,
-      foltia_tvrecord.tid AS rec
-	FROM foltia_program 
-      LEFT JOIN foltia_tvrecord ON foltia_tvrecord.tid = foltia_program.tid
-	GROUP BY foltia_program.tid
-	ORDER BY foltia_program.tid DESC
-	LIMIT $lim OFFSET $st
+  SELECT
+    foltia_program.tid,
+    foltia_program.title,
+    foltia_tvrecord.tid AS rec
+  FROM foltia_program
+    LEFT JOIN foltia_tvrecord ON foltia_tvrecord.tid = foltia_program.tid
+  GROUP BY foltia_program.tid
+  ORDER BY foltia_program.tid DESC
+  LIMIT $lim OFFSET $st
 ";
 
 $rs = sql_query($con, $query, "DBクエリに失敗しました");
@@ -75,7 +75,7 @@ if (! $rowdata) {
 }
 
 $query2 = "
-	SELECT COUNT(*) AS cnt FROM foltia_program 
+	SELECT COUNT(*) AS cnt FROM foltia_program
 ";
 
 $rs2 = sql_query($con, $query2, "DBクエリに失敗しました");
@@ -91,7 +91,7 @@ $dtcnt =  $rowdata2[0];
 <body BGCOLOR="#ffffff" TEXT="#494949" LINK="#0047ff" VLINK="#000000" ALINK="#c6edff" >
 <div align="center">
 
-<?php 
+<?php
 printhtmlpageheader();
 ?>
   <p align="left"><font color="#494949" size="6">番組一覧</font></p>
@@ -104,7 +104,7 @@ page_display("", $p, $p2, $lim, $dtcnt, "");
 // フィールド数
 $maxcols = $rs->columnCount();
 
-// Autopager 
+// Autopager
 echo "<div id=contents class=autopagerize_page_element />";
 ?>
 
@@ -116,7 +116,7 @@ echo "<div id=contents class=autopagerize_page_element />";
 			<th align="left">MPEG4リンク</th>
 		</tr>
 	</thead>
-	
+
 	<tbody>
 
 <?php

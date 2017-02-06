@@ -28,8 +28,7 @@ if ($useenvironmentpolicy == 1) {
 	} else {
 		login($con, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 	}
-} //end if login
-
+} // end if login
 
 $pid  = getgetnumform(pid);
 $file = getgetform(f);
@@ -37,6 +36,7 @@ $file = getgetform(f);
 if ($pid == "") {
 	header("Status: 404 Not Found", TRUE, 404);
 }
+
 ?>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -44,7 +44,7 @@ if ($pid == "") {
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<link rel="stylesheet" type="text/css" href="graytable.css"> 
+<link rel="stylesheet" type="text/css" href="graytable.css">
 <title>Starlight Breaker -キャプチャ画像選択</title>
 <script src="http://images.apple.com/main/js/ac_quicktime.js" language="JavaScript" type="text/javascript"></script>
 </head>
@@ -56,47 +56,50 @@ printhtmlpageheader();
 
 if ($pid != "") {
 	$query = "
-		SELECT 
-		  foltia_program.tid,
-		  stationname,
-		  foltia_program.title,
-		  foltia_subtitle.countno,
-		  foltia_subtitle.subtitle,
-		  foltia_subtitle.startdatetime ,
-		  foltia_subtitle.lengthmin  , 
-		  foltia_subtitle.pid ,
-		  foltia_subtitle.m2pfilename , 
-		  foltia_subtitle.pspfilename 
-		FROM foltia_subtitle , foltia_program ,foltia_station  
-		WHERE foltia_program.tid = foltia_subtitle.tid 
-		  AND foltia_station.stationid = foltia_subtitle.stationid 
-		  AND foltia_subtitle.pid = ?  
-		";
+      SELECT
+        foltia_program.tid,
+        stationname,
+        foltia_program.title,
+        foltia_subtitle.countno,
+        foltia_subtitle.subtitle,
+        foltia_subtitle.startdatetime,
+        foltia_subtitle.lengthmin,
+        foltia_subtitle.pid ,
+        foltia_subtitle.m2pfilename,
+        foltia_subtitle.pspfilename
+      FROM
+        foltia_subtitle,
+        foltia_program,
+        foltia_station
+      WHERE foltia_program.tid = foltia_subtitle.tid
+        AND foltia_station.stationid = foltia_subtitle.stationid
+        AND foltia_subtitle.pid = ?
+";
 	$rs = sql_query($con, $query, "DBクエリに失敗しました", array($pid));
 	$rowdata = $rs->fetch();
-	
+
 	if (! $rowdata) {
 		$query = "
-			SELECT 
-			  foltia_program.tid,
-			  foltia_program.tid,
-			  foltia_program.title,
-			  foltia_subtitle.countno,
-			  foltia_subtitle.subtitle,
-			  foltia_subtitle.startdatetime ,
-			  foltia_subtitle.lengthmin  , 
-			  foltia_subtitle.pid ,
-			  foltia_subtitle.m2pfilename , 
-			  foltia_subtitle.pspfilename 
-			FROM foltia_subtitle , foltia_program  
-			WHERE foltia_program.tid = foltia_subtitle.tid 
-			  AND foltia_subtitle.pid = ?  
-		";
-	  
+          SELECT
+            foltia_program.tid,
+            foltia_program.tid,
+            foltia_program.title,
+            foltia_subtitle.countno,
+            foltia_subtitle.subtitle,
+            foltia_subtitle.startdatetime,
+            foltia_subtitle.lengthmin,
+            foltia_subtitle.pid ,
+            foltia_subtitle.m2pfilename,
+            foltia_subtitle.pspfilename
+          FROM foltia_subtitle , foltia_program
+          WHERE foltia_program.tid = foltia_subtitle.tid
+            AND foltia_subtitle.pid = ?
+        ";
+
 		$rs = sql_query($con, $query, "DBクエリに失敗しました" ,array($pid));
 		$rowdata = $rs->fetch();
 	}
-	
+
 	$rowdata[1] = "";
 } else if ($file != "") {
 	$filesplit = split('-', htmlspecialchars($file));
@@ -123,11 +126,11 @@ if ($pid != "") {
 		$rowdata[8]= $filesplit[1] . '-' . $num . '-' . $date . '-' . $time . '-' . $ch . '.m2t';
 	}
 	$rowdata[9] = htmlspecialchars($file);
-	
+
 } else {
 	print "画像がありません。<br></body></html>";
 	exit;
-} //end if (! $rowdata) 
+} // end if (! $rowdata)
 
 print "  <p align=\"left\"><font color=\"#494949\" size=\"6\">キャプチャ画像</font></p>
   <hr size=\"4\">
@@ -180,7 +183,7 @@ foreach($tids as $filetid) {
 			print "<img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid'  alt='$tid:$countno:$filetid'>\n";
 		}
 	}
-} //foreach
+} // foreach
 // タイトル一覧 ここまで
 
 
@@ -188,4 +191,4 @@ foreach($tids as $filetid) {
 
 </body>
 </html>
- 
+

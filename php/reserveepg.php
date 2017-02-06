@@ -27,7 +27,7 @@ if ($useenvironmentpolicy == 1) {
 	} else {
 		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
 	}
-} //end if login
+} // end if login
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="ja">
@@ -39,10 +39,10 @@ if ($useenvironmentpolicy == 1) {
 <?php
 $epgid = getgetnumform(epgid);
 if ($epgid == "") {
-	print "	<title>foltia:EPG予約:Error</title></head>\n";
+	print " <title>foltia:EPG予約:Error</title></head>\n";
 	die_exit("登録番組がありません<BR>");
 }
-print "	<title>foltia:EPG予約:$epgid</title>
+print " <title>foltia:EPG予約:$epgid</title>
 </head>\n";
 
 
@@ -198,7 +198,6 @@ print "<table width=\"100%\" border=\"0\">
 
 ";
 
-    
 ?>
 
 </FORM>
@@ -206,3 +205,4 @@ print "<table width=\"100%\" border=\"0\">
 
 </body>
 </html>
+

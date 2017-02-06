@@ -27,7 +27,7 @@ if ($useenvironmentpolicy == 1) {
 	} else {
 		login($con, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 	}
-} //end if login
+} // end if login
 
 $tid = getgetnumform(tid);
 
@@ -52,7 +52,7 @@ if (ereg("iPhone", $useragent)) {
 } else {
 	print "<meta http-equiv=\"Content-Style-Type\" content=\"text/css\">
 		<link rel=\"stylesheet\" type=\"text/css\" href=\"graytable.css\">
-		<script src=\"http://images.apple.com/main/js/ac_quicktime.js\" language=\"JavaScript\" type=\"text/javascript\"></script> 
+		<script src=\"http://images.apple.com/main/js/ac_quicktime.js\" language=\"JavaScript\" type=\"text/javascript\"></script>
 		<link rel=\"alternate\" type=\"application/rss+xml\" title=\"RSS\" href=\"./folcast.php?tid=$tid\" />";
 }
 if ($tid == "") {
@@ -74,13 +74,13 @@ $p = getgetnumform(p);
 list($st, $p, $p2) = number_page($p, $lim);
 ///////////////////////////////////////////////////////////
 
-$now = date("YmdHi");   
+$now = date("YmdHi");
 
 $query = "
-  SELECT 
-    foltia_program.title 
-    FROM  foltia_program 
-    WHERE foltia_program.tid = ? 
+  SELECT
+    foltia_program.title
+    FROM  foltia_program
+    WHERE foltia_program.tid = ?
 ";
 
 $rs = sql_query($con, $query, "DBクエリに失敗しました", array($tid));
@@ -117,8 +117,8 @@ if (ereg("iPhone", $useragent)) {
 		print "$title 【<A HREF = \"./folcast.php?tid=$tid\">この番組のFolcast</A> ［<a href=\"itpc://$serveruri/folcast.php?tid=$tid\">iTunesに登録</a>］】 <br>\n";
 	} else {
 		print "<a href=\"http://cal.syoboi.jp/tid/" .
-			htmlspecialchars($tid)  . "\" target=\"_blank\">$title</a> 
-			【<A HREF = \"./folcast.php?tid=$tid\">この番組のFolcast</A> 
+			htmlspecialchars($tid)  . "\" target=\"_blank\">$title</a>
+			【<A HREF = \"./folcast.php?tid=$tid\">この番組のFolcast</A>
 			［<a href=\"itpc://$serveruri/folcast.php?tid=$tid\">iTunesに登録</a>］】 <br>\n";
 	}
 } // endif if (ereg("iPhone", $useragent))
@@ -127,10 +127,10 @@ if (ereg("iPhone", $useragent)) {
 if (file_exists ("$recfolderpath/$tid.localized")) {
 	//	print "ディレクトリは存在します\n";
 } else {
-	//	print "ディレクトリはありません\n";
+	//print "ディレクトリはありません\n";
 	print "再生可能番組がありません<BR>\n</body></html>";
 	exit;
-}					 
+}
 
 //新仕様/* 2006/10/26 */
 if (file_exists("./selectcaptureimage.php") ) {
@@ -156,7 +156,7 @@ $query = "
   FROM foltia_mp4files
     LEFT JOIN foltia_subtitle ON foltia_mp4files.mp4filename = foltia_subtitle.pspfilename AND foltia_mp4files.tid = foltia_subtitle.tid
     LEFT JOIN foltia_program  ON foltia_mp4files.tid         = foltia_program.tid
-  WHERE foltia_mp4files.tid = ? 
+  WHERE foltia_mp4files.tid = ?
   ORDER BY foltia_subtitle.startdatetime DESC
 ";
 
@@ -176,7 +176,7 @@ page_display($query_st, $p, $p2, $lim, $dtcnt, "");
 //////////////////////////////////////////////////////////
 //レコード表示
 $query = "
-  SELECT 
+  SELECT
     foltia_program.tid,
     foltia_program.title,
     foltia_subtitle.countno,
@@ -189,7 +189,7 @@ $query = "
   FROM foltia_mp4files
     LEFT JOIN foltia_subtitle ON foltia_mp4files.mp4filename = foltia_subtitle.pspfilename AND foltia_mp4files.tid = foltia_subtitle.tid
     LEFT JOIN foltia_program  ON foltia_mp4files.tid         = foltia_program.tid
-  WHERE foltia_mp4files.tid = ?  
+  WHERE foltia_mp4files.tid = ?
   GROUP BY foltia_mp4files.mp4filename
   ORDER BY foltia_subtitle.startdatetime DESC
 ";
@@ -214,7 +214,7 @@ if ($rowdataAll) {
 	} else {
 		print "<table BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"2\" WIDTH=\"100%\"><tbody>";
 	}
-	
+
 	foreach ($rowdataAll as $rowdata) {
 		$title = $rowdata['title'];
 
@@ -229,7 +229,7 @@ if ($rowdataAll) {
 			$subtitle = $rowdata['subtitle'];
 		}
 		$onairdate =  $rowdata['startdatetime'];
-		
+
 		$tid		= htmlspecialchars($rowdata['tid']);
 		$title		= htmlspecialchars($title);
 		$count		= htmlspecialchars($count);
@@ -238,7 +238,7 @@ if ($rowdataAll) {
 		$pid		= htmlspecialchars($rowdata['pid']);
 		$fName		= htmlspecialchars($rowdata['mp4filename']);
 		$lengthmin	= htmlspecialchars($rowdata['lengthmin']);
-		
+
 		$mp4path   = "$recfolderpath/$tid.localized/mp4/$fName" ;
 		$mp4Exists = false;
 		if (file_exists($mp4path) && is_file($mp4path)) {
@@ -246,7 +246,7 @@ if ($rowdataAll) {
 			$mp4size	= filesize($mp4path);
 			$mp4size	= round($mp4size / 1024 / 1024);
 		}
-		
+
 		if (ereg(".MP4", $fName)) {
 			$thumbnail = $fName;
 			$thumbnail = ereg_replace(".MP4", ".THM", $thumbnail);
@@ -259,10 +259,10 @@ if ($rowdataAll) {
 		//Starlight Breaker向け拡張
 		//$debug_pg_num_rows = $rs ->rowCount();
 		$caplink = "";
-		
+
 		if ($sbpluginexist == 1) {
 			$capimgpath = htmlspecialchars(preg_replace("/.m2./", "", $rowdata['m2pfilename']));
-		
+
 			if (($capimgpath != "") && (file_exists("$recfolderpath/$tid.localized/img/$capimgpath") )) {
 				$caplink = " / <a href = \"./selectcaptureimage.php?pid=" . $rowdata['pid'] . "\">キャプ</a>";
 			} else {
@@ -271,16 +271,16 @@ if ($rowdataAll) {
 		} else {
 			$caplink = "";
 		} //end if sb
-		
+
 		if (file_exists("$recfolderpath/$tid.localized/mp4/$thumbnail") ) {
-			$imgsrcuri = "$httpmediamappath/$tid.localized/mp4/$thumbnail\" alt=\"$title $count $subtitle"; 
+			$imgsrcuri = "$httpmediamappath/$tid.localized/mp4/$thumbnail\" alt=\"$title $count $subtitle";
 		} else {
 			$imgsrcuri = "./img/no-thumbnail-img.png\" alt=\"NO IMAGE";
 		}
-		
+
 		if (ereg("iPhone", $useragent)) {
 			print "<li><a href=\"http://$serverfqdn/$httpmediamappath/$tid.localized/mp4/$fName\" target=\"_self\">$count $subtitle $onairdate</a></li>\n";
-		
+
 		} else {
 			print "
 				<tr >
@@ -314,10 +314,9 @@ if ($rowdataAll) {
 			print "
 				<script language=\"JavaScript\" type=\"text/javascript\">QT_WriteOBJECT_XHTML('http://g.hatena.ne.jp/images/podcasting.gif','16','16','','controller','FALSE','href','http://$serverfqdn/$httpmediamappath/$tid.localized/mp4/$fName','target','QuickTimePlayer','type','video/mp4');</script> $caplink</td>
 				</tr>";
-			
-			
+
 		} //endif iPhone
-	
+
 	}
 } else {
 	print "録画ファイルがありません<br>\n";

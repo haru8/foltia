@@ -28,7 +28,8 @@ if ($useenvironmentpolicy == 1) {
 	} else {
 		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
 	}
-}//end if login
+} // end if login
+
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="ja">
@@ -207,13 +208,12 @@ if ($maxrows > $maxdisplay) {
 		$beforepage = $page - 1;
 		print "<a href = \"./viewepg.php?p=$beforepage&start=$start\">←</A>";
 	}
-	
+
 	print " $page / $pages (放送局) ";
 	for ($i=1;$i<=$pages;$i++) {
 		print "<a href = \"./viewepg.php?p=$i&start=$start\">$i</a>・";
 	}
-	
-	
+
 	if ($page < $pages) {
 		$nextpage = $page + 1;
 		print "<a href = \"./viewepg.php?p=$nextpage&start=$start\">→</a>";
@@ -299,7 +299,7 @@ foreach ($stationhash as $stationname) {
         AND enddatetime  > ?
         AND startdatetime  < ?
 	  ORDER BY foltia_epg.startdatetime  ASC";
-	
+
 	$statiodh = sql_query($con, $query, "DBクエリに失敗しました", array($stationname, $epgstart, $epgend));
 	$stationrowdata = $statiodh->fetch();
 	if (! $stationrowdata) {
@@ -315,7 +315,7 @@ foreach ($stationhash as $stationname) {
 			$title			= htmlspecialchars(z2h($title));
 			$desc			= $stationrowdata['epgdesc'];
 			$desc			= htmlspecialchars(z2h($desc));
-			
+
 			if ($epgviewstyle) {
 				$desc .= "<br><br>\n";
                 $desc .= "        <!-- " . htmlspecialchars(foldate2print($enddatetime)) . "-->";
@@ -327,7 +327,7 @@ foreach ($stationhash as $stationname) {
 			$height			= htmlspecialchars($stationrowdata['lengthmin']) * 3;
 			$epgid			= htmlspecialchars($stationrowdata['epgid']);
 			$epgcategory	= htmlspecialchars($stationrowdata['epgcategory']);
-			
+
 			if (isset($timetablehash[$startdatetime])) {
 				$number = $timetablehash[$startdatetime];
 				//print "$stationname $stationrowdata[0] [$number] $printstarttime $title $desc<br>\n";
@@ -382,7 +382,7 @@ foreach ($stationhash as $stationname) {
 				$item[$dataplace][$stationname]  = "    <td rowspan = $rowspan ". $item[$dataplace][$stationname] . "\n";
 				$item[$dataplace][$stationname] .= "   </td>\n";
 			}
-	
+
 		} elseif (!isset($item[$i][$stationname])) {
 			// ヌルなら
 			$item[$i][$stationname]  =  null ;
@@ -404,7 +404,7 @@ foreach ($stationhash as $stationname) {
 				$item[$dataplace][$stationname] .= "    </td>\n";
 			}
 			$dataplace = $i;
-			
+
 		}
 	} // for
 } // end of for://・局ごとに縦に配列入れていく

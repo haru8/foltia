@@ -33,7 +33,7 @@ if ($useenvironmentpolicy == 1) {
 	}
 } //end if login
 
-$now		= date("YmdHi");   
+$now		= date("YmdHi");
 $today		= date("Ymd");
 $nowdate	= date("Hi", (mktime(date("G"), date("i") + 8, date("s"), date("m"), date("d"), date("Y"))));
 $errflag	= 0;
@@ -55,7 +55,7 @@ printtitle();
 ?>
 <body BGCOLOR="#ffffff" TEXT="#494949" LINK="#0047ff" VLINK="#000000" ALINK="#c6edff" >
   <div align="center">
-<?php 
+<?php
   printhtmlpageheader();
 ?>
   </div>
@@ -96,9 +96,9 @@ if (($startdate == "") || ($starttime == "")) {
 	// 局確認
 	if ($recstid != "") {
 		$query = "
-		  SELECT stationname
-		  FROM foltia_station
-		  WHERE stationid = ? ";
+          SELECT stationname
+            FROM foltia_station
+          WHERE stationid = ? ";
 
 		$stationvalid = sql_query($con, $query, "DBクエリに失敗しました", array($recstid));
 		$recstationname = $stationvalid->fetch();
@@ -164,9 +164,9 @@ if (($startdate == "") || ($starttime == "")) {
 				if ( $userclass <= 2) {
 					$memberid = getmymemberid($con);
 					$query = "
-    	              INSERT INTO foltia_subtitle
-    	                ( pid, tid, stationid, countno, subtitle, startdatetime, enddatetime, startoffset, lengthmin, epgaddedby )
-    	                VALUES ( ?, '0', ?, ?, ?, ?, ?, '0', ?, ? )";
+                      INSERT INTO foltia_subtitle
+                        ( pid, tid, stationid, countno, subtitle, startdatetime, enddatetime, startoffset, lengthmin, epgaddedby )
+                        VALUES ( ?, '0', ?, ?, ?, ?, ?, '0', ?, ? )";
 
 					//$rs = m_query($con, $query, "DBクエリに失敗しました");
 					//print "【DEBUG】$insertpid,$recstid,$nextcno,$pname,$startdatetime,$enddatetime ,$lengthmin,$memberid <br>\n";
@@ -228,17 +228,29 @@ if (($startdate == "") || ($starttime == "")) {
     <dt>録画局:</dt>
 <?php
 $query = "
-  SELECT stationid as x, stationname, stationrecch, digitalch 
-    FROM foltia_station 
-    WHERE stationrecch > 0 
-  UNION 
-  SELECT DISTINCT stationid, stationname, stationrecch, digitalch 
-    FROM foltia_station 
-    WHERE digitalch > 0 
+  SELECT
+    stationid as x,
+    stationname,
+    stationrecch,
+    digitalch
+  FROM foltia_station
+  WHERE stationrecch > 0
   UNION
-  SELECT DISTINCT stationid, stationname, stationrecch, digitalch 
-  FROM foltia_station 
-    WHERE stationrecch = -2 
+  SELECT
+    DISTINCT stationid,
+    stationname,
+    stationrecch,
+    digitalch
+  FROM foltia_station
+  WHERE digitalch > 0
+  UNION
+  SELECT
+    DISTINCT stationid,
+    stationname,
+    stationrecch,
+    digitalch
+  FROM foltia_station
+    WHERE stationrecch = -2
     ORDER BY x ASC";
 
 $stations = sql_query($con, $query, "DBクエリに失敗しました");
@@ -260,8 +272,8 @@ if ($rowdata) {
 $stations->closeCursor();
 // 外部入力チャンネル
 $query = "
-  SELECT stationid as x,stationname, stationrecch 
-    FROM foltia_station 
+  SELECT stationid as x,stationname, stationrecch
+    FROM foltia_station
     WHERE stationrecch > -2
       AND stationrecch < 1
     ORDER BY x ASC";

@@ -27,7 +27,7 @@ if ($useenvironmentpolicy == 1) {
 	} else {
 		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
 	}
-} //end if login
+} // end if login
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="ja">
@@ -109,7 +109,7 @@ if ($word != '') {
       FROM foltia_mp4files
         LEFT JOIN foltia_subtitle ON foltia_mp4files.mp4filename = foltia_subtitle.pspfilename AND foltia_mp4files.tid = foltia_subtitle.tid
         LEFT JOIN foltia_program  ON foltia_mp4files.tid         = foltia_program.tid
-      WHERE 
+      WHERE
         foltia_program.title LIKE ? OR foltia_subtitle.subtitle LIKE ? OR foltia_subtitle.m2pfilename LIKE ? OR foltia_mp4files.mp4filename LIKE ?
       GROUP BY foltia_mp4files.mp4filename
       ORDER BY foltia_subtitle.startdatetime DESC
@@ -168,7 +168,7 @@ $words = array('EPG録画');
 		$pid          = htmlspecialchars($rowdata['pid']);
 		$mp4filename  = htmlspecialchars($rowdata['PSPfilename']);
 		$lengthmin    = htmlspecialchars($rowdata['lengthmin']);
-        $datas++;
+		$datas++;
 
 		$m2pExists = false;
 		$m2pUrl    = $httpmediamappath . '/' . $fName;

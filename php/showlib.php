@@ -27,7 +27,7 @@ if ($useenvironmentpolicy == 1) {
 	} else {
 		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
 	}
-}//end if login
+} // end if login
 
 
 ?>
@@ -48,7 +48,7 @@ print "<meta name=\"viewport\" content=\"width=320; initial-scale=1.0; maximum-s
 <script type=\"application/x-javascript\" src=\"./iui/iui.js\"></script>";
 }else{
 print "<meta http-equiv=\"Content-Style-Type\" content=\"text/css\">
-<link rel=\"stylesheet\" type=\"text/css\" href=\"graytable.css\"> 
+<link rel=\"stylesheet\" type=\"text/css\" href=\"graytable.css\">
 <link rel=\"alternate\" type=\"application/rss+xml\" title=\"RSS\" href=\"./folcast.php\" />";
 }
 ?>
@@ -66,7 +66,7 @@ $p = getgetnumform(p);
 list($st, $p, $p2) = number_page($p, $lim);
 ///////////////////////////////////////////////////////////
 
-$now = date("YmdHi");  
+$now = date("YmdHi");
 if (ereg("iPhone",$useragent)) {
 	print "<body onclick=\"console.log('Hello', event.target);\">
     <div class=\"toolbar\">
@@ -83,14 +83,14 @@ print "  <p align=\"left\"><font color=\"#494949\" size=\"6\">録画ライブラ
   <hr size=\"4\">
 <p align=\"left\">再生可能ライブラリを表示します。<br>
 ";
-} 
+}
 
 ////////////////////////////////////////////////////////
 //レコードの総数取得
 $query = "
   SELECT
-    COUNT(DISTINCT tid) 
-  FROM   foltia_mp4files 
+    COUNT(DISTINCT tid)
+  FROM   foltia_mp4files
 ";
 
 $rs = sql_query($con, $query, "DBクエリに失敗しました");
@@ -112,12 +112,12 @@ $query = "
   SELECT
     foltia_mp4files.tid,
     foltia_program.title,
-    count(foltia_mp4files.mp4filename) 
-  FROM 
+    count(foltia_mp4files.mp4filename)
+  FROM
     foltia_mp4files,
-    foltia_program 
-  WHERE foltia_program.tid = foltia_mp4files.tid  
-  GROUP BY foltia_mp4files.tid, foltia_program.title 
+    foltia_program
+  WHERE foltia_program.tid = foltia_mp4files.tid
+  GROUP BY foltia_mp4files.tid, foltia_program.title
   ORDER BY foltia_mp4files.tid DESC
   LIMIT $lim OFFSET $st
 ";
@@ -133,54 +133,53 @@ if ($rowdata) {
 	} else {
 		page_display("", $p, $p2, $lim, $dtcnt, "");
 		print "
-		  <table BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"2\" WIDTH=\"100%\">
-			<thead>
-				<tr>
-					<th align=\"left\">TID</th>
-					<th align=\"left\">タイトル(内容リンク)</th>
-					<th align=\"left\">内容数</th>
-					<th align=\"left\">リンク</th>
-				</tr>
-			</thead>
-			<tbody>
-		";
+         <table BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"2\" WIDTH=\"100%\">
+           <thead>
+             <tr>
+               <th align=\"left\">TID</th>
+               <th align=\"left\">タイトル(内容リンク)</th>
+               <th align=\"left\">内容数</th>
+               <th align=\"left\">リンク</th>
+             </tr>
+           </thead>
+         <tbody>
+       ";
 	}
-	
+
 	do {
 		$title = $rowdata[1];
 		$counts = $rowdata[2];
 		$tid = htmlspecialchars($rowdata[0]);
 		$title = htmlspecialchars($title);
 		$counts = htmlspecialchars($counts);
-		
-		
+
 		if (ereg("iPhone",$useragent)) {
 			print "<li><a href=\"showlibc.php?tid=$tid\" target=\"_self\">$title</a></li>\n";
 		} else {
 			print "
-			<tr>
-			<td>$tid</td>
-			<td><a href=\"showlibc.php?tid=$tid\">$title</a></td>
-			<td>$counts</td>
-			<td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">しょぼかる-$tid</a></td>
-			</tr>\n
-			";
+              <tr>
+              <td>$tid</td>
+              <td><a href=\"showlibc.php?tid=$tid\">$title</a></td>
+              <td>$counts</td>
+              <td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">しょぼかる-$tid</a></td>
+              </tr>\n
+            ";
 		}
 	} while ($rowdata = $rs->fetch());
-	
+
 	if (ereg("iPhone",$useragent)) {
 		print "</ul>\n</body>\n</html>\n";
 	} else {
 		print "
 			</tbody>
 		</table>
-		
+
 		";
 		////////////////////////////////////////////////////////////////
 		//Autopageing処理とページのリンクを表示
 		page_display("", $p, $p2, $lim, $dtcnt, "");
 		///////////////////////////////////////////////////////////////
-		
+
 		print "
 		</body>
 		</html>
@@ -207,10 +206,10 @@ if(($fName == ".") or ($fName == "..") ){ continue; }
 	if (ereg(".localized", $fName)){
 		$filesplit = split("\.",$fName);
 $query = "
-SELECT 
-foltia_program.tid,foltia_program.title   
-FROM   foltia_program   
-WHERE foltia_program.tid = $filesplit[0] 
+SELECT
+foltia_program.tid,foltia_program.title
+FROM   foltia_program
+WHERE foltia_program.tid = $filesplit[0]
 ";
 $rs = m_query($con, $query, "DBクエリに失敗しました");
 $rowdata = $rs->fetch();
@@ -237,3 +236,4 @@ print "<br></td>
 */
 //$d->close();
 ?>
+

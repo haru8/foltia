@@ -36,7 +36,7 @@ if ($useenvironmentpolicy == 1) {
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<link rel="stylesheet" type="text/css" href="graytable.css"> 
+<link rel="stylesheet" type="text/css" href="graytable.css">
 <title>foltia</title>
 </head>
 
@@ -46,7 +46,7 @@ if ($tid == "") {
 	die_exit("登録番組がありません<BR>");
 }
 
-$now = date("YmdHi");   
+$now = date("YmdHi");
 
 // タイトル取得
 $query = "SELECT title FROm foltia_program where tid = ? ";
@@ -60,7 +60,7 @@ $title = htmlspecialchars($rowdata['title']);
 ?>
 <body BGCOLOR="#ffffff" TEXT="#494949" LINK="#0047ff" VLINK="#000000" ALINK="#c6edff" >
 
-<?php 
+<?php
 printhtmlpageheader();
 ?>
 
@@ -77,7 +77,7 @@ if ($tid == 0) {
 
 「<?php print "$title"; ?>」を番組予約モードで録画予約します。 <br>
 
- 
+
 <form name="recordingsetting" method="GET" action="reservecomp.php">
 <input type="submit" value="予約" >
 <br>
@@ -92,18 +92,18 @@ if ($tid == 0) {
 <?php
 //録画候補局検索
 $query = "
-	SELECT
-	  distinct foltia_station.stationid,
-	  stationname,
-	  foltia_station.stationrecch
-	FROM
-	  foltia_subtitle,
-	  foltia_program,
-	  foltia_station
-	WHERE foltia_program.tid       = foltia_subtitle.tid
-	  AND foltia_station.stationid = foltia_subtitle.stationid
-	  AND foltia_program.tid       = ?
-	ORDER BY stationrecch DESC
+  SELECT
+    distinct foltia_station.stationid,
+    stationname,
+    foltia_station.stationrecch
+  FROM
+    foltia_subtitle,
+    foltia_program,
+    foltia_station
+  WHERE foltia_program.tid       = foltia_subtitle.tid
+    AND foltia_station.stationid = foltia_subtitle.stationid
+    AND foltia_program.tid       = ?
+  ORDER BY stationrecch DESC
 ";
 $rs = sql_query($con, $query, "DBクエリに失敗しました",array($tid));
 $rowdata = $rs->fetch();
@@ -126,7 +126,7 @@ if (! $rowdata) {
 ?>
 
 	</td>
-	
+
 	<td>
 	<select name="usedigital">
 <?php
@@ -170,24 +170,24 @@ if ($usedigital == 1) {
 
 <?php
 $query = "
-	SELECT 
-	    stationname,
-	    foltia_subtitle.countno,
-	    foltia_subtitle.subtitle,
-	    foltia_subtitle.startdatetime,
-	    foltia_subtitle.lengthmin,
-	    foltia_subtitle.startoffset,
-	    foltia_tvrecord.tid AS rec
-	  FROM
-	    foltia_subtitle,
-	    foltia_program,
-	    foltia_station
-	  LEFT JOIN foltia_tvrecord ON foltia_tvrecord.tid = foltia_subtitle.tid AND foltia_tvrecord.stationid = foltia_subtitle.stationid
-	  WHERE foltia_program.tid            = foltia_subtitle.tid
-	    AND foltia_station.stationid      = foltia_subtitle.stationid
-	    AND foltia_subtitle.startdatetime >= ?
-	    AND foltia_program.tid            = ?
-	  ORDER BY foltia_subtitle.startdatetime  ASC
+  SELECT
+      stationname,
+      foltia_subtitle.countno,
+      foltia_subtitle.subtitle,
+      foltia_subtitle.startdatetime,
+      foltia_subtitle.lengthmin,
+      foltia_subtitle.startoffset,
+      foltia_tvrecord.tid AS rec
+    FROM
+      foltia_subtitle,
+      foltia_program,
+      foltia_station
+    LEFT JOIN foltia_tvrecord ON foltia_tvrecord.tid = foltia_subtitle.tid AND foltia_tvrecord.stationid = foltia_subtitle.stationid
+    WHERE foltia_program.tid            = foltia_subtitle.tid
+      AND foltia_station.stationid      = foltia_subtitle.stationid
+      AND foltia_subtitle.startdatetime >= ?
+      AND foltia_program.tid            = ?
+    ORDER BY foltia_subtitle.startdatetime  ASC
 ";
 $rs = sql_query($con, $query, "DBクエリに失敗しました", array($now, $tid));
 $rowdata = $rs->fetch();

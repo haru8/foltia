@@ -27,7 +27,7 @@ if ($useenvironmentpolicy == 1) {
 	} else {
 		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
 	}
-} //end if login
+} // end if login
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="ja">
@@ -52,28 +52,28 @@ $enddate = date('YmdHi', strtotime('+1 week'));
 if ($word != '') {
 	$numsql = 'count(*)';
 	$selsql = '*';
-	//$query = "
-	//  SELECT 
-	//    %COL%
-	//    FROM foltia_epg
-	//       LEFT JOIN foltia_station ON foltia_epg.ontvchannel = foltia_station.ontvcode
-	//    WHERE (startdatetime >= ?
-	//      AND enddatetime    <= ?)
-	//      AND (startdatetime < enddatetime)
-	//      AND ((epgtitle LIKE ?) OR (epgdesc  LIKE ?))
-	//    ORDER BY startdatetime
-	//";
+      //$query = "
+      //  SELECT
+      //    %COL%
+      //    FROM foltia_epg
+      //       LEFT JOIN foltia_station ON foltia_epg.ontvchannel = foltia_station.ontvcode
+      //    WHERE (startdatetime >= ?
+      //      AND enddatetime    <= ?)
+      //      AND (startdatetime < enddatetime)
+      //      AND ((epgtitle LIKE ?) OR (epgdesc  LIKE ?))
+      //    ORDER BY startdatetime
+      //";
 	$query = "
-	  SELECT 
-	    %COL%
-	    FROM foltia_epg
-	       LEFT JOIN foltia_station ON foltia_epg.ontvchannel = foltia_station.ontvcode
-	    WHERE (startdatetime >= ?)
-	      
-	      AND (startdatetime < enddatetime)
-	      AND ((epgtitle LIKE ?) OR (epgdesc  LIKE ?))
-	    ORDER BY startdatetime
-	";
+        SELECT
+          %COL%
+          FROM foltia_epg
+             LEFT JOIN foltia_station ON foltia_epg.ontvchannel = foltia_station.ontvcode
+          WHERE (startdatetime >= ?)
+
+            AND (startdatetime < enddatetime)
+            AND ((epgtitle LIKE ?) OR (epgdesc  LIKE ?))
+          ORDER BY startdatetime
+      ";
 	$numsql = str_replace('%COL%', $numsql, $query);
 	$selsql = str_replace('%COL%', $selsql, $query);
 	$searchword = '%' . $word . '%';
@@ -89,17 +89,17 @@ function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid, $nowd
 	$reserve      = reserveCheck($con, $startdatetime, $enddatetime, $stationid);
 	$reservecheck = searchStartEndTime($reserve, $startdatetime, $enddatetime);
 	$reservedClass = '';
-    if ($nowdate < $startdatetime) {
+	if ($nowdate < $startdatetime) {
 		if ($reservecheck == 1 || $reservecheck == 2) {
 			$reservedClass = ' class="reservedtitle"';
 		}
-    } else {
+	} else {
 		if ($reservecheck == 1 || $reservecheck == 2) {
 			$reservedClass = ' class="pastreservedtitle"';
 		} else {
 			$reservedClass = ' class="pasttitle"';
 		}
-    }
+	}
 	return $reservedClass;
 }
 
