@@ -84,24 +84,24 @@
 'epgimport.3' => "SELECT digitalch,ontvcode FROM foltia_station WHERE ontvcode is not NULL AND digitalch >= 13 AND digitalch <= 62 ORDER BY digitalch ASC" ,
 'epgimport.4' => "SELECT count(*) FROM foltia_station WHERE ontvcode is not NULL AND digitalch >= 100 AND digitalch <= 222" ,
 'epgimport.5' => "SELECT count(*) FROM foltia_station WHERE ontvcode is not NULL AND digitalch >= 223" ,
-'epgimport.6' => "SELECT 
+'epgimport.6' => "SELECT
  foltia_program.tid, stationname, foltia_program.title,
  foltia_subtitle.countno, foltia_subtitle.subtitle,
  foltia_subtitle.startdatetime as x, foltia_subtitle.lengthmin,
  foltia_tvrecord.bitrate, foltia_subtitle.startoffset,
  foltia_subtitle.pid, foltia_subtitle.epgaddedby,
-foltia_tvrecord.digital 
+foltia_tvrecord.digital
 FROM foltia_subtitle , foltia_program ,foltia_station ,foltia_tvrecord
 WHERE foltia_tvrecord.tid = foltia_program.tid AND foltia_tvrecord.stationid = foltia_station .stationid AND foltia_program.tid = foltia_subtitle.tid AND foltia_station.stationid = foltia_subtitle.stationid
-AND foltia_subtitle.enddatetime >= ? AND foltia_subtitle.startdatetime < ? 
-UNION 
-SELECT 
+AND foltia_subtitle.enddatetime >= ? AND foltia_subtitle.startdatetime < ?
+UNION
+SELECT
  foltia_program.tid, stationname, foltia_program.title,
  foltia_subtitle.countno, foltia_subtitle.subtitle,
  foltia_subtitle.startdatetime, foltia_subtitle.lengthmin,
  foltia_tvrecord.bitrate,  foltia_subtitle.startoffset,
  foltia_subtitle.pid,  foltia_subtitle.epgaddedby,
-foltia_tvrecord.digital 
+foltia_tvrecord.digital
 FROM foltia_tvrecord
 LEFT OUTER JOIN foltia_subtitle on (foltia_tvrecord.tid = foltia_subtitle.tid )
 LEFT OUTER JOIN foltia_program on (foltia_tvrecord.tid = foltia_program.tid )

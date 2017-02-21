@@ -47,6 +47,7 @@ $FILESTATUSTRANSCODEMP4BOX		= 130;
 $FILESTATUSTRANSCODEATOM		= 140;
 $FILESTATUSTRANSCODECOMPLETE	= 150;
 $FILESTATUSALLCOMPLETE			= 200;
+$FILESTATUSABORT				= 300;
 
 
 #------------------------------
@@ -351,21 +352,21 @@ sub getpidbympegfilename {
 } #end sub getpidbympegfilename
 
 sub changefilestatus {
-	#引き数:PID,updatestatus
-	#戻り値:エラーコード
-	my $pid          =  $_[0] ;
+	# 引き数:PID,updatestatus
+	# 戻り値:エラーコード
+	my $pid          = $_[0] ;
 	my $updatestatus = $_[1];
 	if (($pid eq "" ) || ($updatestatus eq "")) {
 		return  0 ;
 	}
-	
+
 	if ($updatestatus > 0 ) {
 		my $sth;
 		$sth = $dbh->prepare($stmt{'foltialib.changefilestatus.1'});
 		$sth->execute($updatestatus, $pid);
 		return 1;
 	} else {
-		&writelog("changefilestatus ERR Sttus invalid:$updatestatus");
+		&writelog("changefilestatus ERR Sttus invalid: $updatestatus");
 		return  0 ;
 	}
 } # end sub changefilestatus

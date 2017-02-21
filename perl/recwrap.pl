@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# usage recwrap.pl ch length(sec) [bitrate(5)] [TID] [NO] [PID] [stationid] [digitalflag] [digitalband] [digitalch] 
+# usage recwrap.pl ch length(sec) [bitrate(5)] [TID] [NO] [PID] [stationid] [digitalflag] [digitalband] [digitalch]
 #
 # Anime recording system foltia
 # http://www.dcc-jpl.com/soft/foltia/
@@ -31,7 +31,7 @@ require "foltialib.pl";
 $recch = $ARGV[0] ;
 if ($recch eq "" ) {
 	#引き数なしで実行されたら、終了
-	print "usage recwrap.pl  ch length(sec) [bitrate(5)] [TID] [NO] [PID]\n";
+	print "usage: recwrap.pl ch length(sec) [bitrate(5)] [TID] [NO] [PID]\n";
 	exit;
 }
 
@@ -98,9 +98,9 @@ if ($recch == -2 ) { #ラジオ局
 	$now = time();
 	if ($now < $endepochtime) { #終了予定より前に録音プロセスが戻ってきたなら
 		&writelog("radiko rec failed,will be retry. NOW:$now PlanedEnd:$endepochtime");
-		
+
 		my $retrycounter = 0;
-		my $waitsecsbase = 10; 
+		my $waitsecsbase = 10;
 		my $waitsec ;
 		my $waitsecsrand ;
 		my $recfilepath;
@@ -130,26 +130,26 @@ if ($recch == -2 ) { #ラジオ局
 			}
 			$now = time();
 		}# while
-	} # if 
+	} # if
 
-	
+
 	# aacファイル名をfoltia_subtitlePIDレコードに書き込み
 	$sth = $dbh->prepare($stmt{'recwrap.1'});
 	$sth->execute($outputfilename, $pid);
 	&writelog("DEBUG UPDATEDB $stmt{'recwrap.1'}");
 	&changefilestatus($pid,$FILESTATUSTRANSCODEMP4BOX);
-	
+
 	# aacファイル名をfoltia_m2pfilesPIDレコードに書き込み
 	$sth = $dbh->prepare($stmt{'recwrap.2'});
 	$sth->execute($outputfilename);
 	&writelog("DEBUG UPDATEDB $stmt{'recwrap.2'}");
-	
-	
-} else { #非ラジオ局なら
+
+} else { # 非ラジオ局なら
 
 	if ($usedigital == 1) {
-		#デジタルなら
+		# デジタルなら
 		&writelog("RECSTART DIGITAL $digitalstationband $digitalch $reclength $stationid 0 $outputfilename $tid $countno friio");
+
 		$head  = "録画開始(digitaltvrecording.pl起動)";
 		$mesg  = sprintf("pid            = %s\n", $pid);
 		$mesg .= sprintf("tid            = %s\n", $tid);
@@ -160,29 +160,36 @@ if ($recch == -2 ) { #ラジオ局
 		$mesg .= sprintf("outputfilename = %s\n", $outputfilename);
 		slackSend($head, $mesg);
 
-		#録画
+		# 録画
 		$starttime = time();
 		$oserr = system("$toolpath/perl/digitaltvrecording.pl $digitalstationband $digitalch $reclength $stationid 0 $outputfilename $tid $countno friio");
-		$oserr = $oserr / 256;
-		
-		if ($oserr == 1) {
-			&writelog("ABORT recfile exist. [$outputfilename] $digitalstationband $digitalch $reclength $stationid 0  $outputfilename $tid $countno");
+		$exit_value  = $oserr >> 8;
+		$signal_num  = $oserr & 127;
+		$dumped_core = $oserr & 128;
+		&writelog("digitaltvrecording.pl exit. exit_value=$exit_value, signal_num=$signal_num, dumped_core=$dumped_core");
+
+		if ($exit_value == 1) {
+			&writelog("[ABORT] recfile exist. [$outputfilename] $digitalstationband $digitalch $reclength $stationid 0 $outputfilename $tid $countno");
 			exit;
-		} elsif ($oserr == 2) {
-			&writelog("ERR 2:Device busy;retry.");
-			&continuousrecordingcheck; #もうすぐ終わる番組をkill
+		} elsif ($exit_value == 2) {
+			&writelog("[ERR] 2:Device busy; retry.");
+			&continuousrecordingcheck; # もうすぐ終わる番組をkill
 			sleep(2);
 			$oserr = system("$toolpath/perl/digitaltvrecording.pl $digitalstationband $digitalch $reclength $stationid N $outputfilename $tid $countno friio");
-			$oserr = $oserr / 256;
-			if ($oserr == 2) {
-				&writelog("ERR 2:Device busy;Giving up digital recording.");
+			$exit_value  = $oserr >> 8;
+			$signal_num  = $oserr & 127;
+			$dumped_core = $oserr & 128;
+			&writelog("digitaltvrecording.pl exit. exit_value=$exit_value, signal_num=$signal_num, dumped_core=$dumped_core");
+
+			if ($exit_value == 2) {
+				&writelog("[ERR] 2:Device busy;Giving up digital recording.");
 				if ($recunits > 0 ) {
 				} else {
 					exit;
 				}
 			}
-		} elsif ($oserr == 3) {
-			&writelog("ABORT:ERR 3");
+		} elsif ($exit_value == 3) {
+			&writelog("[ABORT] ERR 3");
 			exit ;
 		}
 
@@ -251,7 +258,7 @@ if ($recch == -2 ) { #ラジオ局
 					}
 					$retrycounter++;
 				} # while
-			} # if 
+			} # if
 
 			&writelog("RECEND [$outputfilename] $recch $reclength 0 0 $bitrate $tid $countno $pid");
 		} #end if $recunits > 0
@@ -292,7 +299,7 @@ if ($psptrcn[0]  == 1 ) { #トラコン番組
 sub continuousrecordingcheck() {
 	my $now = time() + 60 * 2;
 	&writelog("DEBUG continuousrecordingcheck() now $now");
-	my @processes =`ps ax | grep -e recpt1 -e recfriio`; #foltiaBBS もうすぐ終了する番組のプロセスをkill 投稿日 2010年08月05日03時19分33秒 投稿者 Nis 
+	my @processes =`ps ax | grep -e recpt1 -e recfriio`; #foltiaBBS もうすぐ終了する番組のプロセスをkill 投稿日 2010年08月05日03時19分33秒 投稿者 Nis
 
 	my $psline = "";
 	my @processline = "";
