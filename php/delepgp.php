@@ -20,14 +20,14 @@ include("./foltialib.php");
 $con = m_connect();
 
 if ($useenvironmentpolicy == 1) {
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-		header("WWW-Authenticate: Basic realm=\"foltia\"");
-		header("HTTP/1.0 401 Unauthorized");
-		redirectlogin();
-		exit;
-	} else {
-		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
-	}
+    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        header("WWW-Authenticate: Basic realm=\"foltia\"");
+        header("HTTP/1.0 401 Unauthorized");
+        redirectlogin();
+        exit;
+    } else {
+        login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+    }
 } //end if login
 
 
@@ -37,7 +37,7 @@ if ($useenvironmentpolicy == 1) {
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<link rel="stylesheet" type="text/css" href="graytable.css"> 
+<link rel="stylesheet" type="text/css" href="graytable.css">
 <title>foltia:delete EPG Program</title>
 </head>
 <body BGCOLOR="#ffffff" TEXT="#494949" LINK="#0047ff" VLINK="#000000" ALINK="#c6edff" >
@@ -48,14 +48,14 @@ printhtmlpageheader();
 
 $pid = getgetnumform(pid);
 if ($pid == "") {
-	die_exit("番組がありません<BR>");
+    die_exit("番組がありません<BR>");
 }
 
-$now = date("YmdHi");   
+$now = date("YmdHi");
 
 //タイトル取得
 $query = "
-  SELECT 
+  SELECT
     foltia_subtitle.pid,
     foltia_subtitle.stationid,
     foltia_subtitle.countno,
@@ -79,21 +79,21 @@ $rowdata = $rs->fetch();
 $rs->closeCursor();
 
 if (!is_array($rowdata) || empty($rowdata)) {
-	die_exit("登録番組がありません<BR>");
+    die_exit("登録番組がありません<BR>");
 }
 
-$pid			= htmlspecialchars($rowdata[0]);
-$stationid		= htmlspecialchars($rowdata[1]);
-$countno		= htmlspecialchars($rowdata[2]);
-$subtitle		= htmlspecialchars($rowdata[3]);
-$starttime		= htmlspecialchars($rowdata[4]);
-$startprinttime	= htmlspecialchars(foldate2print($rowdata[4]));
-$endtime		= htmlspecialchars($rowdata[5]);
-$endprinttime	= htmlspecialchars(foldate2print($rowdata[5]));
-$lengthmin		= htmlspecialchars($rowdata[6]);
-$stationjname	= htmlspecialchars($rowdata[7]);
-$recch			= htmlspecialchars($rowdata[8]);
-$delflag		= getgetnumform(delflag);
+$pid            = htmlspecialchars($rowdata[0]);
+$stationid      = htmlspecialchars($rowdata[1]);
+$countno        = htmlspecialchars($rowdata[2]);
+$subtitle       = htmlspecialchars($rowdata[3]);
+$starttime      = htmlspecialchars($rowdata[4]);
+$startprinttime = htmlspecialchars(foldate2print($rowdata[4]));
+$endtime        = htmlspecialchars($rowdata[5]);
+$endprinttime   = htmlspecialchars(foldate2print($rowdata[5]));
+$lengthmin      = htmlspecialchars($rowdata[6]);
+$stationjname   = htmlspecialchars($rowdata[7]);
+$recch          = htmlspecialchars($rowdata[8]);
+$delflag        = getgetnumform(delflag);
 
 ?>
 
@@ -101,53 +101,53 @@ $delflag		= getgetnumform(delflag);
   <hr size="4">
 <?php
 if ($delflag == "1") {
-	//時刻確認
-	if ($now < $starttime ) {
-		print "EPG予約「".$subtitle."」の録画予約を解除しました。 <br>\n";
-		
-		//削除処理
-		if (($demomode) || ($protectmode) ) {
-			// demomodeやprotectmodeならなにもしない
-		} else {
-			// キュー更新
-i			//$oserr = system("$toolpath/perl/addatq.pl 0 $stationid ");
-			$oserr = system("$toolpath/perl/addpidatq.pl $pid ");
-			// DB削除
-			$query = "
-              DELETE  
-                FROM foltia_subtitle  
+    //時刻確認
+    if ($now < $starttime ) {
+        print "EPG予約「".$subtitle."」の録画予約を解除しました。 <br>\n";
+
+        //削除処理
+        if (($demomode) || ($protectmode) ) {
+            // demomodeやprotectmodeならなにもしない
+        } else {
+            // キュー更新
+            $oserr = system("$toolpath/perl/addpidatq.pl $pid");
+
+            // DB削除
+            $query = "
+              DELETE
+                FROM foltia_subtitle
                 WHERE foltia_subtitle.pid = ?
                  AND  foltia_subtitle.tid = 0 ";
 
-			$rs = sql_query($con, $query, "DBクエリに失敗しました",array($pid));
+            $rs = sql_query($con, $query, "DBクエリに失敗しました",array($pid));
 
-			$head  = "EPG予約「pid = " . $pid . "」の録画予約を解除しました。";
-			$mesg  = sprintf("放送局         : %s\n", $stationjname);
-			$mesg .= sprintf("放送開始       : %s\n", $startprinttime);
-			$mesg .= sprintf("放送終了       : %s\n", $endprinttime);
-			$mesg .= sprintf("尺(分)         : %s\n", $lengthmin);
-			$mesg .= sprintf("放送チャンネル : %s\n", $recch);
-			$mesg .= sprintf("局コード       : %s\n", $stationid);
-			$mesg .= sprintf("番組名         : %s\n", $subtitle);
-			$mesg .= sprintf("番組ID         : %s\n", $pid);
-			slackSend($head, $mesg);
-		}
-	} else {
-		print "<strong>過去番組は予約削除出来ません。</strong>";
-	} //end if
+            $head  = "EPG予約「pid = " . $pid . "」の録画予約を解除しました。";
+            $mesg  = sprintf("放送局         : %s\n", $stationjname);
+            $mesg .= sprintf("放送開始       : %s\n", $startprinttime);
+            $mesg .= sprintf("放送終了       : %s\n", $endprinttime);
+            $mesg .= sprintf("尺(分)         : %s\n", $lengthmin);
+            $mesg .= sprintf("放送チャンネル : %s\n", $recch);
+            $mesg .= sprintf("局コード       : %s\n", $stationid);
+            $mesg .= sprintf("番組名         : %s\n", $subtitle);
+            $mesg .= sprintf("番組ID         : %s\n", $pid);
+            slackSend($head, $mesg);
+        }
+    } else {
+        print "<strong>過去番組は予約削除出来ません。</strong>";
+    } //end if
 
 } else {
-	//delflagが1じゃなければ
+    //delflagが1じゃなければ
 
-	//時刻確認
-	if ($now < $starttime ) {
-		print "EPG予約「".$subtitle."」の録画予約を解除します。 <br>\n";
+    //時刻確認
+    if ($now < $starttime ) {
+        print "EPG予約「".$subtitle."」の録画予約を解除します。 <br>\n";
 
-		print "<form name=\"deletereserve\" method=\"GET\" action=\"delepgp.php\">
-		<input type=\"submit\" value=\"予約解除\" >\n";
-	} else {
-		print "<strong>過去番組は予約削除出来ません。</strong>";
-	} //end if
+        print "<form name=\"deletereserve\" method=\"GET\" action=\"delepgp.php\">
+        <input type=\"submit\" value=\"予約解除\" >\n";
+    } else {
+        print "<strong>過去番組は予約削除出来ません。</strong>";
+    } //end if
 }
 
 print "<br>
@@ -166,13 +166,13 @@ print "<br>
 if ($delflag == "1") {
 
 } else {
-	print "
+    print "
       <input type=\"hidden\" name=\"pid\" value=\"$pid\">
       <input type=\"hidden\" name=\"delflag\" value=\"1\">
       </form>\n";
 }
 
-?>  
+?>
 </table>
 
 </body>

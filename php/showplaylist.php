@@ -23,14 +23,14 @@ include("./foltialib.php");
 $con = m_connect();
 
 if ($useenvironmentpolicy == 1) {
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-		header("WWW-Authenticate: Basic realm=\"foltia\"");
-		header("HTTP/1.0 401 Unauthorized");
-		redirectlogin();
-		exit;
-	} else {
-		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
-	}
+    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        header("WWW-Authenticate: Basic realm=\"foltia\"");
+        header("HTTP/1.0 401 Unauthorized");
+        redirectlogin();
+        exit;
+    } else {
+        login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+    }
 } // end if login
 
 
@@ -78,9 +78,9 @@ printhtmlpageheader();
 <?php
 if ($demomode) {
 } else {
-	printdiskusage();
-	printtrcnprocesses();
-	printrecpt1processes();
+    printdiskusage();
+    printtrcnprocesses();
+    printrecpt1processes();
 }
 
 //////////////////////////////////////////
@@ -96,24 +96,24 @@ echo "<div id=contents class=autopagerize_page_element />";
 <p align="left"><input type="submit" value="項目削除" ></p>
 
   <table border="0" cellpadding="0" cellspacing="2" width="100%" style="table-layout: fixed;">
-	<thead>
-		<tr>
-			<th align="left" style="width:20px;">削除</th>
-			<th align="left" style="width:200px;"><A HREF="./showplaylist.php">ファイル名</A></th>
-			<th align="left" style="width:300px;"><A HREF="./showplaylist.php?list=title">タイトル</A></th>
-			<th align="left" style="width:50px;">話数</th>
-			<th align="left" style="">サブタイ</th>
-			<th align="left" style="width:50px;">Player</th>
+    <thead>
+        <tr>
+            <th align="left" style="width:20px;">削除</th>
+            <th align="left" style="width:200px;"><A HREF="./showplaylist.php">ファイル名</A></th>
+            <th align="left" style="width:300px;"><A HREF="./showplaylist.php?list=title">タイトル</A></th>
+            <th align="left" style="width:50px;">話数</th>
+            <th align="left" style="">サブタイ</th>
+            <th align="left" style="width:50px;">Player</th>
 
 <?php
 if (file_exists("./selectcaptureimage.php") ) {
-print "			<th align=\"left\" style=\"width:20px;\">キャプ</th>\n";
+print "         <th align=\"left\" style=\"width:20px;\">キャプ</th>\n";
 }
 ?>
-		</tr>
-	</thead>
+        </tr>
+    </thead>
 
-	<tbody>
+    <tbody>
 
 
 
@@ -140,7 +140,7 @@ if ($list == "raw") {
     if (($fName == ".") or ($fName == "..") ) {
       continue;
     }
-    if ((ereg(".m2.+", $fName))|| (ereg(".aac", $fName))) {
+    if ((preg_match("/\.m2.+/", $fName))|| (preg_match("/\.aac/", $fName))) {
       $filesplit = explode("-", $fName);
 
       if (preg_match("/^\d+$/", $filesplit[0])) {
@@ -241,11 +241,11 @@ if ($list == "raw") {
         print "</tr>\n
         ";
       } else {
-      	//print "File is looks like BAD:preg<br>\n";
+        //print "File is looks like BAD:preg<br>\n";
       }
-    } //ereg
+    } //preg_match
   } //foreach
-  print "	</tbody>\n</table>\n</FORM>\n";
+  print "   </tbody>\n</table>\n</FORM>\n";
   echo '<p align="left">';
   echo '$datas=' . count($datas) . '  ';
   echo '$nodata=' . count($nodata, COUNT_RECURSIVE) . '  ';
@@ -278,7 +278,7 @@ if ($list == "raw") {
     if (($fName == '.') || ($fName == '..') ) {
       continue;
     }
-    if (ereg('.MP4', $fName)) {
+    if (preg_match('/\.MP4/', $fName)) {
       $filesplit = explode('-', $fName);
       $tid       = $filesplit[1];
       $num       = $filesplit[2];
@@ -393,18 +393,18 @@ if ($list == "raw") {
     }
     print "</td>";
 
-	if (file_exists("./selectcaptureimage.php") ) {
-		if ($data['pid']) {
-			print "<td align=\"left\"><a href=\"./selectcaptureimage.php?pid=${data['pid']}\">キャプ</a></td>\n";
-		} else {
-			print "<td align=\"left\"><a href=\"./selectcaptureimage.php?f=${data['fName']}\">キャプ</a></td>\n";
-		}
-	}
+    if (file_exists("./selectcaptureimage.php") ) {
+        if ($data['pid']) {
+            print "<td align=\"left\"><a href=\"./selectcaptureimage.php?pid=${data['pid']}\">キャプ</a></td>\n";
+        } else {
+            print "<td align=\"left\"><a href=\"./selectcaptureimage.php?f=${data['fName']}\">キャプ</a></td>\n";
+        }
+    }
 
     print "</tr>\n
     ";
   }
-  print "	</tbody>\n</table>\n</FORM>";
+  print "   </tbody>\n</table>\n</FORM>";
 
   echo '<p align="left">';
   echo '$datas=' . count($datas) . '  ';
@@ -485,72 +485,72 @@ page_display($query_st, $p, $p2, $lim, $dtcnt, "");
 
 if ($rowdata) {
 
-	do {
-		$tid          = htmlspecialchars($rowdata[0]);
-		$title        = htmlspecialchars($rowdata[1]);
-		$count        = htmlspecialchars($rowdata[2]);
-		$subtitle     = htmlspecialchars($rowdata[3]);
-		$fName        = htmlspecialchars($rowdata[4]);
-		$pid          = htmlspecialchars($rowdata[5]);
-		$mp4filename  = htmlspecialchars($rowdata[6]);
-		$lengthmin    = htmlspecialchars($rowdata['lengthmin']);
+    do {
+        $tid          = htmlspecialchars($rowdata[0]);
+        $title        = htmlspecialchars($rowdata[1]);
+        $count        = htmlspecialchars($rowdata[2]);
+        $subtitle     = htmlspecialchars($rowdata[3]);
+        $fName        = htmlspecialchars($rowdata[4]);
+        $pid          = htmlspecialchars($rowdata[5]);
+        $mp4filename  = htmlspecialchars($rowdata[6]);
+        $lengthmin    = htmlspecialchars($rowdata['lengthmin']);
 
-		$m2pExists = false;
-		$m2pUrl    = $httpmediamappath . '/' . $fName;
-		$m2ppath   = $recfolderpath . '/' . $fName;
-		if (file_exists($m2ppath) && is_file($m2ppath) && filesize($m2ppath)) {
-			$m2pExists = true;
-		}
+        $m2pExists = false;
+        $m2pUrl    = $httpmediamappath . '/' . $fName;
+        $m2ppath   = $recfolderpath . '/' . $fName;
+        if (file_exists($m2ppath) && is_file($m2ppath) && filesize($m2ppath)) {
+            $m2pExists = true;
+        }
 
-		$mp4Exists = false;
-		$mp4Url    = $httpmediamappath . '/' . $tid . '.localized/mp4/' . $mp4filename;
-		$mp4path   = $recfolderpath .'/' . $tid . '.localized/mp4/' . $mp4filename ;
-		if (file_exists($mp4path) && is_file($mp4path)) {
-			$mp4Exists = true;
-			$mp4size = filesize($mp4path);
-			$mp4size = round($mp4size / 1024 / 1024);
-		}
-		print "
-		<tr>
-		<td><INPUT TYPE='checkbox' NAME='delete[]' VALUE='$fName'><br></td>";
+        $mp4Exists = false;
+        $mp4Url    = $httpmediamappath . '/' . $tid . '.localized/mp4/' . $mp4filename;
+        $mp4path   = $recfolderpath .'/' . $tid . '.localized/mp4/' . $mp4filename ;
+        if (file_exists($mp4path) && is_file($mp4path)) {
+            $mp4Exists = true;
+            $mp4size = filesize($mp4path);
+            $mp4size = round($mp4size / 1024 / 1024);
+        }
+        print "
+        <tr>
+        <td><INPUT TYPE='checkbox' NAME='delete[]' VALUE='$fName'><br></td>";
 
-		if (ereg("syabas", $useragent)) {
-			print "<td><A HREF=\"./view_syabas.php?pid=$pid\" vod=playlist>$fName</td>";
-		} else {
-			echo '<td>';
-			if ($m2pExists) {
-				echo '<a href="'. $m2pUrl . '">' . $fName . '</a><br>';
-			}
-			if ($mp4Exists) {
-				echo '<a href="'. $mp4Url . '" target="_blank">' . $mp4filename . '</a>';
-			}
-			echo '</td>';
-		}
-		if ($tid > 0) {
-			print"<td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">$title</a><br><a href=\"./showlibc.php?tid=$tid\">[ライブラリ]</a></td>
-			<td>$count<br></td>
-			<td><a href = \"http://cal.syoboi.jp/tid/$tid/time#$pid\" target=\"_blank\">$subtitle</a><br></td>";
-		} else {
-			print"<td>$title<br><a href=\"./showlibc.php?tid=$tid\">[ライブラリ]</a></td>
-			<td>$count<br></td>
-			<td>$subtitle<br></td>";
-		}
+        if (preg_match("/syabas/", $useragent)) {
+            print "<td><A HREF=\"./view_syabas.php?pid=$pid\" vod=playlist>$fName</td>";
+        } else {
+            echo '<td>';
+            if ($m2pExists) {
+                echo '<a href="'. $m2pUrl . '">' . $fName . '</a><br>';
+            }
+            if ($mp4Exists) {
+                echo '<a href="'. $mp4Url . '" target="_blank">' . $mp4filename . '</a>';
+            }
+            echo '</td>';
+        }
+        if ($tid > 0) {
+            print"<td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">$title</a><br><a href=\"./showlibc.php?tid=$tid\">[ライブラリ]</a></td>
+            <td>$count<br></td>
+            <td><a href = \"http://cal.syoboi.jp/tid/$tid/time#$pid\" target=\"_blank\">$subtitle</a><br></td>";
+        } else {
+            print"<td>$title<br><a href=\"./showlibc.php?tid=$tid\">[ライブラリ]</a></td>
+            <td>$count<br></td>
+            <td>$subtitle<br></td>";
+        }
 
-		print "<td>";
-		if ($mp4Exists) {
-			print "<a href=\"./mp4player.php?p=$pid\" target=\"_blank\">Player</a><br />${mp4size}MB<br>${lengthmin}分";
-		}
-		print "</td>";
+        print "<td>";
+        if ($mp4Exists) {
+            print "<a href=\"./mp4player.php?p=$pid\" target=\"_blank\">Player</a><br />${mp4size}MB<br>${lengthmin}分";
+        }
+        print "</td>";
 
-		if (file_exists("./selectcaptureimage.php") ) {
-			$capimgpath = preg_replace("/.m2.+/", "", $fName);
-			print "			<td align=\"left\"><a href=\"./selectcaptureimage.php?pid=$pid\">キャプ</a></td>\n";
-		}
+        if (file_exists("./selectcaptureimage.php") ) {
+            $capimgpath = preg_replace("/.m2.+/", "", $fName);
+            print "         <td align=\"left\"><a href=\"./selectcaptureimage.php?pid=$pid\">キャプ</a></td>\n";
+        }
 
-		print "</tr>\n
-		";
+        print "</tr>\n
+        ";
 
-	} while ($rowdata = $rs->fetch());
+    } while ($rowdata = $rs->fetch());
 } else {
 
 print "
@@ -569,13 +569,13 @@ print "</tbody>
 //Autopageing処理とページのリンクを表示
 list($p2, $page) = page_display($query_st, $p, $p2, $lim, $dtcnt, "");
 //////////////////////////////////////////////////////////////////////
-print "</div>";	//Auto pager終わり
+print "</div>"; //Auto pager終わり
 
 
 //番組ソートの時、未読番組のタイトルだけ表示
 //if ($list== "title" && $p2 > $page) {
 if ($list== "title") {
-	$query = "
+    $query = "
       SELECT
         distinct foltia_program.tid,
         foltia_program.title
@@ -588,11 +588,11 @@ if ($list== "title") {
       ORDER BY foltia_program.tid DESC
     ";
 
-	//$rs = m_query($con, $query, "DBクエリに失敗しました");
-	$rs = sql_query($con, $query, "DBクエリに失敗しました");
-	$rowdata = $rs->fetch();
-	if ($rowdata) {
-		print "<hr>
+    //$rs = m_query($con, $query, "DBクエリに失敗しました");
+    $rs = sql_query($con, $query, "DBクエリに失敗しました");
+    $rowdata = $rs->fetch();
+    if ($rowdata) {
+        print "<hr>
           <p align=\"left\">未読タイトルを表示します。<br>
           <table BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"2\" WIDTH=\"100%\">
             <thead>
@@ -604,14 +604,14 @@ if ($list== "title") {
           <tbody>
         ";
 
-		do {
-			$tid = htmlspecialchars($rowdata[0]);
-			$title = htmlspecialchars($rowdata[1]);
-			print "<tr><td>$tid</td><td>$title</td></tr>\n";
+        do {
+            $tid = htmlspecialchars($rowdata[0]);
+            $title = htmlspecialchars($rowdata[1]);
+            print "<tr><td>$tid</td><td>$title</td></tr>\n";
 
-		} while ($rowdata = $rs->fetch());
-		print "</tbody></table>\n";
-	} // if maxrows
+        } while ($rowdata = $rs->fetch());
+        print "</tbody></table>\n";
+    } // if maxrows
 } // if title
 
 ?>

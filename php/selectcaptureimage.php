@@ -20,21 +20,21 @@ include("./foltialib.php");
 $con = m_connect();
 
 if ($useenvironmentpolicy == 1) {
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-		header("WWW-Authenticate: Basic realm=\"foltia\"");
-		header("HTTP/1.0 401 Unauthorized");
-		redirectlogin();
-		exit;
-	} else {
-		login($con, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
-	}
+    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        header("WWW-Authenticate: Basic realm=\"foltia\"");
+        header("HTTP/1.0 401 Unauthorized");
+        redirectlogin();
+        exit;
+    } else {
+        login($con, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+    }
 } // end if login
 
 $pid  = getgetnumform(pid);
 $file = getgetform(f);
 
 if ($pid == "") {
-	header("Status: 404 Not Found", TRUE, 404);
+    header("Status: 404 Not Found", TRUE, 404);
 }
 
 ?>
@@ -55,7 +55,7 @@ if ($pid == "") {
 printhtmlpageheader();
 
 if ($pid != "") {
-	$query = "
+    $query = "
       SELECT
         foltia_program.tid,
         stationname,
@@ -75,11 +75,11 @@ if ($pid != "") {
         AND foltia_station.stationid = foltia_subtitle.stationid
         AND foltia_subtitle.pid = ?
 ";
-	$rs = sql_query($con, $query, "DBクエリに失敗しました", array($pid));
-	$rowdata = $rs->fetch();
+    $rs = sql_query($con, $query, "DBクエリに失敗しました", array($pid));
+    $rowdata = $rs->fetch();
 
-	if (! $rowdata) {
-		$query = "
+    if (! $rowdata) {
+        $query = "
           SELECT
             foltia_program.tid,
             foltia_program.tid,
@@ -96,40 +96,40 @@ if ($pid != "") {
             AND foltia_subtitle.pid = ?
         ";
 
-		$rs = sql_query($con, $query, "DBクエリに失敗しました" ,array($pid));
-		$rowdata = $rs->fetch();
-	}
+        $rs = sql_query($con, $query, "DBクエリに失敗しました" ,array($pid));
+        $rowdata = $rs->fetch();
+    }
 
-	$rowdata[1] = "";
+    $rowdata[1] = "";
 } else if ($file != "") {
-	$filesplit = split('-', htmlspecialchars($file));
-	$tid       = $filesplit[1];
-	$num       = $filesplit[2];
-	$date      = $filesplit[3];
-	if ($tid != '0') {
-		list($time, $ext)	= split('\.', $filesplit[4]);
-	} else {
-        $time				= $filesplit[4];
-		list($ch, $ext)		= split('\.', $filesplit[5]);
-	}
-	$rowdata   = array();
-	$rowdata[0]= $tid;
-	$rowdata[1]= '';
-	$rowdata[2]= 'title';
-	$rowdata[3]= $num;
-	$rowdata[4]= 'subtitle';
-	$rowdata[5]= $filesplit[3] . $time;
-	$rowdata[6]= 'min';
-	if ($tid != '0') {
-		$rowdata[8] = $filesplit[1] . '-' . $num . '-' . $date . '-' . $time . '.m2t';
-	} else {
-		$rowdata[8]= $filesplit[1] . '-' . $num . '-' . $date . '-' . $time . '-' . $ch . '.m2t';
-	}
-	$rowdata[9] = htmlspecialchars($file);
+    $filesplit = explode('-', htmlspecialchars($file));
+    $tid       = $filesplit[1];
+    $num       = $filesplit[2];
+    $date      = $filesplit[3];
+    if ($tid != '0') {
+        list($time, $ext)   = explode('\.', $filesplit[4]);
+    } else {
+        $time               = $filesplit[4];
+        list($ch, $ext)     = explode('\.', $filesplit[5]);
+    }
+    $rowdata   = array();
+    $rowdata[0]= $tid;
+    $rowdata[1]= '';
+    $rowdata[2]= 'title';
+    $rowdata[3]= $num;
+    $rowdata[4]= 'subtitle';
+    $rowdata[5]= $filesplit[3] . $time;
+    $rowdata[6]= 'min';
+    if ($tid != '0') {
+        $rowdata[8] = $filesplit[1] . '-' . $num . '-' . $date . '-' . $time . '.m2t';
+    } else {
+        $rowdata[8]= $filesplit[1] . '-' . $num . '-' . $date . '-' . $time . '-' . $ch . '.m2t';
+    }
+    $rowdata[9] = htmlspecialchars($file);
 
 } else {
-	print "画像がありません。<br></body></html>";
-	exit;
+    print "画像がありません。<br></body></html>";
+    exit;
 } // end if (! $rowdata)
 
 print "  <p align=\"left\"><font color=\"#494949\" size=\"6\">キャプチャ画像</font></p>
@@ -140,10 +140,10 @@ print htmlspecialchars($rowdata[2]) . "</a> " ;
 print htmlspecialchars($rowdata[3]) . " ";
 $tid = $rowdata[0];
 if ($tid > 0) {
-	print "<a href = \"http://cal.syoboi.jp/tid/$tid/time#$pid\" target=\"_blank\">";
-	print htmlspecialchars($rowdata[4]) . "</a> ";
+    print "<a href = \"http://cal.syoboi.jp/tid/$tid/time#$pid\" target=\"_blank\">";
+    print htmlspecialchars($rowdata[4]) . "</a> ";
 } else {
-	print htmlspecialchars($rowdata[4]) . " ";
+    print htmlspecialchars($rowdata[4]) . " ";
 }
 print htmlspecialchars($rowdata[1]) . " ";
 print htmlspecialchars($rowdata[6]) . "分 ";
@@ -155,34 +155,34 @@ $serverfqdn = getserverfqdn();
 print "　　再生:<A HREF=\"$httpmediamappath/$tid.localized/mp4/$mp4filename\" target=\"_blank\">$mp4filename</A> / <script language=\"JavaScript\" type=\"text/javascript\">QT_WriteOBJECT_XHTML('http://g.hatena.ne.jp/images/podcasting.gif','16','16','','controller','FALSE','href','http://$serverfqdn/$httpmediamappath/$tid.localized/mp4/$mp4filename','target','QuickTimePlayer','type','video/mp4');</script> / ";
 
 if ($pid) {
-	print "<a href=\"./mp4player.php?p=$pid\" target=\"_blank\">Player</a><br>";
+    print "<a href=\"./mp4player.php?p=$pid\" target=\"_blank\">Player</a><br>";
 } else {
-	print "<a href=\"./mp4player.php?f=$file\" target=\"_blank\">Player</a><br>";
+    print "<a href=\"./mp4player.php?f=$file\" target=\"_blank\">Player</a><br>";
 }
 
 $m2pfilename = $rowdata[8];
 
-list($tid, $countno, $date, $time)= split ("-", $m2pfilename );
-//	$tid = ereg_replace("[^0-9]", "", $tid);
+list($tid, $countno, $date, $time)= explode("-", $m2pfilename );
+//  $tid = preg_replace("/[^0-9]/", "", $tid);
 $tid       = $rowdata[0];
 $countno   = $rowdata[3] ;
-$path      = ereg_replace("\.m2p$|\.m2t$", "", $m2pfilename);
+$path      = preg_replace("/\.m2p$|\.m2t$/", "", $m2pfilename);
 $serveruri = getserverfqdn ();
 
 exec ("ls -1F $recfolderpath/$tid.localized/img/$path/", $tids);
 foreach($tids as $filetid) {
-	if (strpos($filetid, '/') !== false) {
-		continue;
-	}
-	if (file_exists("./sb-edit.php") ) {
-		print "<a href=\"./sb-edit.php?pid=$pid&f=$filetid\"><img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid' alt='$tid:$countno:$filetid'></a>\n";
-	} else {
-		if (file_exists("$recfolderpath/$tid.localized/img/$path/l/$filetid")) {
-			print "<a href='http://$serveruri$httpmediamappath/$tid.localized/img/$path/l/$filetid' target='_blank'><img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid'  alt='$tid:$countno:$filetid'></a>\n";
-		} else {
-			print "<img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid'  alt='$tid:$countno:$filetid'>\n";
-		}
-	}
+    if (strpos($filetid, '/') !== false) {
+        continue;
+    }
+    if (file_exists("./sb-edit.php") ) {
+        print "<a href=\"./sb-edit.php?pid=$pid&f=$filetid\"><img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid' alt='$tid:$countno:$filetid'></a>\n";
+    } else {
+        if (file_exists("$recfolderpath/$tid.localized/img/$path/l/$filetid")) {
+            print "<a href='http://$serveruri$httpmediamappath/$tid.localized/img/$path/l/$filetid' target='_blank'><img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid'  alt='$tid:$countno:$filetid'></a>\n";
+        } else {
+            print "<img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid'  alt='$tid:$countno:$filetid'>\n";
+        }
+    }
 } // foreach
 // タイトル一覧 ここまで
 

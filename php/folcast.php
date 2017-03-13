@@ -25,14 +25,14 @@ include("./foltialib.php");
 $con = m_connect();
 /*
 if ($useenvironmentpolicy == 1){
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-		header("WWW-Authenticate: Basic realm=\"foltia\"");
-		header("HTTP/1.0 401 Unauthorized");
-		redirectlogin();
-		exit;
-	} else {
-		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
-	}
+    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        header("WWW-Authenticate: Basic realm=\"foltia\"");
+        header("HTTP/1.0 401 Unauthorized");
+        redirectlogin();
+        exit;
+    } else {
+        login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+    }
 }//end if login
 */
 $now = date("YmdHi");
@@ -41,13 +41,13 @@ $nowrfc822 =  date("r");
 $max = getgetnumform(max);
 
 if ($max > 0 ) {
-	//件数指定があればなにもしない
+    //件数指定があればなにもしない
 } else {
-	$max = 45;
+    $max = 45;
 }
 $tid = getgetnumform(tid);
 if (($tid >= 0 ) && ($tid != "")) {
-	$query = "
+    $query = "
       SELECT
         foltia_program.tid,
         foltia_program.title,
@@ -67,7 +67,7 @@ if (($tid >= 0 ) && ($tid != "")) {
       LIMIT ? offset 0
     ";
 
-	$titlequery = "
+    $titlequery = "
       SELECT
         foltia_program.tid,
         foltia_program.title
@@ -76,11 +76,11 @@ if (($tid >= 0 ) && ($tid != "")) {
       WHERE foltia_program.tid = ?
     ";
 
-	$titlers = sql_query($con, $query, "DBクエリに失敗しました", array($tid));
-	$rowdata = $titlers->fetch();
-	$rsstitle = htmlspecialchars($rowdata[1]);
+    $titlers = sql_query($con, $query, "DBクエリに失敗しました", array($tid));
+    $rowdata = $titlers->fetch();
+    $rsstitle = htmlspecialchars($rowdata[1]);
 } else {
-	$query = "
+    $query = "
       SELECT
         foltia_program.tid,
         foltia_program.title,
@@ -99,7 +99,7 @@ if (($tid >= 0 ) && ($tid != "")) {
       LIMIT ? offset 0
     ";
 
-	$rsstitle = "新規録画";
+    $rsstitle = "新規録画";
 } // if
 
 $header = '<?xml version="1.0" encoding="UTF-8"?>
@@ -129,49 +129,49 @@ $rs = sql_query($con, $query, "DBクエリに失敗しました", array($max));
 $rowdata = $rs->fetch();
 
 if (! $rowdata) {
-	// die_exit("No items");	
+    // die_exit("No items");
 } else {
-	do {
-		//$title = mb_convert_encoding($rowdata[1], "UTF-8");
-		$tid =  $rowdata[0];
-		$title = $rowdata[1];
-		$title = htmlspecialchars($title);
-		$countno = $rowdata[2];
-		if ($countno > 0 ) {
-			$countprint = "第".$countno."回";
-		} else {
-			$countprint="";
-		}
-		$subtitle = $rowdata[3];
-		$subtitle = htmlspecialchars($subtitle);
-		$onairdate = $rowdata[4];
-		$day = substr($onairdate,0,4)."/".substr($onairdate,4,2)."/".substr($onairdate,6,2);
-		$time = substr($onairdate,8,2).":".substr($onairdate,10,2);
-		$onairdate = "$day $time";
+    do {
+        //$title = mb_convert_encoding($rowdata[1], "UTF-8");
+        $tid =  $rowdata[0];
+        $title = $rowdata[1];
+        $title = htmlspecialchars($title);
+        $countno = $rowdata[2];
+        if ($countno > 0 ) {
+            $countprint = "第".$countno."回";
+        } else {
+            $countprint="";
+        }
+        $subtitle = $rowdata[3];
+        $subtitle = htmlspecialchars($subtitle);
+        $onairdate = $rowdata[4];
+        $day = substr($onairdate,0,4)."/".substr($onairdate,4,2)."/".substr($onairdate,6,2);
+        $time = substr($onairdate,8,2).":".substr($onairdate,10,2);
+        $onairdate = "$day $time";
 
-		$starttimerfc822 = foldate2rfc822($rowdata[4]);
+        $starttimerfc822 = foldate2rfc822($rowdata[4]);
 
-		$mp4filename = $rowdata[5];
-		$mp4uri = "http://". getserverfqdn()  .$httpmediamappath ."/$tid.localized/mp4/$mp4filename";
-		$mp4thmname = $rowdata[5];
-		$mp4thmname = ereg_replace(".MP4", ".THM", $mp4thmname);
-		$mp4thmnameuri = "http://". getserverfqdn() . $httpmediamappath ."/$tid.localized/mp4/$mp4thmname";
+        $mp4filename = $rowdata[5];
+        $mp4uri = "http://". getserverfqdn()  .$httpmediamappath ."/$tid.localized/mp4/$mp4filename";
+        $mp4thmname = $rowdata[5];
+        $mp4thmname = preg_replace("/\.MP4/", ".THM", $mp4thmname);
+        $mp4thmnameuri = "http://". getserverfqdn() . $httpmediamappath ."/$tid.localized/mp4/$mp4thmname";
 
-		if (file_exists("$recfolderpath/$tid.localized/mp4/$mp4filename")) {
-			$mp4filestat = stat("$recfolderpath/$tid.localized/mp4/$mp4filename");
-			$mp4filesize = $mp4filestat[7];
-		} else {
-			$mp4filesize = 0;
-		}
+        if (file_exists("$recfolderpath/$tid.localized/mp4/$mp4filename")) {
+            $mp4filestat = stat("$recfolderpath/$tid.localized/mp4/$mp4filename");
+            $mp4filesize = $mp4filestat[7];
+        } else {
+            $mp4filesize = 0;
+        }
 
-		if ($rowdata[0] == 0 ) {
-			//EPG録画
-			$showntitle = "$title $subtitle";
-		} else {
-			$showntitle = "$title $countprint";
-		}
+        if ($rowdata[0] == 0 ) {
+            //EPG録画
+            $showntitle = "$title $subtitle";
+        } else {
+            $showntitle = "$title $countprint";
+        }
 
-		$item ='
+        $item ='
                 <item>
                   <title>$showntitle</title>
                   <itunes:author>foltia</itunes:author>
@@ -187,10 +187,10 @@ if (! $rowdata) {
                 </item>
         ';
 
-		$item = mb_convert_encoding($item, "UTF-8");
-		print $item ;
+        $item = mb_convert_encoding($item, "UTF-8");
+        print $item ;
 
-	} while ($rowdata = $rs->fetch()); // do
+    } while ($rowdata = $rs->fetch()); // do
 } // if
 ?>
 

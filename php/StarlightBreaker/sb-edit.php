@@ -19,14 +19,14 @@ include("./foltialib.php");
 $con = m_connect();
 
 if ($useenvironmentpolicy == 1){
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-	    header("WWW-Authenticate: Basic realm=\"foltia\"");
-	    header("HTTP/1.0 401 Unauthorized");
-		redirectlogin();
-	    exit;
-	} else {
-	login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
-	}
+    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        header("WWW-Authenticate: Basic realm=\"foltia\"");
+        header("HTTP/1.0 401 Unauthorized");
+        redirectlogin();
+        exit;
+    } else {
+    login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+    }
 }//end if login
 
 
@@ -34,7 +34,7 @@ $pid = getgetform(pid);
 $filename = getgetform(f);
 
 if (($pid == "") ||($filename == "")) {
-	header("Status: 404 Not Found",TRUE,404);
+    header("Status: 404 Not Found",TRUE,404);
 }
 ?>
 
@@ -43,7 +43,7 @@ if (($pid == "") ||($filename == "")) {
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<link rel="stylesheet" type="text/css" href="graytable.css"> 
+<link rel="stylesheet" type="text/css" href="graytable.css">
 <title>Starlight Breaker -編集</title>
 </head>
 <body BGCOLOR="#ffffff" TEXT="#494949" LINK="#0047ff" VLINK="#000000" ALINK="#c6edff" >
@@ -53,32 +53,32 @@ if (($pid == "") ||($filename == "")) {
 printhtmlpageheader();
 
 if (($pid == "") ||($filename == "")) {
-	print "画像がありません。<br></body></html>";
-	exit;
+    print "画像がありません。<br></body></html>";
+    exit;
 }
 
 
 $query = "
-SELECT 
+SELECT
 foltia_program.tid,
 stationname,
 foltia_program.title,
 foltia_subtitle.countno,
 foltia_subtitle.subtitle,
 foltia_subtitle.startdatetime ,
-foltia_subtitle.lengthmin  , 
+foltia_subtitle.lengthmin  ,
 foltia_subtitle.pid ,
-foltia_subtitle.m2pfilename , 
-foltia_subtitle.pspfilename 
-FROM foltia_subtitle , foltia_program ,foltia_station  
-WHERE foltia_program.tid = foltia_subtitle.tid AND foltia_station.stationid = foltia_subtitle.stationid 
-AND foltia_subtitle.pid = ? 
+foltia_subtitle.m2pfilename ,
+foltia_subtitle.pspfilename
+FROM foltia_subtitle , foltia_program ,foltia_station
+WHERE foltia_program.tid = foltia_subtitle.tid AND foltia_station.stationid = foltia_subtitle.stationid
+AND foltia_subtitle.pid = ?
 ";
-//	$rs = m_query($con, $query, "DBクエリに失敗しました");
-	$rs = sql_query($con, $query, "DBクエリに失敗しました",array($pid));
+//  $rs = m_query($con, $query, "DBクエリに失敗しました");
+    $rs = sql_query($con, $query, "DBクエリに失敗しました",array($pid));
 $rows = pg_num_rows($rs);
 if ($rows == 0){
-	print "  <p align=\"left\"><font color=\"#494949\" size=\"6\">書き込み編集</font></p>
+    print "  <p align=\"left\"><font color=\"#494949\" size=\"6\">書き込み編集</font></p>
   <hr size=\"4\">
 <p align=\"left\">
 録画記録がありません。<br>
@@ -112,10 +112,10 @@ $serverfqdn = getserverfqdn();
 
 $m2pfilename = $rowdata[8];
 
-list($tid,$countno,$date,$time)= split ("-", $m2pfilename );
-	$tid = ereg_replace("[^0-9]", "", $tid);
+list($tid,$countno,$date,$time)= explode("-", $m2pfilename );
+    $tid = preg_replace("/[^0-9]/", "", $tid);
 
-$path = ereg_replace("\.m2p$", "", $m2pfilename);
+$path = preg_replace("/\.m2p$/", "", $m2pfilename);
 $serveruri = getserverfqdn ();
 
 print "</div>\n";
@@ -127,37 +127,37 @@ print "<img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$fi
 
 if (getform(preview) == 1){
 //プレビュー表示
-// htmlspecialchars(stripslashes( )) 
-$subject = getform(subject); 
+// htmlspecialchars(stripslashes( ))
+$subject = getform(subject);
 $maintext = $_POST["textarea"];
 $maintext = pg_escape_string($maintext);
 //$maintext = mbereg_replace("\n","<br />\n", $maintext);
 $rate = getform(rank4);
 
 switch ($rate) {
-	case -2:
-		$ratechara =  "× ";
-	break;
-	case -1:
-	$ratechara =  "▲ ";
-	break;
-	case 0:
-	$ratechara =  "− ";
-	break;
-	case 1:
-	$ratechara =  "★ ";
-	break;
-	case 2:
-	$ratechara =  "★★ ";
-	break;
-	case 3:
-	$ratechara =  "★★★ ";
-	break;
-	case 4:
-	$ratechara =  "★★★★ ";
-	break;
-	default:
-	$ratechara =  "− ";
+    case -2:
+        $ratechara =  "× ";
+    break;
+    case -1:
+    $ratechara =  "▲ ";
+    break;
+    case 0:
+    $ratechara =  "− ";
+    break;
+    case 1:
+    $ratechara =  "★ ";
+    break;
+    case 2:
+    $ratechara =  "★★ ";
+    break;
+    case 3:
+    $ratechara =  "★★★ ";
+    break;
+    case 4:
+    $ratechara =  "★★★★ ";
+    break;
+    default:
+    $ratechara =  "− ";
 }
 $subject = $ratechara . $subject;
 
@@ -172,25 +172,25 @@ print "<form id=\"form2\" name=\"form2\" method=\"post\" action=\"./sb-write.php
 }else{//編集書き込みモード
 //タイトル
 if ($tid == 0){
-	$subjects = "「".$subtitle."」";
+    $subjects = "「".$subtitle."」";
 }else{
-	if ($countno == ""){
-	$subjects = "$title 「".$subtitle."」";
-	}else{
-	$subjects = "$title ＃". $countno ." 「".$subtitle."」";
-	}
+    if ($countno == ""){
+    $subjects = "$title 「".$subtitle."」";
+    }else{
+    $subjects = "$title ＃". $countno ." 「".$subtitle."」";
+    }
 }
 print "<form id=\"form1\" name=\"form1\" method=\"post\" action=\"./sb-edit.php?pid=$pid&f=$filename\">
 <input type=\"text\" name=\"subject\" size=\"70\"value=\"$subjects \"><br />
-			<select class='hosi' name='rank4' size='1'>
-				<option value='-2'>×見切り
-				<option value='-1'>▲見切り候補
-				<option value='0'>−見てない
-				<option value='1' selected=\"selected\">★ふつう
-				<option value='2'>★★おもしろい
-				<option value='3'>★★★名作
-				<option value='4'>★★★★殿堂
-			</select> 
+            <select class='hosi' name='rank4' size='1'>
+                <option value='-2'>×見切り
+                <option value='-1'>▲見切り候補
+                <option value='0'>−見てない
+                <option value='1' selected=\"selected\">★ふつう
+                <option value='2'>★★おもしろい
+                <option value='3'>★★★名作
+                <option value='4'>★★★★殿堂
+            </select>
 <br />
 <br />
 <input type=\"hidden\" name=\"preview\" value=\"1\" />
@@ -200,13 +200,13 @@ print "<form id=\"form1\" name=\"form1\" method=\"post\" action=\"./sb-edit.php?
 if ($tid > 0){
 print "
 <br />
-参考リンク:<a href = \"http://cal.syoboi.jp/tid/$tid/\" target=\"_blank\"> $title</a> "; 
-	if ($countno != ""){ 
-	print "第". $countno ."話 ";
-	}
+参考リンク:<a href = \"http://cal.syoboi.jp/tid/$tid/\" target=\"_blank\"> $title</a> ";
+    if ($countno != ""){
+    print "第". $countno ."話 ";
+    }
 print"<a href = \"http://cal.syoboi.jp/tid/$tid/time#$pid\" target=\"_blank\">$subtitle</a> (情報:<a href = \"http://cal.syoboi.jp/\">しょぼいカレンダー</a>)";
 }
-print "			</textarea><br />
+print "         </textarea><br />
   <input type=submit value=\" ブレビュー \">
 </form>
 

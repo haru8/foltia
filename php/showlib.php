@@ -19,14 +19,14 @@ include("./foltialib.php");
 $con = m_connect();
 
 if ($useenvironmentpolicy == 1) {
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-		header("WWW-Authenticate: Basic realm=\"foltia\"");
-		header("HTTP/1.0 401 Unauthorized");
-		redirectlogin();
-		exit;
-	} else {
-		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
-	}
+    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        header("WWW-Authenticate: Basic realm=\"foltia\"");
+        header("HTTP/1.0 401 Unauthorized");
+        redirectlogin();
+        exit;
+    } else {
+        login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+    }
 } // end if login
 
 
@@ -38,9 +38,9 @@ if ($useenvironmentpolicy == 1) {
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <?php
 if (file_exists  ( "./iui/iui.css"  )){
-	$useragent = $_SERVER['HTTP_USER_AGENT'];
+    $useragent = $_SERVER['HTTP_USER_AGENT'];
 }
-if(ereg("iPhone",$useragent)){
+if(preg_match("/iPhone/",$useragent)){
 print "<meta name=\"viewport\" content=\"width=320; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;\"/>
 <link rel=\"apple-touch-icon\" type=\"image/png\" href=\"./img/icon.png\" />
 
@@ -67,18 +67,18 @@ list($st, $p, $p2) = number_page($p, $lim);
 ///////////////////////////////////////////////////////////
 
 $now = date("YmdHi");
-if (ereg("iPhone",$useragent)) {
-	print "<body onclick=\"console.log('Hello', event.target);\">
+if (preg_match("/iPhone/",$useragent)) {
+    print "<body onclick=\"console.log('Hello', event.target);\">
     <div class=\"toolbar\">
         <h1 id=\"pageTitle\"></h1>
         <a id=\"backButton\" class=\"button\" href=\"#\"></a>
     </div>
 ";
 } else {
-	print "<body BGCOLOR=\"#ffffff\" TEXT=\"#494949\" LINK=\"#0047ff\" VLINK=\"#000000\" ALINK=\"#c6edff\" >
+    print "<body BGCOLOR=\"#ffffff\" TEXT=\"#494949\" LINK=\"#0047ff\" VLINK=\"#000000\" ALINK=\"#c6edff\" >
 <div align=\"center\">
 ";
-	printhtmlpageheader();
+    printhtmlpageheader();
 print "  <p align=\"left\"><font color=\"#494949\" size=\"6\">録画ライブラリ表示</font></p>
   <hr size=\"4\">
 <p align=\"left\">再生可能ライブラリを表示します。<br>
@@ -99,7 +99,7 @@ $dtcnt = htmlspecialchars($rowdata[0]);
 //echo $dtcnt;
 //
 if (! $rowdata) {
-	die_exit("番組データがありません<BR>");
+    die_exit("番組データがありません<BR>");
 }
 
 ////////////////////////////////////////////////////////
@@ -128,11 +128,11 @@ $rs = sql_query($con, $query, "DBクエリに失敗しました");
 $rowdata = $rs->fetch();
 
 if ($rowdata) {
-	if (ereg("iPhone",$useragent)) {
-		print "<ul id=\"home\" title=\"録画ライブラリ表示\" selected=\"true\">";
-	} else {
-		page_display("", $p, $p2, $lim, $dtcnt, "");
-		print "
+    if (preg_match("/iPhone/",$useragent)) {
+        print "<ul id=\"home\" title=\"録画ライブラリ表示\" selected=\"true\">";
+    } else {
+        page_display("", $p, $p2, $lim, $dtcnt, "");
+        print "
          <table BORDER=\"0\" CELLPADDING=\"0\" CELLSPACING=\"2\" WIDTH=\"100%\">
            <thead>
              <tr>
@@ -144,19 +144,19 @@ if ($rowdata) {
            </thead>
          <tbody>
        ";
-	}
+    }
 
-	do {
-		$title = $rowdata[1];
-		$counts = $rowdata[2];
-		$tid = htmlspecialchars($rowdata[0]);
-		$title = htmlspecialchars($title);
-		$counts = htmlspecialchars($counts);
+    do {
+        $title = $rowdata[1];
+        $counts = $rowdata[2];
+        $tid = htmlspecialchars($rowdata[0]);
+        $title = htmlspecialchars($title);
+        $counts = htmlspecialchars($counts);
 
-		if (ereg("iPhone",$useragent)) {
-			print "<li><a href=\"showlibc.php?tid=$tid\" target=\"_self\">$title</a></li>\n";
-		} else {
-			print "
+        if (preg_match("/iPhone/",$useragent)) {
+            print "<li><a href=\"showlibc.php?tid=$tid\" target=\"_self\">$title</a></li>\n";
+        } else {
+            print "
               <tr>
               <td>$tid</td>
               <td><a href=\"showlibc.php?tid=$tid\">$title</a></td>
@@ -164,30 +164,30 @@ if ($rowdata) {
               <td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">しょぼかる-$tid</a></td>
               </tr>\n
             ";
-		}
-	} while ($rowdata = $rs->fetch());
+        }
+    } while ($rowdata = $rs->fetch());
 
-	if (ereg("iPhone",$useragent)) {
-		print "</ul>\n</body>\n</html>\n";
-	} else {
-		print "
-			</tbody>
-		</table>
+    if (preg_match("/iPhone/",$useragent)) {
+        print "</ul>\n</body>\n</html>\n";
+    } else {
+        print "
+            </tbody>
+        </table>
 
-		";
-		////////////////////////////////////////////////////////////////
-		//Autopageing処理とページのリンクを表示
-		page_display("", $p, $p2, $lim, $dtcnt, "");
-		///////////////////////////////////////////////////////////////
+        ";
+        ////////////////////////////////////////////////////////////////
+        //Autopageing処理とページのリンクを表示
+        page_display("", $p, $p2, $lim, $dtcnt, "");
+        ///////////////////////////////////////////////////////////////
 
-		print "
-		</body>
-		</html>
-		";
-	}
+        print "
+        </body>
+        </html>
+        ";
+    }
 
 } else {
-	print "録画ファイルが存在しません。</body></html>";
+    print "録画ファイルが存在しません。</body></html>";
 
 } //end if
 
@@ -197,14 +197,14 @@ if ($rowdata) {
 /*
 //旧仕様
 //ディレクトリからファイル一覧を取得
-	exec ("ls  $recfolderpath | grep localized | sort -r", $libdir);
+    exec ("ls  $recfolderpath | grep localized | sort -r", $libdir);
 //print "libdir:$libdir<BR>\n";
 
 foreach($libdir as $fName) {
 
 if(($fName == ".") or ($fName == "..") ){ continue; }
-	if (ereg(".localized", $fName)){
-		$filesplit = split("\.",$fName);
+    if (preg_match("/\.localized/", $fName)){
+        $filesplit = split("\.",$fName);
 $query = "
 SELECT
 foltia_program.tid,foltia_program.title
@@ -230,8 +230,8 @@ print "<br></td>
 <td><a href=\"http://cal.syoboi.jp/tid/$tid\" target=\"_blank\">しょぼかる-$tid</a><br></td>
 </tr>\n
 ";
-        }//end if ereg m2p
-		}//end foreach
+        }//end if preg_match m2p
+        }//end foreach
 //旧仕様ココまで
 */
 //$d->close();
