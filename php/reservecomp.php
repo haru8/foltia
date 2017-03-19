@@ -21,14 +21,14 @@ include("./foltialib.php");
 $con = m_connect();
 
 if ($useenvironmentpolicy == 1) {
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-		header("WWW-Authenticate: Basic realm=\"foltia\"");
-		header("HTTP/1.0 401 Unauthorized");
-		redirectlogin();
-		exit;
-	} else {
-		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
-	}
+    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        header("WWW-Authenticate: Basic realm=\"foltia\"");
+        header("HTTP/1.0 401 Unauthorized");
+        redirectlogin();
+        exit;
+    } else {
+        login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+    }
 }//end if login
 
 ?>
@@ -37,7 +37,7 @@ if ($useenvironmentpolicy == 1) {
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<link rel="stylesheet" type="text/css" href="graytable.css"> 
+<link rel="stylesheet" type="text/css" href="graytable.css">
 <title>foltia</title>
 </head>
 
@@ -46,24 +46,24 @@ if ($useenvironmentpolicy == 1) {
 
 $tid = getgetnumform(tid);
 if ($tid == "") {
-	die_exit("番組が指定されていません<BR>");
+    die_exit("番組が指定されていません<BR>");
 }
 
 $station = getgetnumform(station);
 if ($station == "") {
-	$station = 0;
+    $station = 0;
 }
 $usedigital = getgetnumform(usedigital);
 if ($usedigital == "") {
-	$usedigital = 0;
+    $usedigital = 0;
 }
 $bitrate = getgetnumform(bitrate);
 if ($bitrate == "") {
-	$bitrate = 5;
+    $bitrate = 5;
 }
 
 
-$now = date("YmdHi");   
+$now = date("YmdHi");
 
 //タイトル取得
 $query = "SELECT title FROM foltia_program where tid = ? ";
@@ -71,16 +71,16 @@ $query = "SELECT title FROM foltia_program where tid = ? ";
 $rs = sql_query($con, $query, "DBクエリに失敗しました",array($tid));
 $rowdata = $rs->fetch();
 if (! $rowdata) {
-	$title = "(未登録)";
+    $title = "(未登録)";
 } else {
-	$title = htmlspecialchars($rowdata[0]);
+    $title = htmlspecialchars($rowdata[0]);
 }
 
 ?>
 <body BGCOLOR="#ffffff" TEXT="#494949" LINK="#0047ff" VLINK="#000000" ALINK="#c6edff" >
 
-<?php 
-	printhtmlpageheader();
+<?php
+    printhtmlpageheader();
 ?>
   <p align="left"><font color="#494949" size="6">予約完了</font></p>
   <hr size="4">
@@ -92,8 +92,8 @@ if (! $rowdata) {
 <?php
 
 if ($station != 0) {
-	//局限定
-	$query = "
+    //局限定
+    $query = "
        SELECT
          foltia_subtitle.pid,
          stationname,
@@ -114,8 +114,8 @@ if ($station != 0) {
     ";
 
 } else {
-	//全局
-	$query = "
+    //全局
+    $query = "
       SELECT
         foltia_subtitle.pid,
         stationname,
@@ -139,9 +139,9 @@ if ($station != 0) {
 $rs = m_query($con, $query, "DBクエリに失敗しました");
 $rowdata = $rs->fetch();
 if (! $rowdata) {
-	echo("放映予定はいまのところありません<BR>");
+    echo("放映予定はいまのところありません<BR>");
 } else {
-	$maxcols = $rs->columnCount();
+    $maxcols = $rs->columnCount();
 ?>
   <table BORDER="0" CELLPADDING="0" CELLSPACING="2" WIDTH="100%" BGCOLOR="#bcf1be">
     <thead>
@@ -159,13 +159,13 @@ if (! $rowdata) {
     <tbody>
 <?php
   /* テーブルのデータを出力 */
-	do {
-		echo("<tr>\n");
-		for ($col = 0; $col < $maxcols; $col++) { /* 列に対応 */
-			echo("<td>".htmlspecialchars($rowdata[$col])."<br></td>\n");
-		}
-		echo("</tr>\n");
-	} while ($rowdata = $rs->fetch());
+    do {
+        echo("<tr>\n");
+        for ($col = 0; $col < $maxcols; $col++) { /* 列に対応 */
+            echo("<td>".htmlspecialchars($rowdata[$col])."<br></td>\n");
+        }
+        echo("</tr>\n");
+    } while ($rowdata = $rs->fetch());
 } //end if
 ?>
 
@@ -176,15 +176,15 @@ if (! $rowdata) {
 <?php
 if ($demomode) {
 } else {
-	// foltia_tvrecord 書き込み
-	// 既存が予約あって、新着が全局予約だったら
-	if ($station ==0) {
-		//既存局を消す
-		$query = "DELETE FROM foltia_tvrecord WHERE tid = ?";
-		$rs = sql_query($con, $query, "DBクエリに失敗しました",array($tid));
-	} // endif
-	
-	$query = "
+    // foltia_tvrecord 書き込み
+    // 既存が予約あって、新着が全局予約だったら
+    if ($station ==0) {
+        //既存局を消す
+        $query = "DELETE FROM foltia_tvrecord WHERE tid = ?";
+        $rs = sql_query($con, $query, "DBクエリに失敗しました",array($tid));
+    } // endif
+
+    $query = "
       SELECT
         count(*)
        FROM foltia_tvrecord
@@ -192,38 +192,38 @@ if ($demomode) {
          AND stationid = ?
       ";
 
-	$rs = sql_query($con, $query, "DBクエリに失敗しました",array($tid,$station));
-	$maxrows = $rs->fetchColumn(0);
-	if ($maxrows == 0) {
-		// 新規追加
-		$query = "INSERT INTO  foltia_tvrecord  values (?,?,?,?)";
+    $rs = sql_query($con, $query, "DBクエリに失敗しました",array($tid,$station));
+    $maxrows = $rs->fetchColumn(0);
+    if ($maxrows == 0) {
+        // 新規追加
+        $query = "INSERT INTO  foltia_tvrecord  values (?,?,?,?)";
 
-		$rs = sql_query($con, $query, "DB書き込みに失敗しました",array($tid,$station,$bitrate,$usedigital));
-	} else {
-		// 修正 (ビットレート)
-		$query = "
+        $rs = sql_query($con, $query, "DB書き込みに失敗しました",array($tid,$station,$bitrate,$usedigital));
+    } else {
+        // 修正 (ビットレート)
+        $query = "
           UPDATE  foltia_tvrecord
             SET bitrate = ?, digital = ?
           WHERE tid = ? AND stationid = ? ";
 
-		$rs = sql_query($con, $query, "DB書き込みに失敗しました",array( $bitrate, $usedigital , $tid , $station ));
-	}
+        $rs = sql_query($con, $query, "DB書き込みに失敗しました",array( $bitrate, $usedigital , $tid , $station ));
+    }
 
-	// キュー入れプログラムをキック
-	// 引数 TID チャンネルID
-	// echo("$toolpath/perl/addatq.pl $tid $station");
-	$oserr = system("$toolpath/perl/addatq.pl $tid $station");
-	
-	$head  = '「' . $title . '」を番組予約モードで予約しました。';
-	$mesg  = sprintf("PID          : %s\n", $rowdata[0]);
-	$mesg .= sprintf("放送局       : %s\n", $rowdata[1]);
-	$mesg .= sprintf("話数         : %s\n", $rowdata[2]);
-	$mesg .= sprintf("タイトル     : %s\n", $title);
-	$mesg .= sprintf("サブタイトル : %s\n", $rowdata[3]);
-	$mesg .= sprintf("開始時刻     : %s\n", foldate2print($rowdata[4]));
-	$mesg .= sprintf("総尺         : %s\n", $rowdata[5]);
-	$mesg .= sprintf("時刻ずれ     : %s\n", $rowdata[6]);
-	slackSend($head, $mesg);
+    // キュー入れプログラムをキック
+    // 引数 TID チャンネルID
+    // echo("$toolpath/perl/addatq.pl $tid $station");
+    $oserr = system("$toolpath/perl/addatq.pl $tid $station");
+
+    $head  = '「' . $title . '」を番組予約モードで予約しました。';
+    $mesg  = sprintf("PID          : %s\n", $rowdata[0]);
+    $mesg .= sprintf("放送局       : %s\n", $rowdata[1]);
+    $mesg .= sprintf("話数         : %s\n", $rowdata[2]);
+    $mesg .= sprintf("タイトル     : %s\n", $title);
+    $mesg .= sprintf("サブタイトル : %s\n", $rowdata[3]);
+    $mesg .= sprintf("開始時刻     : %s\n", foldate2print($rowdata[4]));
+    $mesg .= sprintf("総尺         : %s\n", $rowdata[5]);
+    $mesg .= sprintf("時刻ずれ     : %s\n", $rowdata[6]);
+    slackSend($head, $mesg);
 
 } //end if demomode
 ?>

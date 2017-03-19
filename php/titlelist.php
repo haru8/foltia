@@ -20,14 +20,14 @@ include("./foltialib.php");
 $con = m_connect();
 
 if ($useenvironmentpolicy == 1) {
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-		header("WWW-Authenticate: Basic realm=\"foltia\"");
-		header("HTTP/1.0 401 Unauthorized");
-		redirectlogin();
-		exit;
-	} else {
-		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
-	}
+    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        header("WWW-Authenticate: Basic realm=\"foltia\"");
+        header("HTTP/1.0 401 Unauthorized");
+        redirectlogin();
+        exit;
+    } else {
+        login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+    }
 } // end if login
 
 ?>
@@ -71,17 +71,17 @@ $query = "
 $rs = sql_query($con, $query, "DBクエリに失敗しました");
 $rowdata = $rs->fetch();
 if (! $rowdata) {
-	die_exit("番組データがありません<BR>");
+    die_exit("番組データがありません<BR>");
 }
 
 $query2 = "
-	SELECT COUNT(*) AS cnt FROM foltia_program
+    SELECT COUNT(*) AS cnt FROM foltia_program
 ";
 
 $rs2 = sql_query($con, $query2, "DBクエリに失敗しました");
 $rowdata2 = $rs2->fetch();
 if (! $rowdata2) {
-	die_exit("番組データがありません<BR>");
+    die_exit("番組データがありません<BR>");
 }
 
 // 行数取得
@@ -109,42 +109,42 @@ echo "<div id=contents class=autopagerize_page_element />";
 ?>
 
   <table BORDER="0" CELLPADDING="0" CELLSPACING="2" WIDTH="100%">
-	<thead>
-		<tr>
-			<th align="left">TID</th>
-			<th align="left">タイトル</th>
-			<th align="left">MPEG4リンク</th>
-		</tr>
-	</thead>
+    <thead>
+        <tr>
+            <th align="left">TID</th>
+            <th align="left">タイトル</th>
+            <th align="left">MPEG4リンク</th>
+        </tr>
+    </thead>
 
-	<tbody>
+    <tbody>
 
 <?php
 // テーブルのデータを出力
 do {
-	if ($rowdata['rec'] != '') {
-		echo("<tr class=\"reservedtitle\">\n");
-	} else {
-		echo("<tr>\n");
-	}
+    if ($rowdata['rec'] != '') {
+        echo("<tr class=\"reservedtitle\">\n");
+    } else {
+        echo("<tr>\n");
+    }
 
-	// TID
-	echo("<td><a href=\"reserveprogram.php?tid=" .
-	htmlspecialchars($rowdata['tid'])  . "\">" .
-	htmlspecialchars($rowdata['tid']) . "</a></td>\n");
+    // TID
+    echo("<td><a href=\"reserveprogram.php?tid=" .
+    htmlspecialchars($rowdata['tid'])  . "\">" .
+    htmlspecialchars($rowdata['tid']) . "</a></td>\n");
 
-	// タイトル
+    // タイトル
     echo("<td><a href=\"http://cal.syoboi.jp/progedit.php?TID=" .
-	htmlspecialchars($rowdata['tid'])  . "\" target=\"_blank\">" .
-	htmlspecialchars($rowdata['title']) . "</a></td>\n");
-	print "<td><A HREF = \"showlibc.php?tid=".htmlspecialchars($rowdata['tid'])."\">mp4</A></td>\n";
+    htmlspecialchars($rowdata['tid'])  . "\" target=\"_blank\">" .
+    htmlspecialchars($rowdata['title']) . "</a></td>\n");
+    print "<td><A HREF = \"showlibc.php?tid=".htmlspecialchars($rowdata['tid'])."\">mp4</A></td>\n";
 
-	echo("</tr>\n");
+    echo("</tr>\n");
 } while ($rowdata = $rs->fetch());
 
 ?>
 
-	</tbody>
+    </tbody>
 </table>
 
 <?php

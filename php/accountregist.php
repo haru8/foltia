@@ -27,7 +27,7 @@ $errmsg = "";
 
 
 function printtitle() {
-	print "
+    print "
       <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">
       <html lang=\"ja\">
       <head>
@@ -35,7 +35,7 @@ function printtitle() {
       <meta http-equiv=\"Content-Style-Type\" content=\"text/css\">
       <link rel=\"stylesheet\" type=\"text/css\" href=\"graytable.css\"> ";
 
-	print "
+    print "
       <title>foltia:新規アカウント登録</title>
       </head>";
 } // end function printtitle()
@@ -54,92 +54,92 @@ printtitle();
 $username = getform(username);
 $userpasswd = getform(userpasswd);
 if ($username == "") {
-	print "<p align=\"left\">新規アカウント登録をします。</p>\n";
+    print "<p align=\"left\">新規アカウント登録をします。</p>\n";
 
 } else {
-	//すでにそのユーザが存在しているかどうか確認
-	if ($username != "") {
-		$query = "
+    //すでにそのユーザが存在しているかどうか確認
+    if ($username != "") {
+        $query = "
           SELECT count(memberid)
             FROM foltia_envpolicy
             WHERE foltia_envpolicy.name = ?
         ";
 
-		$isaccountexist = sql_query($con, $query, "DBクエリに失敗しました",array($username));
-		$isaccountexistncount = $isaccountexist->fetchColumn(0);
+        $isaccountexist = sql_query($con, $query, "DBクエリに失敗しました",array($username));
+        $isaccountexistncount = $isaccountexist->fetchColumn(0);
 
-		if ($isaccountexistncount == 0) {
-		//valid
-		} else {
-			$errflag = 1;
-			$errmsg = "そのユーザ名は既に使われています。";
-		}
-	}
-	if ($userpasswd == "") {
-		$errflag = 2;
-		$errmsg = "パスワードが不適切です。半角英数を指定して下さい。";
-	}
+        if ($isaccountexistncount == 0) {
+        //valid
+        } else {
+            $errflag = 1;
+            $errmsg = "そのユーザ名は既に使われています。";
+        }
+    }
+    if ($userpasswd == "") {
+        $errflag = 2;
+        $errmsg = "パスワードが不適切です。半角英数を指定して下さい。";
+    }
 
 
-	if ($errflag == 0) {
-	// next midを探す
-	$query = "
-	SELECT max(memberid)
-	FROM  foltia_envpolicy
-	";
-		$rs = m_query($con, $query, "DBクエリに失敗しました");
-		$maxid = $rs->fetchColumn(0);
-		if ($maxid) {
-			$nextcno = $maxid + 1;
-		}else{
-			$nextcno = 1;
-		}
-	
-		// 登録
-		// INSERT
-		if ($demomode) {
-		} else {
-			/*
-			ユーザクラス
-			0:特権管理者
-			1:管理者:予約削除、ファイル削除が出来る
-			2:利用者:EPG追加、予約追加が出来る
-			3:ビュアー:ファイルダウンロードが出来る
-			4:ゲスト:インターフェイスが見れる
-			*/
-			$remotehost = gethostbyaddr($_SERVER['REMOTE_ADDR']);
+    if ($errflag == 0) {
+    // next midを探す
+    $query = "
+    SELECT max(memberid)
+    FROM  foltia_envpolicy
+    ";
+        $rs = m_query($con, $query, "DBクエリに失敗しました");
+        $maxid = $rs->fetchColumn(0);
+        if ($maxid) {
+            $nextcno = $maxid + 1;
+        }else{
+            $nextcno = 1;
+        }
 
-			$query = "
+        // 登録
+        // INSERT
+        if ($demomode) {
+        } else {
+            /*
+            ユーザクラス
+            0:特権管理者
+            1:管理者:予約削除、ファイル削除が出来る
+            2:利用者:EPG追加、予約追加が出来る
+            3:ビュアー:ファイルダウンロードが出来る
+            4:ゲスト:インターフェイスが見れる
+            */
+            $remotehost = gethostbyaddr($_SERVER['REMOTE_ADDR']);
+
+            $query = "
               INSERT INTO foltia_envpolicy
                 VALUES ( ?, '2', ?, ?, now(), ? )
             ";
-			//print "$query <br>\n";
+            //print "$query <br>\n";
 
-			$rs = sql_query($con, $query, "DBクエリに失敗しました", array($nextcno, $username, $userpasswd, $remotehost));
-			
-			print "
+            $rs = sql_query($con, $query, "DBクエリに失敗しました", array($nextcno, $username, $userpasswd, $remotehost));
+
+            print "
              次のアカウントを登録しました。<br>
              ログイン名: $username<br>
              パスワード: $userpasswd
             ";
 
-			if ($environmentpolicytoken != "") {
-				print "＋セキュリティコード<br>\n";
-			}
-			print "<a href=\"./index.php\">ログイン</a><br>\n";
+            if ($environmentpolicytoken != "") {
+                print "＋セキュリティコード<br>\n";
+            }
+            print "<a href=\"./index.php\">ログイン</a><br>\n";
 
-			print "
+            print "
              </body>
              </html>
            ";
-			$oserr = system("$toolpath/perl/envpolicyupdate.pl");
-			exit;
+            $oserr = system("$toolpath/perl/envpolicyupdate.pl");
+            exit;
 
-		} // endif デモモード
-	} else {
-		// errorフラグあったら
-		print "$errmsg / $errflag<br>\n";
-	} //end if エラーじゃなければ
+        } // endif デモモード
+    } else {
+        // errorフラグあったら
+        print "$errmsg / $errflag<br>\n";
+    } //end if エラーじゃなければ
 
 } // end if ""
 ?>
@@ -152,7 +152,7 @@ if ($username == "") {
     <input name="userpasswd" type="text" id="userpasswd" size="19" value="" />
   (半角英数のみ)</p>
 
-  <input type="submit" value="新規登録"> 
+  <input type="submit" value="新規登録">
 </form>
 
 </body>

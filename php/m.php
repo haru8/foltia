@@ -23,21 +23,21 @@ pname:番組名
 include("./foltialib.php");
 $con = m_connect();
 if ($useenvironmentpolicy == 1) {
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-		header("WWW-Authenticate: Basic realm=\"foltia\"");
-		header("HTTP/1.0 401 Unauthorized");
-		redirectlogin();
-		exit;
-	} else {
-		login($con, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
-	}
+    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        header("WWW-Authenticate: Basic realm=\"foltia\"");
+        header("HTTP/1.0 401 Unauthorized");
+        redirectlogin();
+        exit;
+    } else {
+        login($con, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+    }
 } //end if login
 
-$now		= date("YmdHi");
-$today		= date("Ymd");
-$nowdate	= date("Hi", (mktime(date("G"), date("i") + 8, date("s"), date("m"), date("d"), date("Y"))));
-$errflag	= 0;
-$pname		= "手動録画";
+$now        = date("YmdHi");
+$today      = date("Ymd");
+$nowdate    = date("Hi", (mktime(date("G"), date("i") + 8, date("s"), date("m"), date("d"), date("Y"))));
+$errflag    = 0;
+$pname      = "手動録画";
 
 function printtitle() {
   print "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">
@@ -72,148 +72,148 @@ $startdate = getgetnumform(startdate);
 $starttime = getgetnumform(starttime);
 
 if (($startdate == "") || ($starttime == "")) {
-	print "<p align=\"left\">全項目手動指定で予約します。</p>\n";
+    print "<p align=\"left\">全項目手動指定で予約します。</p>\n";
 } else {
-	$lengthmin = getgetnumform(lengthmin);
-	$recstid = getgetnumform(recstid);
-	$pname = getgetform(pname);
-	//$usedigital = getgetnumform(usedigital);
+    $lengthmin = getgetnumform(lengthmin);
+    $recstid = getgetnumform(recstid);
+    $pname = getgetform(pname);
+    //$usedigital = getgetnumform(usedigital);
 
-	// 確認
-	$startdatetime = "$startdate"."$starttime";
-	if (foldatevalidation($startdatetime)) {
-		//print "valid";
-	} else {
-		$errflag = 1;
-		$errmsg = "日付が不正です。";
-	}
-	if ($lengthmin < 361) {
-		//valid
-	} else {
-		$errflag = 2;
-		$errmsg = "録画時間は360分で区切ってください。";
-	}
-	// 局確認
-	if ($recstid != "") {
-		$query = "
+    // 確認
+    $startdatetime = "$startdate"."$starttime";
+    if (foldatevalidation($startdatetime)) {
+        //print "valid";
+    } else {
+        $errflag = 1;
+        $errmsg = "日付が不正です。";
+    }
+    if ($lengthmin < 361) {
+        //valid
+    } else {
+        $errflag = 2;
+        $errmsg = "録画時間は360分で区切ってください。";
+    }
+    // 局確認
+    if ($recstid != "") {
+        $query = "
           SELECT stationname
             FROM foltia_station
           WHERE stationid = ? ";
 
-		$stationvalid = sql_query($con, $query, "DBクエリに失敗しました", array($recstid));
-		$recstationname = $stationvalid->fetch();
-		$stationvalid->closeCursor();
+        $stationvalid = sql_query($con, $query, "DBクエリに失敗しました", array($recstid));
+        $recstationname = $stationvalid->fetch();
+        $stationvalid->closeCursor();
 
-		if (!is_array($recstationname) || empty($recstationname)) {
-			$errflag = 3;
-			$errmsg = "放送局設定が異常です。";
-		}
-	} else {
-		$errflag = 2;
-		$errmsg = "録画する局を設定してください。";
-	}
-	// デジタル優先
-	/*if ($usedigital == 1){
-	}else{
-		$usedigital = 0;
-	}
-	*/
-	// 正しければ
-	if ($errflag == 0) {
-		// 重複があるか?
-		// 未チェック
+        if (!is_array($recstationname) || empty($recstationname)) {
+            $errflag = 3;
+            $errmsg = "放送局設定が異常です。";
+        }
+    } else {
+        $errflag = 2;
+        $errmsg = "録画する局を設定してください。";
+    }
+    // デジタル優先
+    /*if ($usedigital == 1){
+    }else{
+        $usedigital = 0;
+    }
+    */
+    // 正しければ
+    if ($errflag == 0) {
+        // 重複があるか?
+        // 未チェック
 
-		//デモモードじゃなかったら書き込み
-		$enddatetime = calcendtime($startdatetime,$lengthmin);
+        //デモモードじゃなかったら書き込み
+        $enddatetime = calcendtime($startdatetime,$lengthmin);
 
-		//時刻検査
-		if (($startdatetime > $now ) && ($enddatetime > $now ) && ($enddatetime  > $startdatetime )) {
-			//min pidを探す
-			$query = "SELECT min(pid) FROM  foltia_subtitle ";
-			//$rs = m_query($con, $query, "DBクエリに失敗しました");
-			$rs = sql_query($con, $query, "DBクエリに失敗しました");
-			$rowdata = $rs->fetch();
-			$rs->closeCursor();
-			if (! $rowdata) {
-				$insertpid = -1 ;
-			} else {
-				if ($rowdata[0] > 0) {
-					$insertpid = -1 ;
-				} else {
-					$insertpid = $rowdata[0];
-					$insertpid-- ;
-				}
-			}
-			// next 話数を探す
-			$query = "SELECT max(countno) FROM  foltia_subtitle WHERE tid = 0";
-			//$rs = m_query($con, $query, "DBクエリに失敗しました");
-			$rs = sql_query($con, $query, "DBクエリに失敗しました");
-			$rowdata = $rs->fetch();
-			$rs->closeCursor();
-			if (! $rowdata) {
-				$nextcno = 1 ;
-			} else {
-				$nextcno = $rowdata[0];
-				$nextcno++ ;
-			}
+        //時刻検査
+        if (($startdatetime > $now ) && ($enddatetime > $now ) && ($enddatetime  > $startdatetime )) {
+            //min pidを探す
+            $query = "SELECT min(pid) FROM  foltia_subtitle ";
+            //$rs = m_query($con, $query, "DBクエリに失敗しました");
+            $rs = sql_query($con, $query, "DBクエリに失敗しました");
+            $rowdata = $rs->fetch();
+            $rs->closeCursor();
+            if (! $rowdata) {
+                $insertpid = -1 ;
+            } else {
+                if ($rowdata[0] > 0) {
+                    $insertpid = -1 ;
+                } else {
+                    $insertpid = $rowdata[0];
+                    $insertpid-- ;
+                }
+            }
+            // next 話数を探す
+            $query = "SELECT max(countno) FROM  foltia_subtitle WHERE tid = 0";
+            //$rs = m_query($con, $query, "DBクエリに失敗しました");
+            $rs = sql_query($con, $query, "DBクエリに失敗しました");
+            $rowdata = $rs->fetch();
+            $rs->closeCursor();
+            if (! $rowdata) {
+                $nextcno = 1 ;
+            } else {
+                $nextcno = $rowdata[0];
+                $nextcno++ ;
+            }
 
-			//INSERT
-			if ($demomode) {
-			} else {
-				$userclass = getuserclass($con);
-				if ( $userclass <= 2) {
-					$memberid = getmymemberid($con);
-					$query = "
+            //INSERT
+            if ($demomode) {
+            } else {
+                $userclass = getuserclass($con);
+                if ( $userclass <= 2) {
+                    $memberid = getmymemberid($con);
+                    $query = "
                       INSERT INTO foltia_subtitle
                         ( pid, tid, stationid, countno, subtitle, startdatetime, enddatetime, startoffset, lengthmin, epgaddedby )
                         VALUES ( ?, '0', ?, ?, ?, ?, ?, '0', ?, ? )";
 
-					//$rs = m_query($con, $query, "DBクエリに失敗しました");
-					//print "【DEBUG】$insertpid,$recstid,$nextcno,$pname,$startdatetime,$enddatetime ,$lengthmin,$memberid <br>\n";
-					$rs = sql_query($con, $query, "DBクエリに失敗しました", array($insertpid, $recstid, $nextcno, $pname, $startdatetime, $enddatetime, $lengthmin, $memberid));
+                    //$rs = m_query($con, $query, "DBクエリに失敗しました");
+                    //print "【DEBUG】$insertpid,$recstid,$nextcno,$pname,$startdatetime,$enddatetime ,$lengthmin,$memberid <br>\n";
+                    $rs = sql_query($con, $query, "DBクエリに失敗しました", array($insertpid, $recstid, $nextcno, $pname, $startdatetime, $enddatetime, $lengthmin, $memberid));
 
-					//addatq.pl
-					//キュー入れプログラムをキック
-					//引数 TID チャンネルID
-					//echo("$toolpath/perl/addatq.pl $tid $station");
-					//exec("$toolpath/perl/addatq.pl 0 0");
-					$oserr = system("$toolpath/perl/addatq.pl 0 0");
-				} else {
-					print "EPG予約を行う権限がありません。";
-				} // end if $userclass <= 2
-			} //end if demomode
+                    //addatq.pl
+                    //キュー入れプログラムをキック
+                    //引数 TID チャンネルID
+                    //echo("$toolpath/perl/addatq.pl $tid $station");
+                    //exec("$toolpath/perl/addatq.pl 0 0");
+                    $oserr = system("$toolpath/perl/addatq.pl 0 0");
+                } else {
+                    print "EPG予約を行う権限がありません。";
+                } // end if $userclass <= 2
+            } //end if demomode
 
-			print "下記予約を完了いたしました。<br>";
-			//結果表示
-			print "録画開始:";
-			echo foldate2print($startdatetime);
-			print "<br />
-			録画終了:";
-			echo foldate2print($enddatetime);
-			print "<br />
-			録画尺: $lengthmin 分<br />
-			録画局: $recstationname[0]<br />
-			番組名: $pname<br />
-			";
+            print "下記予約を完了いたしました。<br>";
+            //結果表示
+            print "録画開始:";
+            echo foldate2print($startdatetime);
+            print "<br />
+            録画終了:";
+            echo foldate2print($enddatetime);
+            print "<br />
+            録画尺: $lengthmin 分<br />
+            録画局: $recstationname[0]<br />
+            番組名: $pname<br />
+            ";
 
-			$head  = "番組手動予約 を完了しました";
-			$mesg  = sprintf("放送局         : %s\n", $recstationname[0]);
-			$mesg .= sprintf("録画開始       : %s\n", foldate2print($startdatetime));
-			$mesg .= sprintf("録画終了       : %s\n", foldate2print($enddatetime));
-			$mesg .= sprintf("尺(分)         : %s\n", $lengthmin);
-			//$mesg .= sprintf("放送チャンネル : %s\n", $recch);
-			//$mesg .= sprintf("局コード       : %s\n", $stationid);
-			$mesg .= sprintf("番組名         : %s\n", $pname);
-			//$mesg .= sprintf("番組ID         : %s\n", $pid);
-			slackSend($head, $mesg);
+            $head  = "番組手動予約 を完了しました";
+            $mesg  = sprintf("放送局         : %s\n", $recstationname[0]);
+            $mesg .= sprintf("録画開始       : %s\n", foldate2print($startdatetime));
+            $mesg .= sprintf("録画終了       : %s\n", foldate2print($enddatetime));
+            $mesg .= sprintf("尺(分)         : %s\n", $lengthmin);
+            //$mesg .= sprintf("放送チャンネル : %s\n", $recch);
+            //$mesg .= sprintf("局コード       : %s\n", $stationid);
+            $mesg .= sprintf("番組名         : %s\n", $pname);
+            //$mesg .= sprintf("番組ID         : %s\n", $pid);
+            slackSend($head, $mesg);
 
-			exit();
-		} else {
-			print "時刻が不正なために予約できませんでした。 <br>";
-		}
-	} else {
-		print "入力項目が正しくなさそうです。$errmsg<br />\n";
-	}
+            exit();
+        } else {
+            print "時刻が不正なために予約できませんでした。 <br>";
+        }
+    } else {
+        print "入力項目が正しくなさそうです。$errmsg<br />\n";
+    }
 
 } // 初回表示かデータ処理か
 ?>
@@ -257,17 +257,17 @@ $stations = sql_query($con, $query, "DBクエリに失敗しました");
 $rowdata = $stations->fetch();
 
 if ($rowdata) {
-	do {
-		if ($recstid == $rowdata['x']) {
-			print '      <dd class="stations"><input name="recstid" type="radio" value="' . $rowdata['x'] . '" checked />' . $rowdata['stationname'] . '(' . $rowdata['stationrecch'] . 'ch / ' . $rowdata['digitalch'] . 'ch)  </dd>' . "\n";
-		} elseif( $rowdata[2] == -2) {
-			print '      <dd class="stations"><input name="recstid" type="radio" value="'.$rowdata[0] . '" checked />' . $rowdata['stationname'] . '(<!-- ' . $rowdata['stationrecch'] . 'ch / '. $rowdata['digitalch'] . 'ch -->RADIKO)  </dd>' . "\n";
-		} else {
-			print '      <dd class="stations"><input name="recstid" type="radio" id="stationid_' . $rowdata['x'] . '" value="' . $rowdata['x'] . '"/><label for="stationid_' . $rowdata['x'] . '">' . $rowdata['stationname'] . '(' . $rowdata['stationrecch'] . 'ch / ' . $rowdata['digitalch'] . 'ch)  </label></dd>' . "\n";
-		}
-	} while ($rowdata = $stations->fetch());
+    do {
+        if ($recstid == $rowdata['x']) {
+            print '      <dd class="stations"><input name="recstid" type="radio" value="' . $rowdata['x'] . '" checked />' . $rowdata['stationname'] . '(' . $rowdata['stationrecch'] . 'ch / ' . $rowdata['digitalch'] . 'ch)  </dd>' . "\n";
+        } elseif( $rowdata[2] == -2) {
+            print '      <dd class="stations"><input name="recstid" type="radio" value="'.$rowdata[0] . '" checked />' . $rowdata['stationname'] . '(<!-- ' . $rowdata['stationrecch'] . 'ch / '. $rowdata['digitalch'] . 'ch -->RADIKO)  </dd>' . "\n";
+        } else {
+            print '      <dd class="stations"><input name="recstid" type="radio" id="stationid_' . $rowdata['x'] . '" value="' . $rowdata['x'] . '"/><label for="stationid_' . $rowdata['x'] . '">' . $rowdata['stationname'] . '(' . $rowdata['stationrecch'] . 'ch / ' . $rowdata['digitalch'] . 'ch)  </label></dd>' . "\n";
+        }
+    } while ($rowdata = $stations->fetch());
 } else {
-	print "放送局データベースが正しくセットアップされていません。録画可能局がありません";
+    print "放送局データベースが正しくセットアップされていません。録画可能局がありません";
 }
 $stations->closeCursor();
 // 外部入力チャンネル
@@ -282,16 +282,16 @@ $query = "
 $stations = sql_query($con, $query, "DBクエリに失敗しました");
 $rowdata = $stations->fetch();
 if ($rowdata) {
-	do {
-		if ($rowdata[0] != 0) {
-			if ($recstid == $rowdata[0]) {
-				print " <input name=\"recstid\" type=\"radio\" value=\"$rowdata[0]\" checked />  $rowdata[1]　\n";
-			} else {
-				print " <input name=\"recstid\" type=\"radio\" value=\"$rowdata[0]\" />  $rowdata[1]　\n";
-			}
+    do {
+        if ($rowdata[0] != 0) {
+            if ($recstid == $rowdata[0]) {
+                print " <input name=\"recstid\" type=\"radio\" value=\"$rowdata[0]\" checked />  $rowdata[1]　\n";
+            } else {
+                print " <input name=\"recstid\" type=\"radio\" value=\"$rowdata[0]\" />  $rowdata[1]　\n";
+            }
 
-		}
-	} while ($rowdata = $stations->fetch());
+        }
+    } while ($rowdata = $stations->fetch());
 }
 $stations->closeCursor();
 /*

@@ -19,14 +19,14 @@ include("./foltialib.php");
 $con = m_connect();
 
 if ($useenvironmentpolicy == 1) {
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-		header("WWW-Authenticate: Basic realm=\"foltia\"");
-		header("HTTP/1.0 401 Unauthorized");
-		redirectlogin();
-		exit;
-	} else {
-		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
-	}
+    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        header("WWW-Authenticate: Basic realm=\"foltia\"");
+        header("HTTP/1.0 401 Unauthorized");
+        redirectlogin();
+        exit;
+    } else {
+        login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+    }
 } // end if login
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -58,7 +58,7 @@ $datas   = 0;
 $nodata  = array();
 
 if ($word != '') {
-	$numsql = '
+    $numsql = '
       SELECT
         COUNT(foltia_program.tid) AS V
       FROM
@@ -77,7 +77,7 @@ if ($word != '') {
       WHERE
         foltia_program.title LIKE ? OR foltia_subtitle.subtitle LIKE ? OR foltia_subtitle.m2pfilename LIKE ? OR foltia_mp4files.mp4filename LIKE ?
     ';
-	$selsql = "
+    $selsql = "
       SELECT
         foltia_program.tid,
         foltia_program.title,
@@ -115,14 +115,14 @@ if ($word != '') {
       ORDER BY foltia_subtitle.startdatetime DESC
       LIMIT $lim OFFSET $st
     ";
-	$searchword = '%' . $word . '%';
-	$rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($searchword, $searchword, $searchword, $searchword, $searchword, $searchword, $searchword, $searchword));
-	$row_sum = array();
-	while ($row = $rows->fetch(PDO::FETCH_ASSOC)) {
-		$row_sum[] += $row['V'];
-	}
-	$rowMax = max($row_sum);
-	$rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($searchword, $searchword, $searchword, $searchword, $searchword, $searchword, $searchword, $searchword));
+    $searchword = '%' . $word . '%';
+    $rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($searchword, $searchword, $searchword, $searchword, $searchword, $searchword, $searchword, $searchword));
+    $row_sum = array();
+    while ($row = $rows->fetch(PDO::FETCH_ASSOC)) {
+        $row_sum[] += $row['V'];
+    }
+    $rowMax = max($row_sum);
+    $rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($searchword, $searchword, $searchword, $searchword, $searchword, $searchword, $searchword, $searchword));
 }
 
 $words = array('EPG録画');
@@ -159,35 +159,35 @@ $words = array('EPG録画');
       </tr>
     <?php while($rowdata = $rs->fetch(PDO::FETCH_ASSOC)): ?>
     <?php
-		//d($rowdata);
-		$tid          = htmlspecialchars($rowdata['tid']);
-		$title        = htmlspecialchars($rowdata['title']);
-		$count        = htmlspecialchars($rowdata['countno']);
-		$subtitle     = htmlspecialchars($rowdata['subtitle']);
-		$fName        = htmlspecialchars($rowdata['m2pfilename']);
-		$pid          = htmlspecialchars($rowdata['pid']);
-		$mp4filename  = htmlspecialchars($rowdata['PSPfilename']);
-		$lengthmin    = htmlspecialchars($rowdata['lengthmin']);
-		$datas++;
+        //d($rowdata);
+        $tid          = htmlspecialchars($rowdata['tid']);
+        $title        = htmlspecialchars($rowdata['title']);
+        $count        = htmlspecialchars($rowdata['countno']);
+        $subtitle     = htmlspecialchars($rowdata['subtitle']);
+        $fName        = htmlspecialchars($rowdata['m2pfilename']);
+        $pid          = htmlspecialchars($rowdata['pid']);
+        $mp4filename  = htmlspecialchars($rowdata['PSPfilename']);
+        $lengthmin    = htmlspecialchars($rowdata['lengthmin']);
+        $datas++;
 
-		$m2pExists = false;
-		$m2pUrl    = $httpmediamappath . '/' . $fName;
-		$m2ppath   = $recfolderpath . '/' . $fName;
-		if (file_exists($m2ppath) && is_file($m2ppath) && filesize($m2ppath)) {
-			$m2pExists = true;
-		}
+        $m2pExists = false;
+        $m2pUrl    = $httpmediamappath . '/' . $fName;
+        $m2ppath   = $recfolderpath . '/' . $fName;
+        if (file_exists($m2ppath) && is_file($m2ppath) && filesize($m2ppath)) {
+            $m2pExists = true;
+        }
 
-		$mp4Exists = false;
-		$mp4Url    = $httpmediamappath . '/' . $tid . '.localized/mp4/' . $mp4filename;
-		$mp4path   = $recfolderpath . '/' . $tid . '.localized/mp4/' . $mp4filename ;
-		if (file_exists($mp4path) && is_file($mp4path)) {
-			$mp4Exists = true;
-			$mp4size = filesize($mp4path);
-			$mp4size = round($mp4size / 1024 / 1024);
-		} else {
-			$nodata[$pid]['mp4'] = $mp4path;
-			$nodata[$pid]['tid'] = $tid;
-		}
+        $mp4Exists = false;
+        $mp4Url    = $httpmediamappath . '/' . $tid . '.localized/mp4/' . $mp4filename;
+        $mp4path   = $recfolderpath . '/' . $tid . '.localized/mp4/' . $mp4filename ;
+        if (file_exists($mp4path) && is_file($mp4path)) {
+            $mp4Exists = true;
+            $mp4size = filesize($mp4path);
+            $mp4size = round($mp4size / 1024 / 1024);
+        } else {
+            $nodata[$pid]['mp4'] = $mp4path;
+            $nodata[$pid]['tid'] = $tid;
+        }
     ?>
       <tr <?php echo $reservedClass ?>>
         <td><?php if ($m2pExists): ?><a href="<?php echo $m2pUrl ?>"><?php echo $fName ?></a><br><?php endif ?>

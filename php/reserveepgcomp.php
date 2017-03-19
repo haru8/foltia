@@ -23,14 +23,14 @@ include("./foltialib.php");
 $con = m_connect();
 
 if ($useenvironmentpolicy == 1) {
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-		header("WWW-Authenticate: Basic realm=\"foltia\"");
-		header("HTTP/1.0 401 Unauthorized");
-		redirectlogin();
-		exit;
-	} else {
-		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
-	}
+    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        header("WWW-Authenticate: Basic realm=\"foltia\"");
+        header("HTTP/1.0 401 Unauthorized");
+        redirectlogin();
+        exit;
+    } else {
+        login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+    }
 }// end if login
 
 
@@ -40,10 +40,10 @@ if ($useenvironmentpolicy == 1) {
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<link rel="stylesheet" type="text/css" href="graytable.css"> 
+<link rel="stylesheet" type="text/css" href="graytable.css">
 <body BGCOLOR="#ffffff" TEXT="#494949" LINK="#0047ff" VLINK="#000000" ALINK="#c6edff" >
 
-<?php 
+<?php
 printhtmlpageheader();
 
 ?>
@@ -59,13 +59,13 @@ $lengthmin = getnumform(lengthmin); */
 $epgid = getnumform(epgid);
 
 if ($epgid == "" ) {
-	print "<title>foltia:EPG予約:Error</title></head>\n";
-	die_exit("登録番組がありません<BR>");
+    print "<title>foltia:EPG予約:Error</title></head>\n";
+    die_exit("登録番組がありません<BR>");
 }
 print "<title>foltia:EPG予約:完了</title>
 </head>\n";
 
-$now = date("YmdHi");   
+$now = date("YmdHi");
 // タイトル取得
 $query = "
   SELECT
@@ -88,100 +88,100 @@ $query = "
 $rs = sql_query($con, $query, "DBクエリに失敗しました",array($epgid));
 $rowdata = $rs->fetch();
 if (! $rowdata) {
-	die_exit("登録番組がありません。もう一度EPGに戻り操作して下さい。<BR>");
+    die_exit("登録番組がありません。もう一度EPGに戻り操作して下さい。<BR>");
 } else {
-	$stationid		= $rowdata[10];
-	$subtitle		= $rowdata[5] . $rowdata[6];
-	$startdatetime	= $rowdata[1];
-	$enddatetime	= $rowdata[2];
-	$lengthmin		= $rowdata[3];
+    $stationid      = $rowdata[10];
+    $subtitle       = $rowdata[5] . $rowdata[6];
+    $startdatetime  = $rowdata[1];
+    $enddatetime    = $rowdata[2];
+    $lengthmin      = $rowdata[3];
 }
 
 // - DB登録作業
 
 //時刻検査
 if (($startdatetime > $now ) && ($enddatetime > $now ) && ($enddatetime > $startdatetime )) {
-	// min pidを探す
-	$query = "SELECT min(pid) FROM  foltia_subtitle ";
+    // min pidを探す
+    $query = "SELECT min(pid) FROM  foltia_subtitle ";
 
-	$rs = sql_query($con, $query, "DBクエリに失敗しました");
-	$rowdata = $rs->fetch();
-	if (! $rowdata) {
-		$insertpid = -1 ;
-	} else {
-		$insertpid = $rowdata[0];
-		if ($insertpid > 0) {
-			$insertpid = -1;
-		} else {
-			$insertpid-- ;
-		}
-	}
-	// next 話数を探す
-	$query = "SELECT max(countno) FROM  foltia_subtitle WHERE tid = 0";
+    $rs = sql_query($con, $query, "DBクエリに失敗しました");
+    $rowdata = $rs->fetch();
+    if (! $rowdata) {
+        $insertpid = -1 ;
+    } else {
+        $insertpid = $rowdata[0];
+        if ($insertpid > 0) {
+            $insertpid = -1;
+        } else {
+            $insertpid-- ;
+        }
+    }
+    // next 話数を探す
+    $query = "SELECT max(countno) FROM  foltia_subtitle WHERE tid = 0";
 
-	$rs = sql_query($con, $query, "DBクエリに失敗しました");
-	$rowdata = $rs->fetch();
-	if (! $rowdata) {
-		$nextcno = 1 ;
-	} else {
-		$nextcno = $rowdata[0];
-		$nextcno++ ;
-	}
+    $rs = sql_query($con, $query, "DBクエリに失敗しました");
+    $rowdata = $rs->fetch();
+    if (! $rowdata) {
+        $nextcno = 1 ;
+    } else {
+        $nextcno = $rowdata[0];
+        $nextcno++ ;
+    }
 
-	//INSERT
-	if ($demomode) {
-		print "下記予約を完了いたしました。<br>";
-	} else {
-		$userclass = getuserclass($con);
-		if ( $userclass <= 2) {
-			/*
-			pid 
-			tid 
-			stationid  
-			countno 
-			subtitle
-			startdatetime  
-			enddatetime  
-			startoffset  
-			lengthmin  
-			m2pfilename 
-			pspfilename 
-			epgaddedby  
-			
-			*/
+    //INSERT
+    if ($demomode) {
+        print "下記予約を完了いたしました。<br>";
+    } else {
+        $userclass = getuserclass($con);
+        if ( $userclass <= 2) {
+            /*
+            pid
+            tid
+            stationid
+            countno
+            subtitle
+            startdatetime
+            enddatetime
+            startoffset
+            lengthmin
+            m2pfilename
+            pspfilename
+            epgaddedby
 
-			$memberid = getmymemberid($con);
-			$query = "
+            */
+
+            $memberid = getmymemberid($con);
+            $query = "
               INSERT INTO
-                foltia_subtitle ( pid, tid, stationid, countno, subtitle, startdatetime, enddatetime, startoffset, lengthmin, epgaddedby ) 
+                foltia_subtitle ( pid, tid, stationid, countno, subtitle, startdatetime, enddatetime, startoffset, lengthmin, epgaddedby )
                 VALUES ( ?, '0', ?, ?, ?, ?, ?, '0', ?, ? )";
 
-			$rs = sql_query($con, $query, "DBクエリに失敗しました", array($insertpid, $stationid, $nextcno, $subtitle, $startdatetime, $enddatetime, $lengthmin, $memberid));
+            $rs = sql_query($con, $query, "DBクエリに失敗しました", array($insertpid, $stationid, $nextcno, $subtitle, $startdatetime, $enddatetime, $lengthmin, $memberid));
 
-			// addatq.pl
-			// キュー入れプログラムをキック
-			// 引数 TID チャンネルID
-			// echo("$toolpath/perl/addatq.pl $tid $station");
+            // addatq.pl
+            // キュー入れプログラムをキック
+            // 引数 TID チャンネルID
+            // echo("$toolpath/perl/addatq.pl $tid $station");
 
-			$oserr = system("$toolpath/perl/addatq.pl 0 0");
-			print "下記予約を完了いたしました。<br>";
+            $oserr = system("$toolpath/perl/addatq.pl 0 0");
+            print "下記予約を完了いたしました。<br>";
 
-			$head  = 'EPG予約 を完了いたしました。';
-			//$mesg  = sprintf("放送局         : %s\n", $stationjname);
-			$mesg  = sprintf("放送開始   : %s\n", foldate2print($startdatetime));
-			$mesg .= sprintf("放送終了   : %s\n", foldate2print($enddatetime));
-			$mesg .= sprintf("尺(分)     : %s\n", $lengthmin);
-			$mesg .= sprintf("局コード   : %s\n", $stationid);
-			$mesg .= sprintf("番組名     : %s\n", $subtitle);
-			slackSend($head, $mesg);
-		
-		} else {
-			print "EPG予約を行う権限がありません。";
-		} // end if $userclass <= 2
-	} // end if demomode
+            $head  = 'EPG予約 を完了いたしました。';
+            //$mesg  = sprintf("放送局         : %s\n", $stationjname);
+            $mesg  = sprintf("放送開始   : %s\n", foldate2print($startdatetime));
+            $mesg .= sprintf("放送終了   : %s\n", foldate2print($enddatetime));
+            $mesg .= sprintf("尺(分)     : %s\n", $lengthmin);
+            $mesg .= sprintf("局コード   : %s\n", $stationid);
+            $mesg .= sprintf("番組名     : %s\n", $subtitle);
+            slackSend($head, $mesg);
+
+        } else {
+            print "EPG予約を行う権限がありません。";
+        } // end if $userclass <= 2
+    } // end if demomode
 
 } else {
-	print "時刻が不正なために予約できませんでした。 <br>";
+    print "時刻が不正なために予約できませんでした。 <br>";
 }
 
 

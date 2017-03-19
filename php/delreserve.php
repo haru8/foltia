@@ -21,14 +21,14 @@ include("./foltialib.php");
 $con = m_connect();
 
 if ($useenvironmentpolicy == 1) {
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-		header("WWW-Authenticate: Basic realm=\"foltia\"");
-		header("HTTP/1.0 401 Unauthorized");
-		redirectlogin();
-		exit;
-	} else {
-		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
-	}
+    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        header("WWW-Authenticate: Basic realm=\"foltia\"");
+        header("HTTP/1.0 401 Unauthorized");
+        redirectlogin();
+        exit;
+    } else {
+        login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+    }
 } // end if login
 
 ?>
@@ -44,11 +44,11 @@ if ($useenvironmentpolicy == 1) {
 <?php
 $tid = getgetnumform("tid");
 if ($tid == "") {
-	die_exit("番組がありません<BR>");
+    die_exit("番組がありません<BR>");
 }
 $sid = getgetnumform("sid");
 if ($sid == "") {
-	die_exit("局がありません<BR>");
+    die_exit("局がありません<BR>");
 }
 $now = date("YmdHi");
 
@@ -56,7 +56,7 @@ $now = date("YmdHi");
 <body BGCOLOR="#ffffff" TEXT="#494949" LINK="#0047ff" VLINK="#000000" ALINK="#c6edff" >
 
 <?php
-	printhtmlpageheader();
+    printhtmlpageheader();
 
 // タイトル取得
 $query = "
@@ -80,13 +80,13 @@ $rs = sql_query($con, $query, "DBクエリに失敗しました",array($tid,$sid
 $rowdata = $rs->fetch();
 
 if (! $rowdata ) {
-	die_exit("登録番組がありません<BR>");
+    die_exit("登録番組がありません<BR>");
 }
-$tid			= htmlspecialchars($rowdata[0]);
-$stationname	= htmlspecialchars($rowdata[1]);
-$title			= htmlspecialchars($rowdata[2]);
-$bitrate		= htmlspecialchars($rowdata[3]);
-$stationid		= htmlspecialchars($rowdata[4]);
+$tid            = htmlspecialchars($rowdata[0]);
+$stationname    = htmlspecialchars($rowdata[1]);
+$title          = htmlspecialchars($rowdata[2]);
+$bitrate        = htmlspecialchars($rowdata[3]);
+$stationid      = htmlspecialchars($rowdata[4]);
 
 $delflag = getgetnumform(delflag);
 
@@ -96,37 +96,37 @@ $delflag = getgetnumform(delflag);
   <hr size="4">
 <?php
 if ($delflag == "1") {
-	print "「".$title."」の自動録画予約を解除しました。 <br>\n";
+    print "「".$title."」の自動録画予約を解除しました。 <br>\n";
 
-	// 削除処理
-	if (($demomode) || ($protectmode) ) {
-		// demomodeやprotectmodeならなにもしない
-	} else {
-		// キュー削除プログラムをキック
-		$oserr = system("$toolpath/perl/addatq.pl $tid $sid DELETE");
+    // 削除処理
+    if (($demomode) || ($protectmode) ) {
+        // demomodeやprotectmodeならなにもしない
+    } else {
+        // キュー削除プログラムをキック
+        $oserr = system("$toolpath/perl/addatq.pl $tid $sid DELETE");
 
-		// DB削除
-		$query = "
-          DELETE  
-          FROM foltia_tvrecord  
+        // DB削除
+        $query = "
+          DELETE
+          FROM foltia_tvrecord
           WHERE foltia_tvrecord.tid = ?
             AND foltia_tvrecord.stationid = ?
         ";
 
-		$rs->closeCursor();
-		$rs = sql_query($con, $query, "DBクエリに失敗しました",array($tid,$sid));
-	}
+        $rs->closeCursor();
+        $rs = sql_query($con, $query, "DBクエリに失敗しました",array($tid,$sid));
+    }
 } else {
-	print "「".$title."」の自動録画予約を解除します。 <br>\n";
+    print "「".$title."」の自動録画予約を解除します。 <br>\n";
 
-	print "
+    print "
       <form name=\"deletereserve\" method=\"GET\" action=\"delreserve.php\">
       <input type=\"submit\" value=\"予約解除\" >\n
     ";
 
 }
 
-?>  
+?>
 <br>
 <table width="100%" border="0">
   <tr>
@@ -146,7 +146,7 @@ if ($delflag == "1") {
 if ($delflag == "1") {
 
 } else {
-	print "
+    print "
      <input type=\"hidden\" name=\"tid\" value=\"$tid\">
      <input type=\"hidden\" name=\"sid\" value=\"$sid\">
      <input type=\"hidden\" name=\"delflag\" value=\"1\">
@@ -184,9 +184,9 @@ $rs = sql_query($con, $query, "DBクエリに失敗しました",array($now,$tid
 $rowdata = $rs->fetch();
 
 if (! $rowdata) {
-	echo("放映予定はありません<BR>");
+    echo("放映予定はありません<BR>");
 } else {
-	$maxcols = $rs->columnCount();
+    $maxcols = $rs->columnCount();
 ?>
   <table BORDER="0" CELLPADDING="0" CELLSPACING="2" WIDTH="100%" BGCOLOR="#bcf1be">
     <thead>
@@ -202,15 +202,15 @@ if (! $rowdata) {
 
     <tbody>
 <?php
-	/* テーブルのデータを出力 */
-	do {
-		echo("<tr>\n");
-		for ($col = 0; $col < $maxcols; $col++) {
-			/* 列に対応 */
-			echo("<td>".htmlspecialchars($rowdata[$col])."<br></td>\n");
-		}
-		echo("</tr>\n");
-	} while ($row = $rs->fetch());
+    /* テーブルのデータを出力 */
+    do {
+        echo("<tr>\n");
+        for ($col = 0; $col < $maxcols; $col++) {
+            /* 列に対応 */
+            echo("<td>".htmlspecialchars($rowdata[$col])."<br></td>\n");
+        }
+        echo("</tr>\n");
+    } while ($row = $rs->fetch());
 } // end if
 
 ?>

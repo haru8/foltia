@@ -19,14 +19,14 @@ include("./foltialib.php");
 $con = m_connect();
 
 if ($useenvironmentpolicy == 1) {
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-		header("WWW-Authenticate: Basic realm=\"foltia\"");
-		header("HTTP/1.0 401 Unauthorized");
-		redirectlogin();
-		exit;
-	} else {
-		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
-	}
+    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        header("WWW-Authenticate: Basic realm=\"foltia\"");
+        header("HTTP/1.0 401 Unauthorized");
+        redirectlogin();
+        exit;
+    } else {
+        login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+    }
 }
 
 ?>
@@ -43,7 +43,7 @@ if ($useenvironmentpolicy == 1) {
 <?php
 $tid = getgetnumform(tid);
 if ($tid == "") {
-	die_exit("登録番組がありません<BR>");
+    die_exit("登録番組がありません<BR>");
 }
 
 $now = date("YmdHi");
@@ -53,7 +53,7 @@ $query = "SELECT title FROm foltia_program where tid = ? ";
 $rs = sql_query($con, $query, "DBクエリに失敗しました", array($tid));
 $rowdata = $rs->fetch();
 if (! $rowdata) {
-	die_exit("登録番組がありません<BR>");
+    die_exit("登録番組がありません<BR>");
 }
 
 $title = htmlspecialchars($rowdata['title']);
@@ -69,8 +69,8 @@ printhtmlpageheader();
 
 <?php
 if ($tid == 0) {
-	print "<p>EPG予約の追加は「<a href=\"./viewepg.php\">番組表</a>」メニューから行って下さい。</p>\n</body>\n</html>\n";
-	exit ;
+    print "<p>EPG予約の追加は「<a href=\"./viewepg.php\">番組表</a>」メニューから行って下さい。</p>\n</body>\n</html>\n";
+    exit ;
 }
 
 ?>
@@ -108,42 +108,42 @@ $query = "
 $rs = sql_query($con, $query, "DBクエリに失敗しました",array($tid));
 $rowdata = $rs->fetch();
 if (! $rowdata) {
-	echo("放映局情報がまだはいってません<BR>");
+    echo("放映局情報がまだはいってません<BR>");
 } else {
-	$maxcols = $rs->columnCount();
+    $maxcols = $rs->columnCount();
 
-	echo("<select name=\"station\">\n");
-	/* テーブルのデータを出力 */
-	do {
-		echo("<option value=\"");
-		echo(htmlspecialchars($rowdata['stationid']));
-		echo("\">");
-		echo(htmlspecialchars($rowdata['stationname']));
-		echo("</option>\n");
-	} while ($rowdata = $rs->fetch());
-	echo("<option value=\"0\">全局</option>\n</select>\n");
+    echo("<select name=\"station\">\n");
+    /* テーブルのデータを出力 */
+    do {
+        echo("<option value=\"");
+        echo(htmlspecialchars($rowdata['stationid']));
+        echo("\">");
+        echo(htmlspecialchars($rowdata['stationname']));
+        echo("</option>\n");
+    } while ($rowdata = $rs->fetch());
+    echo("<option value=\"0\">全局</option>\n</select>\n");
 }
 ?>
 
-	</td>
+    </td>
 
-	<td>
-	<select name="usedigital">
+    <td>
+    <select name="usedigital">
 <?php
 if ($usedigital == 1) {
-	print "
-	<option value=\"1\" selected>する</option>
-	<option value=\"0\">しない</option>
-	";
+    print "
+    <option value=\"1\" selected>する</option>
+    <option value=\"0\">しない</option>
+    ";
 } else {
-	print "
-	<option value=\"1\">する</option>
-	<option value=\"0\" selected>しない</option>
-	";
+    print "
+    <option value=\"1\">する</option>
+    <option value=\"0\" selected>しない</option>
+    ";
 }
 ?>
-	</select>
-	</td>
+    </select>
+    </td>
 
     <td><select name="bitrate">
         <option value="14">最高画質</option>
@@ -192,45 +192,45 @@ $query = "
 $rs = sql_query($con, $query, "DBクエリに失敗しました", array($now, $tid));
 $rowdata = $rs->fetch();
 if (! $rowdata) {
-	echo("放映予定はありません<BR>");
+    echo("放映予定はありません<BR>");
 } else {
-	$maxcols = $rs->columnCount() - 1 ;
+    $maxcols = $rs->columnCount() - 1 ;
 ?>
   <table BORDER="0" CELLPADDING="0" CELLSPACING="2" WIDTH="100%" BGCOLOR="#bcf1be">
-	<thead>
-		<tr>
-			<th align="left">放映局</th>
-			<th align="left">話数</th>
-			<th align="left">サブタイトル</th>
-			<th align="left">開始時刻</th>
-			<th align="left">総尺</th>
-			<th align="left">時刻ずれ</th>
+    <thead>
+        <tr>
+            <th align="left">放映局</th>
+            <th align="left">話数</th>
+            <th align="left">サブタイトル</th>
+            <th align="left">開始時刻</th>
+            <th align="left">総尺</th>
+            <th align="left">時刻ずれ</th>
 
-		</tr>
-	</thead>
+        </tr>
+    </thead>
 
-	<tbody>
+    <tbody>
 
 <?php
 /* テーブルのデータを出力 */
-	do {
-		if ($rowdata['rec']) {
-			echo("<tr class=\"reserved\">\n");
-		} else {
-			echo("<tr>\n");
-		}
-		for ($col = 0; $col < $maxcols; $col++) { /* 列に対応 */
-			if ($col == 3) {
-				echo("<td>" . htmlspecialchars(foldate2print($rowdata[$col])) . "<br></td>\n");
-			} else {
-				echo("<td>" . htmlspecialchars($rowdata[$col]) . "<br></td>\n");
-			}
-		}
-		echo("</tr>\n");
-	} while ($rowdata = $rs->fetch());
+    do {
+        if ($rowdata['rec']) {
+            echo("<tr class=\"reserved\">\n");
+        } else {
+            echo("<tr>\n");
+        }
+        for ($col = 0; $col < $maxcols; $col++) { /* 列に対応 */
+            if ($col == 3) {
+                echo("<td>" . htmlspecialchars(foldate2print($rowdata[$col])) . "<br></td>\n");
+            } else {
+                echo("<td>" . htmlspecialchars($rowdata[$col]) . "<br></td>\n");
+            }
+        }
+        echo("</tr>\n");
+    } while ($rowdata = $rs->fetch());
 } //end if
-		?>
-	</tbody>
+        ?>
+    </tbody>
 </table>
 
 </body>

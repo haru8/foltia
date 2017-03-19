@@ -19,14 +19,14 @@ include("./foltialib.php");
 $con = m_connect();
 
 if ($useenvironmentpolicy == 1) {
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-		header("WWW-Authenticate: Basic realm=\"foltia\"");
-		header("HTTP/1.0 401 Unauthorized");
-		redirectlogin();
-		exit;
-	} else {
-		login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
-	}
+    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        header("WWW-Authenticate: Basic realm=\"foltia\"");
+        header("HTTP/1.0 401 Unauthorized");
+        redirectlogin();
+        exit;
+    } else {
+        login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+    }
 } // end if login
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -50,8 +50,8 @@ $strdate = date('YmdHi', strtotime('-1 week'));
 $enddate = date('YmdHi', strtotime('+1 week'));
 
 if ($word != '') {
-	$numsql = 'count(*)';
-	$selsql = '*';
+    $numsql = 'count(*)';
+    $selsql = '*';
       //$query = "
       //  SELECT
       //    %COL%
@@ -63,7 +63,7 @@ if ($word != '') {
       //      AND ((epgtitle LIKE ?) OR (epgdesc  LIKE ?))
       //    ORDER BY startdatetime
       //";
-	$query = "
+    $query = "
         SELECT
           %COL%
           FROM foltia_epg
@@ -74,33 +74,33 @@ if ($word != '') {
             AND ((epgtitle LIKE ?) OR (epgdesc  LIKE ?))
           ORDER BY startdatetime
       ";
-	$numsql = str_replace('%COL%', $numsql, $query);
-	$selsql = str_replace('%COL%', $selsql, $query);
-	$searchword = '%' . $word . '%';
-	//$rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($strdate, $enddate, $searchword, $searchword));
-	$rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($strdate, $searchword, $searchword));
-	$row  = $rows->fetchColumn();
-	//$rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($strdate, $enddate, $searchword, $searchword));
-	$rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($strdate, $searchword, $searchword));
+    $numsql = str_replace('%COL%', $numsql, $query);
+    $selsql = str_replace('%COL%', $selsql, $query);
+    $searchword = '%' . $word . '%';
+    //$rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($strdate, $enddate, $searchword, $searchword));
+    $rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($strdate, $searchword, $searchword));
+    $row  = $rows->fetchColumn();
+    //$rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($strdate, $enddate, $searchword, $searchword));
+    $rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($strdate, $searchword, $searchword));
 }
 
 function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid, $nowdate)
 {
-	$reserve      = reserveCheck($con, $startdatetime, $enddatetime, $stationid);
-	$reservecheck = searchStartEndTime($reserve, $startdatetime, $enddatetime);
-	$reservedClass = '';
-	if ($nowdate < $startdatetime) {
-		if ($reservecheck == 1 || $reservecheck == 2) {
-			$reservedClass = ' class="reservedtitle"';
-		}
-	} else {
-		if ($reservecheck == 1 || $reservecheck == 2) {
-			$reservedClass = ' class="pastreservedtitle"';
-		} else {
-			$reservedClass = ' class="pasttitle"';
-		}
-	}
-	return $reservedClass;
+    $reserve      = reserveCheck($con, $startdatetime, $enddatetime, $stationid);
+    $reservecheck = searchStartEndTime($reserve, $startdatetime, $enddatetime);
+    $reservedClass = '';
+    if ($nowdate < $startdatetime) {
+        if ($reservecheck == 1 || $reservecheck == 2) {
+            $reservedClass = ' class="reservedtitle"';
+        }
+    } else {
+        if ($reservecheck == 1 || $reservecheck == 2) {
+            $reservedClass = ' class="pastreservedtitle"';
+        } else {
+            $reservedClass = ' class="pasttitle"';
+        }
+    }
+    return $reservedClass;
 }
 
 ?>
