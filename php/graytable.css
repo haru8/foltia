@@ -1,27 +1,27 @@
 // body * {margin:0px;padding:0px;border:0px;}
 
 body {
-	color: #555;
-	background-color: #CCC;
+    color: #555;
+    background-color: #CCC;
 }
 caption {
-	text-align: center;
-	font-weight: bold;
-	font-size: 2em;
-	padding: 1ex;
+    text-align: center;
+    font-weight: bold;
+    font-size: 2em;
+    padding: 1ex;
 }
 table {
-	background-color: #F5F5F5;
-	color: #222;
-	font: message-box;
-	width: 100%;
-	border: 1px solid #222;
-	border-spacing: 0px;
+    background-color: #F5F5F5;
+    color: #222;
+    font: message-box;
+    width: 100%;
+    border: 1px solid #222;
+    border-spacing: 0px;
 }
 th {
-	text-align: center;
-	font-weight: bold;
-	background-color: #CCC;
+    text-align: center;
+    font-weight: bold;
+    background-color: #CCC;
 }
 th + th, td + td { border-right: 1px solid #AAA; }
 td               { vertical-align: top;  }
@@ -77,12 +77,12 @@ td#drama {background:#FFD0FF;} /* ドラマ */
 
 #information:hover, #hobby:hover, #education:hover, #music:hover, #stage:hover, #cinema:hover, #variety:hover, #news:hover, #drama:hover, #documentary:hover, #sports:hover, #kids:hover, #anime:hover, #etc:hover
  {
- 	background-color: #FFFA4D;
-	padding-right: 1px; padding-bottom:1px;
-	border-right: 3px solid #aaa; border-bottom: 3px solid #666; 
- 	cursor:pointer; 
+    background-color: #FFFA4D;
+    padding-right: 1px; padding-bottom:1px;
+    border-right: 3px solid #aaa; border-bottom: 3px solid #666;
+    cursor:pointer;
  }
- 
+
 .pagenation {
   text-align: center;
   margin: 7px 0px;
@@ -126,5 +126,9 @@ td#drama {background:#FFD0FF;} /* ドラマ */
 .manualRecord dd.stations {
   margin-left: 25px;
   margin-bottom: 5px;
+}
+
+.searchhit {
+  background-color: #FFFA4D;
 }
 
