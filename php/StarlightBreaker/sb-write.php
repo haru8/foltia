@@ -21,16 +21,16 @@ include("./sb-config.php");
 include("./foltialib.php");
 $con = m_connect();
 
-if ($useenvironmentpolicy == 1){
-	if (!isset($_SERVER['PHP_AUTH_USER'])) {
-	    header("WWW-Authenticate: Basic realm=\"foltia\"");
-	    header("HTTP/1.0 401 Unauthorized");
-		redirectlogin();
-	    exit;
-	} else {
-	login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
-	}
-}//end if login
+if ($useenvironmentpolicy == 1) {
+    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        header("WWW-Authenticate: Basic realm=\"foltia\"");
+        header("HTTP/1.0 401 Unauthorized");
+        redirectlogin();
+        exit;
+    } else {
+        login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+    }
+} //end if login
 
 
 $tid = getgetnumform(tid);
@@ -45,7 +45,7 @@ $blogmessages = stripslashes(mb_convert_encoding(urldecode($_POST[maintext]), "U
 
 
 if (($tid == "") ||($filename == "") || ($path == "")) {
-	header("Status: 404 Not Found",TRUE,404);
+    header("Status: 404 Not Found",TRUE,404);
 }
 
 $htmloutput = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">
@@ -53,7 +53,7 @@ $htmloutput = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.
 <head>
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">
 <meta http-equiv=\"Content-Style-Type\" content=\"text/css\">
-<link rel=\"stylesheet\" type=\"text/css\" href=\"graytable.css\"> 
+<link rel=\"stylesheet\" type=\"text/css\" href=\"graytable.css\">
 <title>Starlight Breaker -書き込み</title>
 </head>
 <body BGCOLOR=\"#ffffff\" TEXT=\"#494949\" LINK=\"#0047ff\" VLINK=\"#000000\" ALINK=\"#c6edff\" >
@@ -66,8 +66,8 @@ print "$htmloutput";
 printhtmlpageheader();
 
 if (($tid == "") ||($filename == "") || ($path == "")) {
-	print "No pictures<br></body></html>";
-	exit;
+    print "No pictures<br></body></html>";
+    exit;
 }
 
 $htmloutput = " <p align=\"left\"><font color=\"#494949\" size=\"6\">書き込み・アップロード </font></p>  <hr size=\"4\">";
@@ -140,3 +140,4 @@ print "$blogmessages <br />\n";
 
 </body>
 </html>
+
