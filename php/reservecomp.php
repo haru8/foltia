@@ -27,7 +27,7 @@ if ($useenvironmentpolicy == 1) {
         redirectlogin();
         exit;
     } else {
-        login($con,$_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+        login($con, $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
     }
 }//end if login
 
@@ -68,12 +68,12 @@ $now = date("YmdHi");
 //タイトル取得
 $query = "SELECT title FROM foltia_program where tid = ? ";
 
-$rs = sql_query($con, $query, "DBクエリに失敗しました",array($tid));
-$rowdata = $rs->fetch();
+$rs = sql_query($con, $query, "DBクエリに失敗しました", array($tid));
+$rowdata = $rs->fetch(PDO::FETCH_ASSOC);
 if (! $rowdata) {
     $title = "(未登録)";
 } else {
-    $title = htmlspecialchars($rowdata[0]);
+    $title = htmlspecialchars($rowdata['title']);
 }
 
 ?>
@@ -137,7 +137,8 @@ if ($station != 0) {
 }
 
 $rs = m_query($con, $query, "DBクエリに失敗しました");
-$rowdata = $rs->fetch();
+$rowdata = $rs->fetch(PDO::FETCH_ASSOC);
+$rowdata2 = $rowdata;
 if (! $rowdata) {
     echo("放映予定はいまのところありません<BR>");
 } else {
@@ -161,11 +162,15 @@ if (! $rowdata) {
   /* テーブルのデータを出力 */
     do {
         echo("<tr>\n");
-        for ($col = 0; $col < $maxcols; $col++) { /* 列に対応 */
-            echo("<td>".htmlspecialchars($rowdata[$col])."<br></td>\n");
+        //for ($col = 0; $col < $maxcols; $col++) { /* 列に対応 */
+        foreach ($rowdata as $col => $val) {
+            if ($col === 'startdatetime') {
+              $val = foldate2print($val);
+            }
+            echo("<td>".htmlspecialchars($val)."<br></td>\n");
         }
         echo("</tr>\n");
-    } while ($rowdata = $rs->fetch());
+    } while ($rowdata = $rs->fetch(PDO::FETCH_ASSOC));
 } //end if
 ?>
 
@@ -181,7 +186,7 @@ if ($demomode) {
     if ($station ==0) {
         //既存局を消す
         $query = "DELETE FROM foltia_tvrecord WHERE tid = ?";
-        $rs = sql_query($con, $query, "DBクエリに失敗しました",array($tid));
+        $rs = sql_query($con, $query, "DBクエリに失敗しました", array($tid));
     } // endif
 
     $query = "
@@ -192,13 +197,13 @@ if ($demomode) {
          AND stationid = ?
       ";
 
-    $rs = sql_query($con, $query, "DBクエリに失敗しました",array($tid,$station));
+    $rs = sql_query($con, $query, "DBクエリに失敗しました", array($tid, $station));
     $maxrows = $rs->fetchColumn(0);
     if ($maxrows == 0) {
         // 新規追加
         $query = "INSERT INTO  foltia_tvrecord  values (?,?,?,?)";
 
-        $rs = sql_query($con, $query, "DB書き込みに失敗しました",array($tid,$station,$bitrate,$usedigital));
+        $rs = sql_query($con, $query, "DB書き込みに失敗しました", array($tid, $station, $bitrate, $usedigital));
     } else {
         // 修正 (ビットレート)
         $query = "
@@ -206,7 +211,7 @@ if ($demomode) {
             SET bitrate = ?, digital = ?
           WHERE tid = ? AND stationid = ? ";
 
-        $rs = sql_query($con, $query, "DB書き込みに失敗しました",array( $bitrate, $usedigital , $tid , $station ));
+        $rs = sql_query($con, $query, "DB書き込みに失敗しました", array( $bitrate, $usedigital, $tid, $station));
     }
 
     // キュー入れプログラムをキック
@@ -215,14 +220,14 @@ if ($demomode) {
     $oserr = system("$toolpath/perl/addatq.pl $tid $station");
 
     $head  = '「' . $title . '」を番組予約モードで予約しました。';
-    $mesg  = sprintf("PID          : %s\n", $rowdata[0]);
-    $mesg .= sprintf("放送局       : %s\n", $rowdata[1]);
-    $mesg .= sprintf("話数         : %s\n", $rowdata[2]);
+    $mesg  = sprintf("PID          : %s\n", $rowdata2['pid']);
+    $mesg .= sprintf("放送局       : %s\n", $rowdata2['stationname']);
+    $mesg .= sprintf("話数         : %s\n", $rowdata2['countno']);
     $mesg .= sprintf("タイトル     : %s\n", $title);
-    $mesg .= sprintf("サブタイトル : %s\n", $rowdata[3]);
-    $mesg .= sprintf("開始時刻     : %s\n", foldate2print($rowdata[4]));
-    $mesg .= sprintf("総尺         : %s\n", $rowdata[5]);
-    $mesg .= sprintf("時刻ずれ     : %s\n", $rowdata[6]);
+    $mesg .= sprintf("サブタイトル : %s\n", $rowdata2['subtitle']);
+    $mesg .= sprintf("開始時刻     : %s\n", foldate2print($rowdata2['startdatetime']));
+    $mesg .= sprintf("総尺         : %s\n", $rowdata2['lengthmin']);
+    $mesg .= sprintf("時刻ずれ     : %s\n", $rowdata2['startoffset']);
     slackSend($head, $mesg);
 
 } //end if demomode
