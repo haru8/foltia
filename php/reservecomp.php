@@ -211,7 +211,7 @@ if ($demomode) {
             SET bitrate = ?, digital = ?
           WHERE tid = ? AND stationid = ? ";
 
-        $rs = sql_query($con, $query, "DB書き込みに失敗しました", array( $bitrate, $usedigital, $tid, $station));
+        $rs = sql_query($con, $query, "DB書き込みに失敗しました", array($bitrate, $usedigital, $tid, $station));
     }
 
     // キュー入れプログラムをキック
@@ -221,6 +221,8 @@ if ($demomode) {
 
     $head  = '「' . $title . '」を番組予約モードで予約しました。';
     $mesg  = sprintf("PID          : %s\n", $rowdata2['pid']);
+    $mesg  = sprintf("TID          : %s\n", $tid);
+    $mesg .= sprintf("station      : %s\n", $station);
     $mesg .= sprintf("放送局       : %s\n", $rowdata2['stationname']);
     $mesg .= sprintf("話数         : %s\n", $rowdata2['countno']);
     $mesg .= sprintf("タイトル     : %s\n", $title);
