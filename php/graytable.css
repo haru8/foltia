@@ -75,6 +75,23 @@ td#information {background:#B6FFFA;} /* 情報 */
 td#stage{background-color: #FFC0E3;} /* 演劇 */
 td#drama {background:#FFD0FF;} /* ドラマ */
 
+/* 予約済み */
+.reserved {
+  border: 3px #ff0000 solid;
+}
+/* 部分的に予約済み */
+.partiallyReserved {
+  border: 3px #ff0000 dashed;
+}
+/* EPG予約済み */
+.reservedEpg {
+  border: 3px #0000ff solid;
+}
+/* EPG部分的に予約済み */
+.partiallyReservedEpg {
+  border: 3px #0000ff dashed;
+}
+
 #information:hover, #hobby:hover, #education:hover, #music:hover, #stage:hover, #cinema:hover, #variety:hover, #news:hover, #drama:hover, #documentary:hover, #sports:hover, #kids:hover, #anime:hover, #etc:hover
  {
     background-color: #FFFA4D;
@@ -131,4 +148,5 @@ td#drama {background:#FFD0FF;} /* ドラマ */
 .searchhit {
   background-color: #FFFA4D;
 }
+
 

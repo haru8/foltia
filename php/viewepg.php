@@ -335,14 +335,28 @@ foreach ($stationhash as $stationname) {
                 $number = 0;
                 //print "$stationname $stationrowdata[0] 現在番組 $printstarttime $title $desc<br>\n";
             }
-            $reservedStyle = '';
-            $reserveCheck = searchStartEndTime($reserve, $startdatetime, $enddatetime);
-            if ($reserveCheck == 1) {
-                $reservedStyle = ' style="border: 3px #ff0000 solid;" ';
-            } else if($reserveCheck == 2) {
-                $reservedStyle = ' style="border: 3px #ff000f dashed;" ';
+            $reservedClass = '';
+            $reserveSearch = searchStartEndTime($reserve, $startdatetime, $enddatetime);
+            if ($reserve[0]['tid'] != 0) {
+              // 番組予約
+              if ($reserveSearch == 1) {
+                  // 予約済み
+                  $reservedClass = 'class="reserved"';
+              } else if($reserveSearch == 2) {
+                  // 部分的に予約済み
+                  $reservedClass = 'class="partiallyReserved"';
+              }
+            } else {
+              // EPG予約
+              if ($reserveSearch == 1) {
+                  // 予約済み
+                  $reservedClass = 'class="reservedEpg"';
+              } else if($reserveSearch == 2) {
+                  // 部分的に予約済み
+                  $reservedClass = 'class="partiallyReservedEpg"';
+              }
             }
-            $program  = " onClick=\"location = './reserveepg.php?epgid=$epgid'\" $reservedStyle>\n";
+            $program  = " onClick=\"location = './reserveepg.php?epgid=$epgid'\" $reservedClass>\n";
             $program .= "      <span id=\"epgstarttime\">$printstarttime</span>\n";
             $program .= "      <A HREF=\"./reserveepg.php?epgid=$epgid\"><span id=\"epgtitle\">$title</span></A>\n";
             $program .= "      <span id=\"epgdesc\">\n";

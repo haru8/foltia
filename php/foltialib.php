@@ -960,7 +960,8 @@ function reserveCheck($con, $startfoltime, $endfoltime, $stationid)
       ORDER BY foltia_subtitle.startdatetime ASC ;
     ";
     $rs = sql_query($con, $query, "DBクエリに失敗しました", array($startfoltime, $endfoltime, $stationid, $startfoltime, $endfoltime, $stationid));
-    return $chkoverwrap = $rs->fetchAll(PDO::FETCH_ASSOC);
+    $ret = $chkoverwrap = $rs->fetchAll(PDO::FETCH_ASSOC);
+    return $ret;
 }
 
 // デバッグ用
