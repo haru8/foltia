@@ -336,22 +336,22 @@ foreach ($stationhash as $stationname) {
                 //print "$stationname $stationrowdata[0] 現在番組 $printstarttime $title $desc<br>\n";
             }
             $reservedClass = '';
-            $reserveSearch = searchStartEndTime($reserve, $startdatetime, $enddatetime);
-            if ($reserve[0]['tid'] != 0) {
+            $reserveSearch = searchStartEndTime2($reserve, $startdatetime, $enddatetime);
+            if ($reserve[$reserveSearch[1]]['tid'] != 0) {
               // 番組予約
-              if ($reserveSearch == 1) {
+              if ($reserveSearch[0] == 1) {
                   // 予約済み
                   $reservedClass = 'class="reserved"';
-              } else if($reserveSearch == 2) {
+              } else if($reserveSearch[0] == 2) {
                   // 部分的に予約済み
                   $reservedClass = 'class="partiallyReserved"';
               }
             } else {
               // EPG予約
-              if ($reserveSearch == 1) {
+              if ($reserveSearch[0] == 1) {
                   // 予約済み
                   $reservedClass = 'class="reservedEpg"';
-              } else if($reserveSearch == 2) {
+              } else if($reserveSearch[0] == 2) {
                   // 部分的に予約済み
                   $reservedClass = 'class="partiallyReservedEpg"';
               }

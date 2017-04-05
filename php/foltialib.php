@@ -905,6 +905,26 @@ function searchStartEndTime($haystack, $startdatetime, $enddatetime)
     return $ret;
 }
 
+// 録画予約の配列、開始時間、終了時間を受け取って、予約済みかを返す。
+// 0: 予約なし
+// 1: 予約有り
+// 2: 一部の予約有り
+function searchStartEndTime2($haystack, $startdatetime, $enddatetime)
+{
+    $ret = array(0, 0);
+    foreach ($haystack as $key => $item) {
+        if ($startdatetime == $item['startdatetime'] &&
+            $enddatetime   == $item['enddatetime']) {
+            return array(1, $key);
+        }
+        if ($startdatetime <= $item['startdatetime'] &&
+            $enddatetime   >= $item['enddatetime']) {
+            $ret = array(2, $key);
+        }
+    }
+    return $ret;
+}
+
 // 予約済みかをチェックする
 //
 function reserveCheck($con, $startfoltime, $endfoltime, $stationid)
@@ -966,7 +986,10 @@ function reserveCheck($con, $startfoltime, $endfoltime, $stationid)
 
 // デバッグ用
 function d($var) {
+    ini_set('xdebug.overload_var_dump', 1);
+    $trace = debug_backtrace();
     echo '<pre style="text-align: left;">';
+    echo $trace[0]['file'] . ':' . $trace[0]['line'] . PHP_EOL ;
     var_dump($var);
     echo '</pre>';
 } // d()
