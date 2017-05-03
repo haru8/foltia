@@ -87,7 +87,8 @@ if ($word != '') {
         foltia_subtitle.pid,
         foltia_subtitle.pspfilename,
         foltia_subtitle.startdatetime,
-        foltia_subtitle.lengthmin
+        foltia_subtitle.lengthmin,
+        foltia_subtitle.startdatetime
       FROM
         foltia_subtitle,
         foltia_program,
@@ -105,7 +106,8 @@ if ($word != '') {
         foltia_subtitle.pid,
         foltia_mp4files.mp4filename,
         foltia_subtitle.startdatetime,
-        foltia_subtitle.lengthmin
+        foltia_subtitle.lengthmin,
+        foltia_subtitle.startdatetime
       FROM foltia_mp4files
         LEFT JOIN foltia_subtitle ON foltia_mp4files.mp4filename = foltia_subtitle.pspfilename AND foltia_mp4files.tid = foltia_subtitle.tid
         LEFT JOIN foltia_program  ON foltia_mp4files.tid         = foltia_program.tid
@@ -150,24 +152,33 @@ $words = array('EPG録画');
     <?php page_display($word, $p, $p2, $lim, $rowMax, ""); ?>
     <table border="0" cellpadding="0" cellspacing="2" width="100%" style="table-layout: fixed;">
       <tr>
-        <th style="width:270px;">ファイル名</th>
-        <th style="width:300px;">タイトル</th>
-        <th style="width:50px;">話数</th>
-        <th >サブタイ</th>
-        <th style="width:60px;">Player</th>
-        <th style="width:20px;">キャプ</th>
+        <th rowspan='1' style="width:270px;">日時</th>
+        <th rowspan='2' style="width:300px;">タイトル</th>
+        <th rowspan='2' style="width:50px;">話数</th>
+        <th rowspan='2'>サブタイ</th>
+        <th rowspan='2' style="width:60px;">Player</th>
+        <th rowspan='2' style="width:20px;">キャプ</th>
+      </tr>
+      <tr>
+        <th rowspan='1' style="width:270px;">ファイル名</th>
       </tr>
     <?php while($rowdata = $rs->fetch(PDO::FETCH_ASSOC)): ?>
     <?php
         //d($rowdata);
-        $tid          = htmlspecialchars($rowdata['tid']);
-        $title        = htmlspecialchars($rowdata['title']);
-        $count        = htmlspecialchars($rowdata['countno']);
-        $subtitle     = htmlspecialchars($rowdata['subtitle']);
-        $fName        = htmlspecialchars($rowdata['m2pfilename']);
-        $pid          = htmlspecialchars($rowdata['pid']);
-        $mp4filename  = htmlspecialchars($rowdata['PSPfilename']);
-        $lengthmin    = htmlspecialchars($rowdata['lengthmin']);
+        $tid           = htmlspecialchars($rowdata['tid']);
+        $title         = htmlspecialchars($rowdata['title']);
+        $count         = htmlspecialchars($rowdata['countno']);
+        $subtitle      = htmlspecialchars($rowdata['subtitle']);
+        $fName         = htmlspecialchars($rowdata['m2pfilename']);
+        $pid           = htmlspecialchars($rowdata['pid']);
+        $mp4filename   = htmlspecialchars($rowdata['PSPfilename']);
+        $lengthmin     = htmlspecialchars($rowdata['lengthmin']);
+        $startdatetime = htmlspecialchars($rowdata['startdatetime']);
+        if ($startdatetime == '' && $mp4filename != '') {
+            $filenamebody = explode('.', $mp4filename);
+            $expdatetime  = explode('-', $filenamebody[0]);
+            $startdatetime = $expdatetime[3] . $expdatetime[4];
+        }
         $datas++;
 
         $m2pExists = false;
@@ -190,26 +201,29 @@ $words = array('EPG録画');
         }
     ?>
       <tr <?php echo $reservedClass ?>>
-        <td><?php if ($m2pExists): ?><a href="<?php echo $m2pUrl ?>"><?php echo $fName ?></a><br><?php endif ?>
-            <?php if ($mp4Exists): ?><a href="<?php echo $mp4Url ?>"><?php echo $mp4filename ?></a><?php endif ?></td>
+        <td rowspan='1'><?php echo foldate2print($startdatetime) ?></td>
       <?php if ($tid > 0): ?>
-        <td><a href="http://cal.syoboi.jp/tid/<?php echo $tid ?>" target="_blank"><?php echo $title ?></a><br><a href="./showlibc.php?tid=<?php echo $tid ?>">[ライブラリ]</a></td>
+        <td rowspan='2'><a href="http://cal.syoboi.jp/tid/<?php echo $tid ?>" target="_blank"><?php echo $title ?></a><br><a href="./showlibc.php?tid=<?php echo $tid ?>">[ライブラリ]</a></td>
       <?php else: ?>
-        <td><?php echo $title ?><br><a href="./showlibc.php?tid=<?php echo $tid ?>">[ライブラリ]</a></td>
+        <td rowspan='2'><?php echo $title ?><br><a href="./showlibc.php?tid=<?php echo $tid ?>">[ライブラリ]</a></td>
       <?php endif ?>
-        <td><?php echo $count ?></td>
+        <td rowspan='2'><?php echo $count ?></td>
       <?php if ($tid > 0): ?>
-        <td><a href="<?php echo "http://cal.syoboi.jp/tid/$tid/time#$pid" ?>" target="_blank"><?php echo $subtitle ?></a><br></td>
+        <td rowspan='2'><a href="<?php echo "http://cal.syoboi.jp/tid/$tid/time#$pid" ?>" target="_blank"><?php echo $subtitle ?></a><br></td>
       <?php else: ?>
-        <td><?php echo $subtitle ?><br></td>
+        <td rowspan='2'><?php echo $subtitle ?><br></td>
       <?php endif ?>
       <?php if($pid) :?>
-        <td><?php if ($mp4Exists):?><a href="./mp4player.php?p=<?php echo $pid ?>" target="_blank">Player</a><br><?php echo $mp4size ?>MB<br><?php endif ?><?php echo $lengthmin ?>分</td>
-        <td><a href="./selectcaptureimage.php?pid=<?php echo $pid ?>">キャプ</a></td>
+        <td rowspan='2'><?php if ($mp4Exists):?><a href="./mp4player.php?p=<?php echo $pid ?>" target="_blank">Player</a><br><?php echo $mp4size ?>MB<br><?php endif ?><?php echo $lengthmin ?>分</td>
+        <td rowspan='2'><a href="./selectcaptureimage.php?pid=<?php echo $pid ?>">キャプ</a></td>
       <?php else: ?>
-        <td><?php if ($mp4Exists):?><a href="./mp4player.php?f=<?php echo $mp4filename ?>" target="_blank">Player</a><br><?php echo $mp4size ?>MB<br><?php endif ?>
-        <td><a href="./selectcaptureimage.php?f=<?php echo $mp4filename ?>">キャプ</a></td>
+        <td rowspan='2'><?php if ($mp4Exists):?><a href="./mp4player.php?f=<?php echo $mp4filename ?>" target="_blank">Player</a><br><?php echo $mp4size ?>MB<br><?php endif ?>
+        <td rowspan='2'><a href="./selectcaptureimage.php?f=<?php echo $mp4filename ?>">キャプ</a></td>
       <?php endif ?>
+      </tr>
+      <tr>
+        <td rowspan='1'><?php if ($m2pExists): ?><a href="<?php echo $m2pUrl ?>"><?php echo $fName ?></a><br><?php endif ?>
+            <?php if ($mp4Exists): ?><a href="<?php echo $mp4Url ?>"><?php echo $mp4filename ?></a><?php endif ?></td>
       </tr>
     <?php endwhile ?>
     </table>
