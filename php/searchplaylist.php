@@ -44,7 +44,7 @@ if ($useenvironmentpolicy == 1) {
 printhtmlpageheader();
 
 //１ページの表示レコード数
-$lim = 300;
+$lim = 50;
 //クエリ取得
 $p = getgetnumform(p);
 //ページ取得の計算
