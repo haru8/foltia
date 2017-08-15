@@ -91,19 +91,20 @@ function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid, $nowd
 {
     $reserve      = reserveCheck($con, $startdatetime, $enddatetime, $stationid);
     $reservecheck = searchStartEndTime($reserve, $startdatetime, $enddatetime);
-    $reservedClass = '';
+    $reserved     = array();
     if ($nowdate < $startdatetime) {
         if ($reservecheck == 1 || $reservecheck == 2) {
-            $reservedClass = ' class="reservedtitle"';
+            $reserved['class'] = ' class="reservedtitle"';
         }
     } else {
         if ($reservecheck == 1 || $reservecheck == 2) {
-            $reservedClass = ' class="pastreservedtitle"';
+            $reserved['class'] = ' class="pastreservedtitle"';
+            $reserved['pid']   = $reserve[0]['pid'];
         } else {
-            $reservedClass = ' class="pasttitle"';
+            $reserved['class'] = ' class="pasttitle"';
         }
     }
-    return $reservedClass;
+    return $reserved;
 }
 
 ?>
@@ -146,7 +147,7 @@ function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid, $nowd
       </tr>
     <?php while($epg = $rs->fetch(PDO::FETCH_ASSOC)): ?>
     <?php
-            $reservedClass = reserveCheckClass($con, $epg['startdatetime'], $epg['enddatetime'], $epg['stationid'], $nowdate);
+            $reserved             = reserveCheckClass($con, $epg['startdatetime'], $epg['enddatetime'], $epg['stationid'], $nowdate);
             $epg['epgid']         = htmlspecialchars($epg['epgid']);
             $epg['stationname']   = htmlspecialchars($epg['stationname']);
             $epg['stationid']     = htmlspecialchars($epg['stationid']);
@@ -159,15 +160,15 @@ function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid, $nowd
             $epg['epgtitle'] = str_replace($word, '<span class="searchhit">' . $word . '</span>', $epg['epgtitle']);
             $epg['epgdesc']  = str_replace($word, '<span class="searchhit">' . $word . '</span>', $epg['epgdesc']);
     ?>
-      <tr <?php echo $reservedClass ?>>
+      <tr <?php echo $reserved['class'] ?>>
         <td rowspan="2" style="text-align: center; vertical-align: middle;"><a href="./reserveepg.php?epgid=<?php echo $epg['epgid'] ?>"><?php echo $epg['epgid'] ?></a></td>
         <td rowspan="2" style="text-align: center; vertical-align: middle;"><?php echo $epg['stationname'] ?>(<?php echo $epg['stationid'] ?>)</td>
         <td><?php echo foldate2print($epg['startdatetime']) ?></td>
         <td rowspan="2" style="text-align: center; vertical-align: middle;"><?php echo $epg['lengthmin'] ?></td>
-        <td rowspan="2"><?php echo $epg['epgtitle'] ?></td>
+        <td rowspan="2"><?php echo $epg['epgtitle'] ?><?php if (isset($reserved['pid'])): ?><br> <a href="./mp4player.php?p=<?php echo $reserved['pid']?>" target="_blank">[Player]</a> <a href="./selectcaptureimage.php?pid=<?php echo $reserved['pid']?>">[キャプ]</a> <a href="./searchplaylist.php?word=<?php echo urlencode($word)?>#result">[録画一覧検索]</a><?php endif ?></td>
         <td rowspan="2"><?php echo $epg['epgdesc'] ?></td>
       </tr>
-      <tr <?php echo $reservedClass ?>>
+      <tr <?php echo $reserved['class'] ?>>
         <td><?php echo foldate2print($epg['enddatetime']) ?></td>
       </tr>
     <?php endwhile ?>
