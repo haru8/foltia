@@ -145,8 +145,29 @@ td#drama {background:#FFD0FF;} /* ドラマ */
   margin-bottom: 5px;
 }
 
-.searchhit {
-  background-color: #FFFA4D;
+/* 番組検索 */
+#searchepg .searchhit {
+  /*background-color: #FFFA4D;*/
+  background: #FFFA4D;
+}
+#searchepg .searchhit-proguram {
+  background: #FFFA4D;
+  padding: 2px;
+  border-radius: 8px;
+  border: 2px solid #ccc;
 }
 
+#searchepg .proguram {
+  background: #ddd;
+  padding: 2px;
+  border-radius: 8px;
+  border: 2px solid #ccc;
+}
+#searchepg .stationss {
+  margin-bottom: 10px;
+  display: grid;
+  grid-gap: 1px;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: auto;
+}
 

@@ -109,6 +109,7 @@ function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid, $nowd
 
 ?>
 
+<div id="searchepg">
   <p align="left"><font color="#494949" size="6">番組検索</font></p>
   <hr size="4">
 
@@ -116,16 +117,30 @@ function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid, $nowd
     検索: <input name="word" type="text" id="word" size="60" value="<?php echo "$word"; ?>"/><br><br>
     <input type="submit" value="検索">
   </form>
-  <p>
-  <?php foreach($searc_words as $val): ?>
+<?php
+$words = array();
+$n     = 0;
+foreach($searc_words as $val) {
+  $val  = trim($val);
+  if ($val == '') {
+    $n++;
+    continue;
+  }
+  $words[$n][] = $val;
+}
+?>
+  <?php foreach($words as $wordsVal1): ?>
+    <div class="stationss">
+    <?php foreach($wordsVal1 as $wordsVal2): ?>
     <?php
-      $val  = trim($val);
-      $searchhit = '';
-      if ($val === $word) {
-        $searchhit = 'searchhit';
-      }
+    $searchhit = 'proguram';
+    if ($wordsVal2 === $word) {
+      $searchhit = 'searchhit-proguram';
+    }
     ?>
-    <span class="<?php echo $searchhit ?>"><a href="./searchepg.php?word=<?php echo urlencode($val)?>#result"><?php echo $val ?></a></span><br>
+      <div class="<?php echo $searchhit ?>"><a href="./searchepg.php?word=<?php echo urlencode($wordsVal2)?>#result"><?php echo $wordsVal2 ?></a></div>
+    <?php endforeach ?>
+    </div>
   <?php endforeach ?>
   </p>
 
@@ -184,7 +199,8 @@ function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid, $nowd
         <td class="">未予約</td>
       </tr>
     </table>
-    </div
+    </div>
+</div>
   <?php endif ?>
 
 </body>
