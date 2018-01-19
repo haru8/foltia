@@ -33,7 +33,7 @@ $FILESTATUSRESERVINGLONG        =  10;
 $FILESTATUSRESERVINGSHORT       =  20;
 $FILESTATUSRECORDING            =  30;
 $FILESTATUSRECTSSPLITTING       =  40;
-$FILESTATUSRECEND               =  50;
+$FILESTATUSRECEND               =  50; # 録画完了
 $FILESTATUSWAITINGCAPTURE       =  55;
 $FILESTATUSCAPTURE              =  60;
 $FILESTATUSCAPEND               =  70;
@@ -125,7 +125,7 @@ sub syobocaldate2foltiadate {
 
 sub foldate2epoch {
     my $foltiadate = $_[0] ;
-    #EPGをEPOCに
+    # EPGをEPOCに
     # 2004 11 14 21 30
     my $eyear = substr($foltiadate , 0, 4);
     my $emon  = substr($foltiadate, 4, 2);
@@ -264,24 +264,20 @@ sub calcatqparam {
 
 
 sub processfind {
-    my $findprocess = $_[0];
+    my @findprocess = @_;
     my @processes ;
-    #@processes = `ps ax | grep -i $findprocess | grep -Ev "vim|sudo"`;
-    @processes  = `ps h -C $findprocess `;
     my $chkflag = 0;
 
-    foreach (@processes) {
-        if (/$findprocess/i) {
-            unless (/grep/) {
-                #print "process found:$_\n";
-                $chkflag++ ;
-                &writelog("$_")
-            } else {
-                #print "process NOT found:$_\n";
-            }
+    foreach my $find (@findprocess) {
+        @processes = `ps h -C "$find"`;
+
+        foreach my $psc (@processes) {
+          if ($psc =~ /$find/i) {
+              #print "process found: $psc\n";
+              $chkflag++;
+          }
         }
     }
-
     return ($chkflag);
 } #endsub
 
