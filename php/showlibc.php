@@ -284,7 +284,7 @@ if ($rowdataAll) {
         } else {
             print "
                 <tr >
-                    <td rowspan=\"4\" width=\"170\" style=\"border-bottom-color: #222;\"><a href=\"./mp4player.php?p=$pid\" target=\"_blank\"><img src = \"$imgsrcuri\" width=\"160\" height=\"120\"></a></td>
+                    <td rowspan=\"4\" width=\"170\" style=\"border-bottom-color: #222;\"><a href=\"./mp4player.php?p=$pid\" target=\"_blank\"><img src = \"$imgsrcuri\" width=\"160\" height=\"90\"></a></td>
                     <td>$count</td>
                 </tr>
                 <tr>";
