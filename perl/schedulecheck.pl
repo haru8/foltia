@@ -20,7 +20,7 @@ use Time::Local;
 $path = $0;
 $path =~ s/schedulecheck.pl$//i;
 if ($path ne "./") {
-	push( @INC, "$path");
+    push( @INC, "$path");
 }
 
 require "foltialib.pl";
@@ -46,19 +46,21 @@ $sth->execute();
 @titlecount= $sth->fetchrow_array;
 
 if ($titlecount[0]  == 0 ) {
-	exit;
+    exit;
 } else {
-	$sth = $dbh->prepare($stmt{'schedulecheck.2'});
-	$sth->execute();
-	while (($tid, $stationid) = $sth->fetchrow_array()) {
-		# キュー再投入
-		system ("$toolpath/perl/addatq.pl $tid $stationid");
-		&writelog("$toolpath/perl/addatq.pl $tid $stationid");
-	} # while
+    $sth = $dbh->prepare($stmt{'schedulecheck.2'});
+    $sth->execute();
+    while (($tid, $stationid) = $sth->fetchrow_array()) {
+        # キュー再投入
+        system ("$toolpath/perl/addatq.pl $tid $stationid");
+        &writelog("$toolpath/perl/addatq.pl $tid $stationid");
+    } # while
 
-	# EPG更新
-	system("$toolpath/perl/epgimport.pl");
+    # EPG更新
+    system("$toolpath/perl/epgimport.pl");
 }
 
 &writelog("schedulecheck END.");
+
+system("$toolpath/perl/ipodtranscode.pl");
 
