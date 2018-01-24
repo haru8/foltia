@@ -6,12 +6,12 @@
 # DCC-JPL Japan/foltia project
 #
 #
-
+use utf8;
 
 #config section
 $toolpath = '/home/foltia'; #「perl」ディレクトリがあるPATH
-$recunits = 0;					#アナログキャプチャカード搭載エンコーダの数
-$recfolderpath = '/home/foltia/php/tv';		#録画ファイルを置くPATH
+$recunits = 0;                  #アナログキャプチャカード搭載エンコーダの数
+$recfolderpath = '/home/foltia/php/tv';     #録画ファイルを置くPATH
 $uhfbandtype = 1; # CATVなら1 UHF帯なら0 : 0=ntsc-bcast-jp 1=ntsc-cable-jp
 $rapidfiledelete =  1;#1なら削除ファイルは「mita」ディレクトリに移動。0なら即時削除
 $tunerinputnum = 0; #IO-DATA DV-MVP/RX,RX2,RX2W
@@ -33,6 +33,10 @@ $phptoolpath = $toolpath ;#php版の初期設定の位置。デフォルトで�
 
 ## for postgresql
 #$main::DSN="dbi:Pg:dbname=foltia;host=localhost;port=5432";
+#require 'db/Pg.pl';
+
+## for mysql
+#$main::DSN="dbi:mysql:dbname=foltia;host=localhost;port=3306";
 #require 'db/Pg.pl';
 
 ## for sqlite

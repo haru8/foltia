@@ -25,13 +25,21 @@ $environmentpolicytoken = "";                    // 環境ポリシーのパス�
 $perltoolpath           = $toolpath ;            // perl版の初期設定の位置。デフォルトではphpと同じ位置
 $usedigital             = 1;                     // Friioなどでデジタル録画をするか 1:する 0:しない
 
-
 // Slack Incoming Webhook URL
 $slack_webhook_url = '';
 
 // データベース接続設定
+// postgresql
 // define("DSN", "pgsql:host=localhost dbname=foltia user=foltia password= ");
+
+// Mysql
+// define("DSN", "mysql:host=localhost;dbname=foltia");
+
+// SQLite
 define("DSN", "sqlite:/home/foltia/foltia.sqlite");
+
+define("DBUser", "foltia");
+define("DBPass", "");
 
 // $mylocalip = "192.168.0.177" ; //動いている機械のIPアドレス
 
