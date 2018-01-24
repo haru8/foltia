@@ -229,7 +229,7 @@ $query = "
       ontvcode,
       digitalch
     FROM foltia_station
-    WHERE \"ontvcode\" LIKE '%ontvjapan%'
+    WHERE ontvcode LIKE '%ontvjapan%'
     ORDER BY stationid ASC, stationrecch
     LIMIT ? OFFSET ?
 ";

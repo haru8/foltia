@@ -456,7 +456,6 @@ if ($list == "raw") {
     AND foltia_subtitle.m2pfilename = foltia_m2pfiles.m2pfilename
   ORDER BY foltia_subtitle.tid DESC, foltia_subtitle.startdatetime ASC
   LIMIT $lim OFFSET $st
-
   ";
 } else {
   $query = "

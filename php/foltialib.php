@@ -178,7 +178,7 @@ function escape_numeric($sql) {
 /* DBに接続 */
 function m_connect() {
     try {
-        $dbh = new PDO(DSN);
+        $dbh = new PDO(DSN, DBUser, DBPass);
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return($dbh);
     } catch (PDOException $e) {
