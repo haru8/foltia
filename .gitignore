@@ -3,6 +3,7 @@ tags
 
 bin/
 foltia.sqlite*
+debuglog.*
 *.txt
 
 perl/tool/MP4Box
