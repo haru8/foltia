@@ -1,4 +1,7 @@
-php_value default_charset UTF-8
+
+<IfModule  mod_php7.c>
+  php_value default_charset UTF-8
+</IfModule>
 
 <IfModule mod_deflate.c>
   <IfModule mod_filter.c>
