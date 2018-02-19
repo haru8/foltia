@@ -158,10 +158,19 @@ td#drama {background:#FFD0FF;} /* ドラマ */
 }
 
 #searchepg .proguram {
+  /*position: relative;*/
   background: #ddd;
   padding: 2px;
   border-radius: 8px;
   border: 2px solid #ccc;
+}
+#searchepg .proguram a, #searchepg .searchhit-proguram a {
+  /*position: absolute;*/
+  display: block;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 #searchepg .stationss {
   margin-bottom: 10px;
