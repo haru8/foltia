@@ -495,20 +495,38 @@ function getdiskusage() {//戻り値　配列　[,全体容量, 使用容量 , �
 
 
 function printtrcnprocesses() {
-    $ffmpegprocesses = `ps ax | grep ffmpeg | grep -v grep |  wc -l`;
+    $ffmpegprocessesNum = `ps ax | grep ffmpeg | grep m2t | grep -v grep |  wc -l`;
+    $ffmpegprocesses    = `ps ax | grep ffmpeg | grep m2t | grep -v grep`;
+    $m2tname = '';
+    preg_match('|[\w-]*\.m2t|', $ffmpegprocesses, $m2tname);
+
     $uptime = exec('uptime');
 
     print "<div style=\"text-align:left;\">";
     print "$uptime<br>\n";
-    print "トラコン稼働数 : $ffmpegprocesses<br>\n";
+    print "トラコン稼働数 : $ffmpegprocessesNum : ";
+    print "$m2tname[0]<br>\n";
     print "</div>";
 } //endsub
 
 function printrecpt1processes() {
-    $recpt1processes = `ps ax | grep recpt1 | grep -v grep |  wc -l`;
+    $recpt1processesNum = `ps ax | grep recpt1 | grep -v grep |  wc -l`;
+    $recpt1processes    = `ps ax | grep recpt1 | grep -v grep`;
+    $recpt1processes    = explode("\n", $recpt1processes);
+    $recpt1processes    = array_map('trim', $recpt1processes);
+    $recpt1processes    = array_filter($recpt1processes, 'strlen');
+    $recpt1processes    = array_values($recpt1processes);
+    $m2tname = array();
+    foreach ($recpt1processes as $file) {
+      $m2tnameTmp = '';
+      preg_match('|[\w-]*\.m2t|', $file, $m2tnameTmp);
+      $m2tname[] = $m2tnameTmp[0];
+    }
+    $m2tname = implode(', ', $m2tname);
 
     print "<div style=\"text-align:left;\">";
-    print "録画稼働数 : $recpt1processes<br>\n";
+    print "録画稼働数 : $recpt1processesNum : ";
+    print "$m2tname<br>\n";
     print "</div>";
 }
 
