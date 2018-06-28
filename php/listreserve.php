@@ -133,7 +133,7 @@ printhtmlpageheader();
 ?>
       <p align="left"><font color="#494949" size="6">予約一覧</font></p>
       <hr size="4">
-      <p align="left">録画予約番組放映予定と予約番組名を表示します。</p>
+      <p align="left">録画予約番組放映予定と<a href="listreserve.php#reservetitle">予約番組名</a>を表示します。</p>
       <p align="left"><a href="listreserve.php?o=1">重複チェックをする</a></p>
 
 <?php
@@ -400,7 +400,7 @@ if (! $rowdata) {
     $maxcols = $rs->columnCount();
 
 ?>
-      <p align="left">録画予約番組タイトルを表示します。</p>
+      <p id="reservetitle" align="left">録画予約番組タイトルを表示します。</p>
       <table BORDER="0" CELLPADDING="0" CELLSPACING="2" WIDTH="100%">
         <thead>
           <tr>
