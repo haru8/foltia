@@ -50,9 +50,9 @@ $userclass = getuserclass($con);
 
 <?php
 $mymemberid = getmymemberid($con);
-$now = getgetnumform(startdate);
+$now = getgetnumform('startdate');
 if ($now == "") {
-    $now = getgetnumform(date);
+    $now = getgetnumform('date');
 }
 
 if ($now > 200501010000) {

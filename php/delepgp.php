@@ -46,7 +46,7 @@ if ($useenvironmentpolicy == 1) {
 
 printhtmlpageheader();
 
-$pid = getgetnumform(pid);
+$pid = getgetnumform('pid');
 if ($pid == "") {
     die_exit("番組がありません<BR>");
 }
@@ -93,7 +93,7 @@ $endprinttime   = htmlspecialchars(foldate2print($rowdata[5]));
 $lengthmin      = htmlspecialchars($rowdata[6]);
 $stationjname   = htmlspecialchars($rowdata[7]);
 $recch          = htmlspecialchars($rowdata[8]);
-$delflag        = getgetnumform(delflag);
+$delflag        = getgetnumform('delflag');
 
 ?>
 

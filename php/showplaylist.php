@@ -57,7 +57,7 @@ print "<title>foltia:recorded file list</title>
 //１ページの表示レコード数
 $lim = 300;
 //クエリ取得
-$p = getgetnumform(p);
+$p = getgetnumform('p');
 //ページ取得の計算
 list($st, $p, $p2) = number_page($p, $lim);
 //////////////////////////////////////////////////????
@@ -399,9 +399,9 @@ if ($list == "raw") {
     print "<td rowspan='2'>";
     if ($data['mp4Exists']) {
       if ($data['pid']) {
-        print "<a href=\"./mp4player.php?p=${data['pid']}\" target=\"_blank\">Player</a><br />${data[mp4size]}MB";
+        print "<a href=\"./mp4player.php?p=${data['pid']}\" target=\"_blank\">Player</a><br />${data['mp4size']}MB";
       } else {
-        print "<a href=\"./mp4player.php?f=${data['fName']}\" target=\"_blank\">Player</a><br />${data[mp4size]}MB";
+        print "<a href=\"./mp4player.php?f=${data['fName']}\" target=\"_blank\">Player</a><br />${data['mp4size']}MB";
       }
     }
     print "</td>";

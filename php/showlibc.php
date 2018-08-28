@@ -29,7 +29,7 @@ if ($useenvironmentpolicy == 1) {
     }
 } // end if login
 
-$tid = getgetnumform(tid);
+$tid = getgetnumform('tid');
 
 if ($tid == "") {
     header("Status: 404 Not Found" ,TRUE, 404);
@@ -69,7 +69,7 @@ if ($tid == "") {
 //１ページの表示レコード数
 $lim = 35;
 //クエリ取得
-$p = getgetnumform(p);
+$p = getgetnumform('p');
 //ページ取得の計算
 list($st, $p, $p2) = number_page($p, $lim);
 ///////////////////////////////////////////////////////////

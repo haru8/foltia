@@ -51,12 +51,12 @@ printhtmlpageheader();
   <hr size="4">
 <?php
 
-/* $stationid = getnumform(stationid);
-$subtitle = getform(subtitle);
-$startdatetime = getnumform(startdatetime);
-$enddatetime = getnumform(enddatetime);
-$lengthmin = getnumform(lengthmin); */
-$epgid = getnumform(epgid);
+/* $stationid = getnumform('stationid');
+$subtitle = getform('subtitle');
+$startdatetime = getnumform('startdatetime');
+$enddatetime = getnumform('enddatetime');
+$lengthmin = getnumform('lengthmin); */
+$epgid = getnumform('epgid');
 
 if ($epgid == "" ) {
     print "<title>foltia:EPG予約:Error</title></head>\n";

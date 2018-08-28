@@ -88,7 +88,7 @@ $title          = htmlspecialchars($rowdata[2]);
 $bitrate        = htmlspecialchars($rowdata[3]);
 $stationid      = htmlspecialchars($rowdata[4]);
 
-$delflag = getgetnumform(delflag);
+$delflag = getgetnumform('delflag');
 
 ?>
 

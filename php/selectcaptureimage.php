@@ -30,8 +30,8 @@ if ($useenvironmentpolicy == 1) {
     }
 } // end if login
 
-$pid  = getgetnumform(pid);
-$file = getgetform(f);
+$pid  = getgetnumform('pid');
+$file = getgetform('f');
 
 if ($pid == "") {
     header("Status: 404 Not Found", TRUE, 404);

@@ -37,7 +37,7 @@ if ($useenvironmentpolicy == 1) {
 <link rel="stylesheet" type="text/css" href="graytable.css">
 
 <?php
-$epgid = getgetnumform(epgid);
+$epgid = getgetnumform('epgid');
 if ($epgid == "") {
     print " <title>foltia:EPG予約:Error</title></head>\n";
     die_exit("登録番組がありません<BR>");

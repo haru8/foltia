@@ -32,7 +32,7 @@ if ($useenvironmentpolicy == 1) {
     }
 } // end if login
 
-$now = getgetnumform(date);
+$now = getgetnumform('date');
 if(($now < 200001010000 ) || ($now > 209912342353 )) {
     $now = date("YmdHi");
 }
@@ -57,7 +57,7 @@ function printtitle() {
 $lim = 300;
 
 // クエリ取得
-$p = getgetnumform(p);
+$p = getgetnumform('p');
 
 // ページ取得の計算
 list($st, $p, $p2) = number_page($p, $lim);
@@ -133,7 +133,7 @@ if ($rowdata) {
     $reservedpid = array();
 } // end if
 
-$mode = getgetform(mode);
+$mode = getgetform('mode');
 
 if ($mode == "new") {
     // 新番組表示モード

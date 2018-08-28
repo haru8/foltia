@@ -41,7 +41,7 @@ if ($useenvironmentpolicy == 1) {
 </head>
 
 <?php
-$tid = getgetnumform(tid);
+$tid = getgetnumform('tid');
 if ($tid == "") {
     die_exit("登録番組がありません<BR>");
 }

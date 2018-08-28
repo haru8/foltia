@@ -33,7 +33,7 @@ if ($useenvironmentpolicy == 1) {
     }
 } // end if login
 
-$pid = getgetnumform(pid);
+$pid = getgetnumform('pid');
 if ($pid == "") {
     exit;
 }

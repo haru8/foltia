@@ -68,16 +68,16 @@ printtitle();
 <hr size="4">
 <?php
 //値取得
-$startdate = getgetnumform(startdate);
-$starttime = getgetnumform(starttime);
+$startdate = getgetnumform('startdate');
+$starttime = getgetnumform('starttime');
 
 if (($startdate == "") || ($starttime == "")) {
     print "<p align=\"left\">全項目手動指定で予約します。</p>\n";
 } else {
-    $lengthmin = getgetnumform(lengthmin);
-    $recstid = getgetnumform(recstid);
-    $pname = getgetform(pname);
-    //$usedigital = getgetnumform(usedigital);
+    $lengthmin = getgetnumform('lengthmin');
+    $recstid = getgetnumform('recstid');
+    $pname = getgetform('pname');
+    //$usedigital = getgetnumform('usedigital');
 
     // 確認
     $startdatetime = "$startdate"."$starttime";

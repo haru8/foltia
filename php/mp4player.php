@@ -31,8 +31,8 @@ if ($useenvironmentpolicy == 1) {
     }
 } // end if login
 
-$pid  = getgetnumform(p);
-$file = getgetform(f);
+$pid  = getgetnumform('p');
+$file = getgetform('f');
 
 if ($pid != "") {
     $query = "

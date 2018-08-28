@@ -46,7 +46,7 @@ printhtmlpageheader();
 //１ページの表示レコード数
 $lim = 50;
 //クエリ取得
-$p = getgetnumform(p);
+$p = getgetnumform('p');
 //ページ取得の計算
 list($st, $p, $p2) = number_page($p, $lim);
 

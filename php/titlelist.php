@@ -47,7 +47,7 @@ if ($useenvironmentpolicy == 1) {
 $lim = 1000;
 
 // クエリ取得
-$p = getgetnumform(p);
+$p = getgetnumform('p');
 
 // ページ取得の計算
 list($st, $p, $p2) = number_page($p, $lim);

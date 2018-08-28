@@ -44,20 +44,20 @@ if ($useenvironmentpolicy == 1) {
 <?php
 
 
-$tid = getgetnumform(tid);
+$tid = getgetnumform('tid');
 if ($tid == "") {
     die_exit("番組が指定されていません<BR>");
 }
 
-$station = getgetnumform(station);
+$station = getgetnumform('station');
 if ($station == "") {
     $station = 0;
 }
-$usedigital = getgetnumform(usedigital);
+$usedigital = getgetnumform('usedigital');
 if ($usedigital == "") {
     $usedigital = 0;
 }
-$bitrate = getgetnumform(bitrate);
+$bitrate = getgetnumform('bitrate');
 if ($bitrate == "") {
     $bitrate = 5;
 }

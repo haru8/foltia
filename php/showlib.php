@@ -61,7 +61,7 @@ print "<meta http-equiv=\"Content-Style-Type\" content=\"text/css\">
 //１ページの表示レコード数
 $lim = 300;
 //クエリ取得
-$p = getgetnumform(p);
+$p = getgetnumform('p');
 //ページ取得の計算
 list($st, $p, $p2) = number_page($p, $lim);
 ///////////////////////////////////////////////////////////

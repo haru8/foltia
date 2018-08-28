@@ -38,14 +38,14 @@ if ($useenvironmentpolicy == 1){
 $now = date("YmdHi");
 $nowrfc822 =  date("r");
 
-$max = getgetnumform(max);
+$max = getgetnumform('max');
 
 if ($max > 0 ) {
     //件数指定があればなにもしない
 } else {
     $max = 45;
 }
-$tid = getgetnumform(tid);
+$tid = getgetnumform('tid');
 if (($tid >= 0 ) && ($tid != "")) {
     $query = "
       SELECT
