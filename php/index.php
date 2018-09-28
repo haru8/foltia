@@ -139,10 +139,15 @@ if ($mode == "new") {
     // 新番組表示モード
     $query = "
       SELECT
-        foltia_program.tid, stationname, foltia_program.title,
-        foltia_subtitle.countno, foltia_subtitle.subtitle,
-        foltia_subtitle.startdatetime, foltia_subtitle.lengthmin,
-        foltia_subtitle.pid, foltia_subtitle.startoffset
+        foltia_program.tid,
+        stationname,
+        foltia_program.title,
+        foltia_subtitle.countno,
+        foltia_subtitle.subtitle,
+        foltia_subtitle.startdatetime,
+        foltia_subtitle.lengthmin,
+        foltia_subtitle.pid,
+        foltia_subtitle.startoffset
       FROM foltia_subtitle, foltia_program, foltia_station
       WHERE foltia_program.tid          = foltia_subtitle.tid
         AND foltia_station.stationid    = foltia_subtitle.stationid
@@ -227,6 +232,7 @@ if ($mode == "new") {
   <hr size="4">
 <p align="left">放映番組リストを表示します。</p>
 
+
 <?php
 page_display("", $p, $p2, $lim, $dtcnt, $mode);
 // フィールド数
@@ -281,7 +287,7 @@ do {
     print "</td>\n";
 
     // 放映局
-    echo("<td>".htmlspecialchars($rowdata[1])."<br></td>\n");
+    echo("<td>" . $rowdata[1] . "<br></td>\n");
 
     // タイトル
     print "<td>";
@@ -293,7 +299,7 @@ do {
     print "</td>\n";
 
      // 話数
-    echo("<td>".htmlspecialchars($rowdata[3])."<br></td>\n");
+    echo("<td>" . htmlspecialchars($rowdata[3]) . "<br></td>\n");
 
     // サブタイ
     if ($pid > 0 ) {
@@ -302,10 +308,10 @@ do {
         print "<td>$subtitle<br></td>\n";
     }
     // 開始時刻(ズレ)
-    echo("<td>".htmlspecialchars(foldate2print($rowdata[5]))."<br>(".htmlspecialchars($rowdata[8]).")</td>\n");
+    echo("<td>" . htmlspecialchars(foldate2print($rowdata[5])) . "<br>(" . htmlspecialchars($rowdata[8]).")</td>\n");
 
     // 総尺
-    echo("<td>".htmlspecialchars($rowdata[6])."<br></td>\n");
+    echo("<td>" . htmlspecialchars($rowdata[6]) . "<br></td>\n");
 
     echo("</tr>\n");
 
