@@ -116,9 +116,9 @@ if (! $rowdata) {
     /* テーブルのデータを出力 */
     do {
         echo("<option value=\"");
-        echo(htmlspecialchars($rowdata['stationid']));
+        echo($rowdata['stationid']);
         echo("\">");
-        echo(htmlspecialchars($rowdata['stationname']));
+        echo($rowdata['stationname']);
         echo("</option>\n");
     } while ($rowdata = $rs->fetch());
     echo("<option value=\"0\">全局</option>\n</select>\n");
@@ -221,9 +221,9 @@ if (! $rowdata) {
         }
         for ($col = 0; $col < $maxcols; $col++) { /* 列に対応 */
             if ($col == 3) {
-                echo("<td>" . htmlspecialchars(foldate2print($rowdata[$col])) . "<br></td>\n");
+                echo("<td>" . foldate2print($rowdata[$col]) . "<br></td>\n");
             } else {
-                echo("<td>" . htmlspecialchars($rowdata[$col]) . "<br></td>\n");
+                echo("<td>" . $rowdata[$col] . "<br></td>\n");
             }
         }
         echo("</tr>\n");
