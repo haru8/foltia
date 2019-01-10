@@ -3,7 +3,7 @@
  Anime recording system foltia
  http://www.dcc-jpl.com/soft/foltia/
 
-searchepg.php
+searchplaylist.php
 
 目的
 録画済みの番組を検索します
@@ -130,10 +130,11 @@ if ($word != '') {
 $words = array('EPG録画');
 ?>
 
+<div id="searchplaylist">
   <p align="left"><font color="#494949" size="6">録画一覧検索</font></p>
   <hr size="4">
 
-  <form name="searchepg" method="GET" action="searchplaylist.php" style="margin-bottom:20px;">
+  <form name="searchplaylist" method="GET" action="searchplaylist.php" style="margin-bottom:20px;">
     検索: <input name="word" type="text" id="word" size="60" value="<?php echo "$word"; ?>"/><br><br>
     <input type="submit" value="検索">
   </form>
@@ -174,6 +175,10 @@ $words = array('EPG録画');
         $mp4filename   = htmlspecialchars($rowdata['PSPfilename']);
         $lengthmin     = htmlspecialchars($rowdata['lengthmin']);
         $startdatetime = htmlspecialchars($rowdata['startdatetime']);
+
+        $subtitle = str_replace($word, '<span class="searchhit">' . $word . '</span>', $subtitle);
+        $title    = str_replace($word, '<span class="searchhit">' . $word . '</span>', $title);
+
         if ($startdatetime == '' && $mp4filename != '') {
             $filenamebody = explode('.', $mp4filename);
             $expdatetime  = explode('-', $filenamebody[0]);
@@ -231,6 +236,7 @@ $words = array('EPG録画');
     <?php page_display($word, $p, $p2, $lim, $rowMax, ""); ?>
   <?php endif ?>
 
+</div>
 </body>
 </html>
 

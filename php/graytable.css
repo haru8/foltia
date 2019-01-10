@@ -145,8 +145,8 @@ td#drama {background:#FFD0FF;} /* ドラマ */
   margin-bottom: 5px;
 }
 
-/* 番組検索 */
-#searchepg .searchhit {
+/* 番組検索, 録画一覧検索 */
+#searchepg .searchhit, #searchplaylist .searchhit{
   /*background-color: #FFFA4D;*/
   background: #FFFA4D;
 }
