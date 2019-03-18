@@ -157,6 +157,7 @@ if (! $chkoverwrap) {
     }
     print '<table width="85%" style="width: 85%">';
     print '<tr><th style="width: 70px">削除</th><th style="width: 85px">予約番組名</th><th>サブタイトル</th><th style="width: 160px">開始</th><th style="width: 160px">終了</th><th>尺(分)</th></tr>';
+    $lengthminSum = 0;
     foreach ($chkoverwrap as $item) {
         $prereservedtitle = $item['title'];
         $subtitle = $item['subtitle'];
@@ -169,8 +170,10 @@ if (! $chkoverwrap) {
         } else {
             echo "<td><a href=\"delepgp.php?pid=$pid\">予約削除</a></td><td>EPG録画</td><td>$subtitle</td><td>" . foldate2print($item['startdatetime']) . "</td><td>" . foldate2print($item['enddatetime']) . "</td><td>" . $item['lengthmin'] . "</td>\n";
         }
+        $lengthminSum += $item['lengthmin'];
         print "</tr>";
     }
+    print "<tr><td></td><td></td><td></td><td></td><td style=\"text-align:right\">合計</td><td>$lengthminSum</td></tr>";
     print "</table>";
     print "<br><input type=\"submit\" value=\"それでも予約\" ><br>\n";
 }
