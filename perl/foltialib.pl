@@ -67,7 +67,7 @@ sub slackSend {
     #&writelog($head . ":" . $mesg);
 
     # コンテンツの準備
-    my $values =    {text     => "`" . $head . "`\n" . '```' . $timestump . "\n" . $mesg . '```',
+    my $values =    {text     => "`" . $head . ': ' . $$ . "`\n" . '```' . $timestump . "\n" . $mesg . '```',
                      username => 'foltiaBot'};
     my $content = JSON::to_json($values, {utf8 => 1});
 
