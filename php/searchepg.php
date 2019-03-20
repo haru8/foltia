@@ -53,38 +53,38 @@ $strdate = date('YmdHi', strtotime('-1 week'));
 $enddate = date('YmdHi', strtotime('+1 week'));
 
 if ($word != '') {
+    $split_words = split_word($word);
     $numsql = 'count(*)';
     $selsql = '*';
-      //$query = "
-      //  SELECT
-      //    %COL%
-      //    FROM foltia_epg
-      //       LEFT JOIN foltia_station ON foltia_epg.ontvchannel = foltia_station.ontvcode
-      //    WHERE (startdatetime >= ?
-      //      AND enddatetime    <= ?)
-      //      AND (startdatetime < enddatetime)
-      //      AND ((epgtitle LIKE ?) OR (epgdesc  LIKE ?))
-      //    ORDER BY startdatetime
-      //";
     $query = "
         SELECT
           %COL%
           FROM foltia_epg
              LEFT JOIN foltia_station ON foltia_epg.ontvchannel = foltia_station.ontvcode
           WHERE (startdatetime >= ?)
-
             AND (startdatetime < enddatetime)
-            AND ((epgtitle LIKE ?) OR (epgdesc  LIKE ?))
-          ORDER BY startdatetime
-      ";
+            AND ((";
+    $epgtitle = [];
+    $epgdesc  = [];
+    $like_str = [];
+    foreach ($split_words as $split_word) {
+        $epgtitle[] = 'epgtitle LIKE ?';
+        $epgdesc[]  = 'epgdesc LIKE ?';
+        $like_str[] = '%' . $split_word . '%';
+    }
+    $epgtitle_imp = implode(' AND ', $epgtitle);
+    $epgdesc_imp  = implode(' AND ', $epgdesc);
+    $query .= $epgtitle_imp . ') OR (';
+    $query .= $epgdesc_imp  . '))';
+    $query .= "\n" . '      ORDER BY startdatetime';
+    $query_param = array($strdate);
+    $query_param = array_merge($query_param, $like_str);
+    $query_param = array_merge($query_param, $like_str);
     $numsql = str_replace('%COL%', $numsql, $query);
     $selsql = str_replace('%COL%', $selsql, $query);
-    $searchword = '%' . $word . '%';
-    //$rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($strdate, $enddate, $searchword, $searchword));
-    $rows = sql_query($con, $numsql, 'DBクエリに失敗しました', array($strdate, $searchword, $searchword));
+    $rows = sql_query($con, $numsql, 'DBクエリに失敗しました', $query_param);
     $row  = $rows->fetchColumn();
-    //$rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($strdate, $enddate, $searchword, $searchword));
-    $rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', array($strdate, $searchword, $searchword));
+    $rs   = sql_query($con, $selsql, 'DBクエリに失敗しました', $query_param);
 }
 
 function reserveCheckClass($con, $startdatetime, $enddatetime, $stationid, $nowdate)
@@ -172,8 +172,10 @@ foreach($searc_words as $val) {
             $epg['epgdesc']       = htmlspecialchars($epg['epgdesc']);
             $epg['enddatetime']   = htmlspecialchars($epg['enddatetime']);
 
-            $epg['epgtitle'] = str_replace($word, '<span class="searchhit">' . $word . '</span>', $epg['epgtitle']);
-            $epg['epgdesc']  = str_replace($word, '<span class="searchhit">' . $word . '</span>', $epg['epgdesc']);
+            foreach ($split_words as $split_word) {
+                $epg['epgtitle'] = str_replace($split_word, '<span class="searchhit">' . $split_word . '</span>', $epg['epgtitle']);
+                $epg['epgdesc']  = str_replace($split_word, '<span class="searchhit">' . $split_word . '</span>', $epg['epgdesc']);
+            }
     ?>
       <tr <?php echo $reserved['class'] ?>>
         <td rowspan="2" style="text-align: center; vertical-align: middle;"><a href="./reserveepg.php?epgid=<?php echo $epg['epgid'] ?>"><?php echo $epg['epgid'] ?></a></td>

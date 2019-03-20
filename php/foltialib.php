@@ -25,7 +25,7 @@ function slackSend($head, $mesg='') {
     $icon_emoji = '';
 
     $timestump  = date("Y/m/d H:i:s");
-    $message    = '`' . $head . "`\n" . '```' . $timestump . "\n" . $mesg . '```';
+    $message    = '`' . $head . ': ' . getmypid() . "`\n" . '```' . $timestump . "\n" . $mesg . '```';
 
     $info = array(
         'url'  => $slack_webhook_url,
@@ -1011,6 +1011,27 @@ function d($var) {
     var_dump($var);
     echo '</pre>';
 } // d()
+
+// スペース区切りで分割する
+function split_word($word)
+{
+    $words = [];
+
+    // 全角スペースを半角スペースに変換
+    $word = str_replace('　', ' ', $word);
+
+    // 前後のスペース削除
+    $word = trim($word);
+
+    // 連続する半角スペースを半角スペースひとつに置換
+    $word = preg_replace('/\s+/', ' ', $word);
+
+    // 分割
+    $words = explode(' ', $word);
+
+    return $words;
+}
+
 
 ?>
 
