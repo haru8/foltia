@@ -27,7 +27,7 @@ require "foltialib.pl";
 
 
 # 二重起動の確認!
-$processes = &processfind("ipodtranscode.pl", "ffmpeg");
+$processes = &processfind("ipodtranscode.pl");
 if ($processes > 1 ) {
     &writelog("processes exist. exit: $processes");
     exit;
