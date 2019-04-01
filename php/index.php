@@ -251,7 +251,7 @@ echo "<div id=contents class=autopagerize_page_element />";
        <th align="left">タイトル</th>
        <th align="left">話数</th>
        <th align="left">サブタイトル</th>
-       <th align="left" style="width: 160px;">開始時刻(ズレ)</th>
+       <th align="left" style="width: 180px;">開始時刻(ズレ)</th>
        <th align="left">総尺</th>
      </tr>
    </thead>
@@ -308,7 +308,7 @@ do {
         print "<td>$subtitle<br></td>\n";
     }
     // 開始時刻(ズレ)
-    echo("<td>" . htmlspecialchars(foldate2print($rowdata[5])) . "<br>(" . htmlspecialchars($rowdata[8]).")</td>\n");
+    echo("<td>" . htmlspecialchars(foldate2print($rowdata[5])) . " (" . htmlspecialchars($rowdata[8]).")</td>\n");
 
     // 総尺
     echo("<td>" . htmlspecialchars($rowdata[6]) . "<br></td>\n");
