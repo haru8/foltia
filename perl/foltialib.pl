@@ -269,18 +269,25 @@ sub processfind {
     my $chkflag = 0;
 
     foreach my $find (@findprocess) {
-        @processes = `ps h -C "$find"`;
+        #@processes = `ps h -C "$find"`;
+        @processes = `ps -ef | grep "$find" | grep -Ev 'grep|vi|sudo|ffmpeg.*http'`;
 
         foreach my $psc (@processes) {
-          if ($psc =~ /$find/i) {
-              #print "process found: $psc\n";
-              $chkflag++;
-          }
+            if ($psc =~ /$find/i) {
+                #print "process found: $psc\n";
+                $chkflag++;
+            }
         }
     }
     return ($chkflag);
 } #endsub
 
+sub get_load_average {
+    open my $fh, '/proc/loadavg';
+    my ($LA1) = split /\s+/, <$fh>;
+    close $fh;
+    return $LA1;
+}
 
 sub filenameinjectioncheck {
     my $filename = $_[0];
