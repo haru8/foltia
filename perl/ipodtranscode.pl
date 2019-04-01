@@ -25,30 +25,11 @@ if ($path ne "./") {
 }
 require "foltialib.pl";
 
-
-# 二重起動の確認!
-$processes = &processfind("ipodtranscode.pl");
-if ($processes > 1 ) {
-    &writelog("processes exist. exit: $processes");
-    exit;
-} else {
-    &writelog("Normal launch.");
-    #slackSend("Normal launch.");
-}
+&writelog("starting up.");
 
 #DB初期化
 $dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
 $dbh->{sqlite_unicode} = 1;
-
-# タイトル取得
-# トラコンフラグがたっていてステータス50以上150未満のファイルを古い順にひとつ探す
-# 数数える
-#$DBQuery =  "SELECT count(*) FROM foltia_subtitle, foltia_program, foltia_m2pfiles
-#WHERE filestatus >= $FILESTATUSRECEND AND filestatus < $FILESTATUSTRANSCODECOMPLETE  AND foltia_program.tid = foltia_subtitle.TID AND foltia_program.PSP = 1  AND foltia_m2pfiles.m2pfilename = foltia_subtitle.m2pfilename  ";
-#$sth = $dbh->prepare($DBQuery);
-#$sth->execute();
-#@titlecount= $sth->fetchrow_array;
-&writelog("starting up.");
 
 $counttranscodefiles = &counttranscodefiles();
 if ($counttranscodefiles == 0) {
@@ -59,8 +40,30 @@ sleep 30;
 
 while ($counttranscodefiles >= 1) {
 
+    # 二重起動の確認!
+    $processes = &processfind("ipodtranscode.pl");
+    #$processes = &processfind("ipodtranscode.pl", "ffmpeg");
+    if ($processes > 1 ) {
+        &writelog("processes exist. exit: $processes");
+        exit;
+    } else {
+        &writelog("Normal launch.: $processes");
+        #slackSend("Normal launch.");
+    }
+
+    # Load Average をチェック
+    my $la;
+    $la = &get_load_average();
+    if ($la > 10) {
+        &writelog("Load Average over threshold! exit: $la");
+        exit;
+    } else {
+        &writelog("Load Average OK.: $la");
+    }
+
+    # トラコンフラグがたっていてステータス50以上150未満のファイルを古い順にひとつ探す
     $sth = $dbh->prepare($stmt{'ipodtranscode.1'});
-    $sth->execute($FILESTATUSRECEND, $FILESTATUSTRANSCODECOMPLETE, );
+    $sth->execute($FILESTATUSRECEND, $FILESTATUSTRANSCODECOMPLETE);
     @dbparam = $sth->fetchrow_array;
     &writelog("DEBUG $stmt{'ipodtranscode.1'}");
     &writelog("DEBUG pid=$dbparam[0], tid=$dbparam[1], m2pfilename=$dbparam[2], filestatus=$dbparam[3], aspect=$dbparam[4], countno=$dbparam[5], title=$dbparam[6], subtitle=$dbparam[7], startdatetime=$dbparam[8], enddatetime=$dbparam[9], lengthmin=$dbparam[10]");
@@ -914,6 +917,7 @@ sub updatemp4file() {
 } #updatemp4file
 
 sub counttranscodefiles() {
+    # トラコンフラグがたっていてステータス50以上150未満のファイルの数をチェック
     $sth = $dbh->prepare($stmt{'ipodtranscode.counttranscodefiles.1'});
     $sth->execute($FILESTATUSRECEND, $FILESTATUSTRANSCODECOMPLETE);
     my @titlecount= $sth->fetchrow_array;
