@@ -228,12 +228,12 @@ while ($counttranscodefiles >= 1) {
                 }
                 if ($tid != 0) {
                     $tune       = "-tune animation";
-                    $crf        = "-crf 22";
+                    $crf        = "-crf 23";
 
                 } else {
                     $maxrate    = "-bufsize 1024K -maxrate 1024K";
                     $tune       = "-tune film";
-                    $crf        = "-crf 25";
+                    $crf        = "-crf 26";
                 }
                 $ffmpegencopt = "$threads $resolution $aspect $framerate -f mp4 -vcodec libx264 $preset $crf $maxrate $refs $tune $qcomp $x264opts $vf -acodec libfdk_aac $aacopt $sync $bench ${filenamebody}.base.mp4";
 
