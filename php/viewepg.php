@@ -319,7 +319,7 @@ foreach ($stationhash as $stationname) {
             $title          = $stationrowdata['epgtitle'];
             $title          = htmlspecialchars(z2h($title));
             $desc           = $stationrowdata['epgdesc'];
-            $desc           = htmlspecialchars(z2h($desc));
+            $desc           = z2h($desc);
 
             if ($epgviewstyle) {
                 $desc .= "<br><br>\n";
@@ -429,14 +429,21 @@ foreach ($stationhash as $stationname) {
 } // end of for://・局ごとに縦に配列入れていく
 
 //・テーブルレンダリング
-print "\n<table>
-<tr> ";
+print "\n<table>";
 
-//ヘッダ
+// ヘッダ
+print "\n
+  <thead>
+    <tr>\n";
+
 foreach ($snames as $s) {
-    print "\n  <th>\n    " . htmlspecialchars($s) . "\n  </th>" ;
+    print "      <th>" . htmlspecialchars($s) . "</th>\n" ;
 }
-//本体
+print "    </tr>
+  </thead>\n";
+
+// 本体
+print "  <tbody>\n";
 for ($l = 0 ;$l <  $colmnums; $l++) {
     print "\n  <tr>\n";
     foreach ($stationhash as $stationname) {
@@ -444,6 +451,18 @@ for ($l = 0 ;$l <  $colmnums; $l++) {
     }
     print "  </tr>\n";
 }
+print "  </tbody>\n";
+
+// フッタ
+print "
+  <tfoot>
+    <tr>\n";
+foreach ($snames as $s) {
+    print "      <th>" . htmlspecialchars($s) . "</th>\n" ;
+}
+print "    </tr>
+  </tfoot>\n";
+
 print "</table>\n";
 
 print "<p align=\"left\"> $navigationbar </p>";
