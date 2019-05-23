@@ -97,8 +97,7 @@ $lengthmin      = htmlspecialchars($rowdata[3]);
 $recch          = htmlspecialchars($rowdata[9]);
 $progname       = htmlspecialchars($rowdata[5]);
 $progname       = z2h($progname);
-$progdesc       = htmlspecialchars($rowdata[6]);
-$progdesc       = z2h($progdesc);
+$progdesc       = z2h($rowdata[6]);
 $progcat        = htmlspecialchars(z2h($rowdata[7]));
 
 if ($progcat == "information") {
