@@ -368,7 +368,8 @@ function renderepgstation($con,$stationname,$start) { //戻り値 なし EPGの�
     }//if
 }//end function
 
-function calcendtime($start, $lengthmin) { // 戻り値 終了時刻(Ex:200510170130)
+// 戻り値 終了時刻(Ex:200510170130)
+function calcendtime($start, $lengthmin) {
     $startyear  = substr($start,  0, 4);
     $startmonth = substr($start,  4, 2);
     $startday   = substr($start,  6, 2);
@@ -380,13 +381,14 @@ function calcendtime($start, $lengthmin) { // 戻り値 終了時刻(Ex:20051017
     return ($endtime );
 } // end function
 
-
-function z2h($string) { //戻り値　半角化した文字
+// 戻り値 半角化した文字
+function z2h($string) {
     $stringh = mb_convert_kana($string, "a", "UTF-8");
     return ($stringh );
 }
 
-function foldate2rfc822($start) {//戻り値　RFC822スタイルの時刻表記
+// 戻り値 RFC822スタイルの時刻表記
+function foldate2rfc822($start) {
     $startyear  = substr($start,0,4);
     $startmonth = substr($start,4,2);
     $startday   = substr($start,6,2);
