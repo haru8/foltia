@@ -19,16 +19,16 @@ use DBD::SQLite;
 $path = $0;
 $path =~ s/mklocalizeddir.pl$//i;
 if ($path ne "./") {
-	push( @INC, "$path");
+    push( @INC, "$path");
 }
 require "foltialib.pl";
 
 # 引き数がアルか?
 $tid =  $ARGV[0] ;
 if ($tid eq "" ) {
-	# 引き数なし出実行されたら、終了
-	print "usage mklocalizeddir.pl [TID]\n";
-	exit;
+    # 引き数なし出実行されたら、終了
+    print "usage mklocalizeddir.pl [TID]\n";
+    exit;
 }
 
 
@@ -36,29 +36,29 @@ if ($tid eq "" ) {
 if (-e "$recfolderpath/$tid.localized") {
 
 } else {
-	# .localized用文字列取得
-	
-	# 接続
-	$dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
-	$dbh->{sqlite_unicode} = 1;
-	
-	# 検索
-	$sth = $dbh->prepare($stmt{'mklocalizeddir.1'});
-	$sth->execute($tid);
-	@subticount= $sth->fetchrow_array;
-	$title = $subticount[0] ;
-	$titleeuc = $title ;
-	Jcode::convert(\$title , 'utf8', '', "z");
+    # .localized用文字列取得
 
-	mkdir ("$recfolderpath/$tid.localized",0755);
-	mkdir ("$recfolderpath/$tid.localized/.localized",0755);
-	mkdir ("$recfolderpath/$tid.localized/mp4",0755);
-	mkdir ("$recfolderpath/$tid.localized/m2p",0755);
-	open (JASTRING,">$recfolderpath/$tid.localized/.localized/ja.strings")  || die "Cannot write ja.strings.\n";
-	print JASTRING "\"$tid\"=\"$title\";\n";
-	close(JASTRING);
+    # 接続
+    $dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
+    $dbh->{sqlite_unicode} = 1;
 
-	&writelog("$tid $titleeuc");
+    # 検索
+    $sth = $dbh->prepare($stmt{'mklocalizeddir.1'});
+    $sth->execute($tid);
+    @subticount= $sth->fetchrow_array;
+    $title = $subticount[0] ;
+    $titleeuc = $title ;
+    Jcode::convert(\$title , 'utf8', '', "z");
+
+    mkdir ("$recfolderpath/$tid.localized", 0755);
+    mkdir ("$recfolderpath/$tid.localized/.localized", 0755);
+    mkdir ("$recfolderpath/$tid.localized/mp4", 0755);
+    mkdir ("$recfolderpath/$tid.localized/m2p", 0755);
+    open (JASTRING,">$recfolderpath/$tid.localized/.localized/ja.strings")  || die "Cannot write ja.strings.\n";
+    print JASTRING "\"$tid\"=\"$title\";\n";
+    close(JASTRING);
+
+    &writelog("$tid $titleeuc");
 
 } # unless 引き数がアルか?
 
