@@ -419,24 +419,30 @@ sub getfilestatus {
 
 
 sub makemp4dir {
-    #TIDが100以上の3桁の場合はそのまま
+    # TIDが100以上の3桁の場合はそのまま
     my $pspfilnamehd = $_[0];
     my $tid          = $_[0];
     my $pspdirname   = "$tid.localized/";
     $pspdirname      = $recfolderpath."/".$pspdirname;
 
-    #なければ作る
-    unless (-e $pspdirname ) {
+    if (-e $pspdirname ) {
+        # あったらtouch
+        &writelog("touch $pspdirname");
+        system("touch $pspdirname");
+    } else {
+        # なければ作る
+        &writelog("mkdir $pspdirname");
         system("$toolpath/perl/mklocalizeddir.pl $tid");
-        #&writelog("mkdir $pspdirname");
     }
+
     $pspdirname = "$tid.localized/mp4/";
     $pspdirname = $recfolderpath."/".$pspdirname;
-    #なければ作る
+    # なければ作る
     unless (-e $pspdirname ) {
-        mkdir $pspdirname ,0777;
-        #&writelog("mkdir $pspdirname");
+        &writelog("mkdir $pspdirname");
+        mkdir $pspdirname, 0777;
     }
+
     return ("$pspdirname");
 } #endsub makemp4dir
 
