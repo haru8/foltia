@@ -250,8 +250,8 @@ echo "<div id=contents class=autopagerize_page_element />";
        <th align="left">放映局</th>
        <th align="left">タイトル</th>
        <th align="left">話数</th>
-       <th align="left">サブタイトル</th>
-       <th align="left" style="width: 180px;">開始時刻(ズレ)</th>
+       <th align="left" style="width: 500px;">サブタイトル</th>
+       <th align="left" style="width: 190px;">開始時刻(ズレ)</th>
        <th align="left">総尺</th>
      </tr>
    </thead>
