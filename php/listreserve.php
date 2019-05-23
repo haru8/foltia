@@ -149,10 +149,10 @@ if (! $rowdata) {
           <tr>
             <th align="left" rowspan="2" style="width:40px;">TID</th>
             <th align="left" rowspan="2" style="width:85px;">放映局</th>
-            <th align="left" rowspan="2" style="width:350px;">タイトル</th>
+            <th align="left" rowspan="2" style="width:330px;">タイトル</th>
             <th align="left" rowspan="2" style="width:40px;">話数</th>
             <th align="left" rowspan="2">サブタイトル</th>
-            <th align="left" style="width:180px;">開始時刻(ズレ)</th>
+            <th align="left" style="width:190px;">開始時刻(ズレ)</th>
             <th align="left" rowspan="2" style="width:40px;">総尺</th>
           </tr>
           <tr>
