@@ -270,7 +270,22 @@ if ($list == "raw") {
   if (!$head) {
     $head = 300;
   }
-  exec ("ls -1t $recfolderpath/*.localized/mp4/*.MP4", $mp4files);
+  $mp4files = array();
+  //exec ("ls -1t $recfolderpath/*.localized/mp4/*.MP4", $mp4files);
+  $mp4files = glob("$recfolderpath/*.localized/mp4/*.MP4", GLOB_NOSORT);
+  $mp4fileTime = array();
+  $sort = array();
+  $n = 0;
+  foreach ($mp4files as $mp4file) {
+    $mp4fileTime[$n]['mp4'] = $mp4file;
+    $mp4fileTime[$n]['time'] = filemtime($mp4file);
+    $sort[$n] = $mp4fileTime[$n]['time'];
+    $n++;
+  }
+  array_multisort($sort, SORT_DESC, SORT_NUMERIC, $mp4fileTime);
+  foreach ($mp4fileTime as $key => $mp4file) {
+    $mp4files[$key] = $mp4file['mp4'];
+  }
 
   $lim = $head;
   page_display($list, $p, $p2, $lim, count($mp4files), "");
