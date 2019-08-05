@@ -147,7 +147,8 @@ foreach($searc_words as $val) {
   </p>
 
   <?php if ($word): ?>
-    <span id="resulttop"><?php  echo $row ?> 件ヒットしました</span>
+    <div id="resulttop" style="float:left;"><?php  echo $row ?> 件ヒットしました</div>
+    <div style="text-align:right;"><a href="./searchepg.php?word=<?php echo urlencode($word)?>#currentsearch">上に戻る△</a></div>
   <?php endif ?>
   <?php if($row > 0): ?>
     <table style="margin-bottom:10px; table-layout: fixed;">
