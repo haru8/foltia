@@ -129,6 +129,7 @@ foreach($searc_words as $val) {
   $words[$n][] = $val;
 }
 ?>
+  <?php $currentsearchhit = false; ?>
   <?php foreach($words as $wordsVal1): ?>
     <div class="stationss">
     <?php foreach($wordsVal1 as $wordsVal2): ?>
@@ -138,6 +139,7 @@ foreach($searc_words as $val) {
     if ($wordsVal2 === $word) {
       $searchhit     = 'searchhit-proguram';
       $currentsearch = 'currentsearch';
+      $currentsearchhit = true;
     }
     ?>
       <div class="<?php echo $searchhit ?>" id="<?php echo $currentsearch; ?>"><a href="./searchepg.php?word=<?php echo urlencode($wordsVal2)?>#currenttr"><?php echo $wordsVal2 ?></a></div>
@@ -148,7 +150,7 @@ foreach($searc_words as $val) {
 
   <?php if ($word): ?>
     <div id="resulttop" style="float:left;"><?php  echo $row ?> 件ヒットしました</div>
-    <div style="text-align:right;"><a href="./searchepg.php?word=<?php echo urlencode($word)?>#currentsearch">上に戻る△</a></div>
+    <div style="text-align:right;"><a href="./searchepg.php?word=<?php echo urlencode($word)?><?php if ($currentsearchhit): ?>#currentsearch<?php else: ?>#word<?php endif ?>">上に戻る△</a></div>
   <?php endif ?>
   <?php if($row > 0): ?>
     <table style="margin-bottom:10px; table-layout: fixed;">
@@ -201,7 +203,7 @@ foreach($searc_words as $val) {
       </tr>
     <?php endwhile ?>
     </table>
-    <div style="text-align:right;"><a href="./searchepg.php?word=<?php echo urlencode($word)?>#currentsearch">上に戻る△</a></div>
+    <div style="text-align:right;"><a href="./searchepg.php?word=<?php echo urlencode($word)?><?php if ($currentsearchhit): ?>#currentsearch<?php else: ?>#word<?php endif ?>">上に戻る△</a></div>
     <hr>
     <div style="margin:10px;">
     凡例
