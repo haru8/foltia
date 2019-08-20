@@ -149,8 +149,12 @@ foreach($searc_words as $val) {
   </p>
 
   <?php if ($word): ?>
-    <div id="resulttop" style="float:left;"><?php  echo $row ?> 件ヒットしました</div>
-    <div style="text-align:right;"><a href="./searchepg.php?word=<?php echo urlencode($word)?><?php if ($currentsearchhit): ?>#currentsearch<?php else: ?>#word<?php endif ?>">上に戻る△</a></div>
+    <div id="resulttop" style="float:left;">
+      <?php  echo $row ?> 件ヒットしました
+    </div>
+    <div style="text-align:right;" <?php if ($row == 0): ?>id="currenttr"<?php else: ?>id="backtotop1"<?php endif ?>>
+      <a href="./searchepg.php?word=<?php echo urlencode($word)?><?php if ($currentsearchhit): ?>#currentsearch<?php else: ?>#word<?php endif ?>">上に戻る△</a>
+    </div>
   <?php endif ?>
   <?php if($row > 0): ?>
     <table style="margin-bottom:10px; table-layout: fixed;">
@@ -203,7 +207,9 @@ foreach($searc_words as $val) {
       </tr>
     <?php endwhile ?>
     </table>
-    <div style="text-align:right;"><a href="./searchepg.php?word=<?php echo urlencode($word)?><?php if ($currentsearchhit): ?>#currentsearch<?php else: ?>#word<?php endif ?>">上に戻る△</a></div>
+    <div style="text-align:right;" <?php if (empty($currenttr)): ?>id="currenttr"<?php else: ?>id="backtotop2"<?php endif ?>>
+      <a href="./searchepg.php?word=<?php echo urlencode($word)?><?php if ($currentsearchhit): ?>#currentsearch<?php else: ?>#word<?php endif ?>">上に戻る△</a>
+    </div>
     <hr>
     <div style="margin:10px;">
     凡例
