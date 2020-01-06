@@ -84,11 +84,11 @@ $query = "
 ";
 
 $reservedrssametid = sql_query($con, $query, "DBクエリに失敗しました", array($now));
-$rowdata = $reservedrssametid->fetch();
+$rowdata = $reservedrssametid->fetch(PDO::FETCH_ASSOC);
 if ($rowdata) {
     do {
-        $reservedpidsametid[] = $rowdata[7];
-    } while ($rowdata = $reservedrssametid->fetch());
+        $reservedpidsametid[] = $rowdata['pid'];
+    } while ($rowdata = $reservedrssametid->fetch(PDO::FETCH_ASSOC));
 
     $rowdata = "";
 } else {
@@ -124,11 +124,11 @@ $query = "
 ";
 $reservedrs = sql_query($con, $query, "DBクエリに失敗しました",array($now, $now));
 
-$rowdata = $reservedrs->fetch();
+$rowdata = $reservedrs->fetch(PDO::FETCH_ASSOC);
 if ($rowdata) {
     do {
-        $reservedpid[] = $rowdata[8];
-    } while ($rowdata = $reservedrs->fetch());
+        $reservedpid[] = $rowdata['pid'];
+    } while ($rowdata = $reservedrs->fetch(PDO::FETCH_ASSOC));
 } else {
     $reservedpid = array();
 } // end if
@@ -170,10 +170,9 @@ if ($mode == "new") {
     ";
 
     $rs = sql_query($con, $query, "DBクエリに失敗しました",array($now));
-    $rowdata = $rs->fetch();
+    $rowdata = $rs->fetch(PDO::FETCH_ASSOC);
 
-    $dtcnt = htmlspecialchars($rowdata[0]);
-    // echo $dtcnt;
+    $dtcnt = htmlspecialchars($rowdata['cnt']);
 
     if (! $rowdata) {
         die_exit("番組データがありません<BR>");
@@ -199,7 +198,7 @@ if ($mode == "new") {
 } // end if
 
 $rs = sql_query($con, $query, "DBクエリに失敗しました", array($now));
-$rowdata = $rs->fetch();
+$rowdata = $rs->fetch(PDO::FETCH_ASSOC);
 
 if (! $rowdata) {
     header("Status: 404 Not Found", TRUE, 404);
@@ -261,20 +260,19 @@ echo "<div id=contents class=autopagerize_page_element />";
 // テーブルのデータを出力
 do {
     // 他局で同一番組録画済みなら色変え
-    if (in_array($rowdata[7], $reservedpidsametid)) {
+    if (in_array($rowdata['pid'], $reservedpidsametid)) {
         $rclass = "reservedtitle";
     } else {
         $rclass = "";
     }
     // 録画予約済みなら色変え
-    if (in_array($rowdata[7], $reservedpid)) {
+    if (in_array($rowdata['pid'], $reservedpid)) {
         $rclass = "reserved";
     }
-    $pid = htmlspecialchars($rowdata[7]);
-
-    $tid = htmlspecialchars($rowdata[0]);
-    $title = htmlspecialchars($rowdata[2]);
-    $subtitle =  htmlspecialchars($rowdata[4]);
+    $pid      = htmlspecialchars($rowdata['pid']);
+    $tid      = htmlspecialchars($rowdata['tid']);
+    $title    = htmlspecialchars($rowdata['title']);
+    $subtitle = htmlspecialchars($rowdata['subtitle']);
 
     echo("<tr class=\"$rclass\">\n");
     // TID
@@ -287,7 +285,7 @@ do {
     print "</td>\n";
 
     // 放映局
-    echo("<td>" . $rowdata[1] . "<br></td>\n");
+    echo("<td>" . $rowdata['stationname'] . "<br></td>\n");
 
     // タイトル
     print "<td>";
@@ -299,7 +297,7 @@ do {
     print "</td>\n";
 
      // 話数
-    echo("<td>" . htmlspecialchars($rowdata[3]) . "<br></td>\n");
+    echo("<td>" . htmlspecialchars($rowdata['countno']) . "<br></td>\n");
 
     // サブタイ
     if ($pid > 0 ) {
@@ -308,14 +306,14 @@ do {
         print "<td>$subtitle<br></td>\n";
     }
     // 開始時刻(ズレ)
-    echo("<td>" . htmlspecialchars(foldate2print($rowdata[5])) . " (" . htmlspecialchars($rowdata[8]).")</td>\n");
+    echo("<td>" . htmlspecialchars(foldate2print($rowdata['startdatetime'])) . " (" . htmlspecialchars($rowdata['startoffset']).")</td>\n");
 
     // 総尺
-    echo("<td>" . htmlspecialchars($rowdata[6]) . "<br></td>\n");
+    echo("<td>" . htmlspecialchars($rowdata['lengthmin']) . "<br></td>\n");
 
     echo("</tr>\n");
 
-} while ($rowdata = $rs->fetch());
+} while ($rowdata = $rs->fetch(PDO::FETCH_ASSOC));
 
 ?>
     </tbody>
