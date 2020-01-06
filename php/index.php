@@ -99,11 +99,15 @@ $reservedrssametid->closeCursor();
 // 録画番組検索
 $query = "
   SELECT
-    foltia_program.tid,stationname, foltia_program.title,
-    foltia_subtitle.countno, foltia_subtitle.subtitle,
-    foltia_subtitle.startdatetime as x, foltia_subtitle.lengthmin,
-    foltia_tvrecord.bitrate, foltia_subtitle.pid
-  FROM foltia_subtitle , foltia_program ,foltia_station ,foltia_tvrecord
+    foltia_program.tid,stationname,
+    foltia_program.title,
+    foltia_subtitle.countno,
+    foltia_subtitle.subtitle,
+    foltia_subtitle.startdatetime as x,
+    foltia_subtitle.lengthmin,
+    foltia_tvrecord.bitrate,
+    foltia_subtitle.pid
+  FROM foltia_subtitle, foltia_program, foltia_station ,foltia_tvrecord
     WHERE foltia_tvrecord.tid         = foltia_program.tid
       AND foltia_tvrecord.stationid   = foltia_station .stationid
       AND foltia_program.tid          = foltia_subtitle.tid
@@ -111,10 +115,15 @@ $query = "
       AND foltia_subtitle.enddatetime >= ?
   UNION
   SELECT
-    foltia_program.tid, stationname, foltia_program.title,
-    foltia_subtitle.countno, foltia_subtitle.subtitle,
-    foltia_subtitle.startdatetime, foltia_subtitle.lengthmin,
-    foltia_tvrecord.bitrate, foltia_subtitle.pid
+    foltia_program.tid,
+    stationname,
+    foltia_program.title,
+    foltia_subtitle.countno,
+    foltia_subtitle.subtitle,
+    foltia_subtitle.startdatetime,
+    foltia_subtitle.lengthmin,
+    foltia_tvrecord.bitrate,
+    foltia_subtitle.pid
   FROM foltia_tvrecord
     LEFT OUTER JOIN foltia_subtitle on (foltia_tvrecord.tid       = foltia_subtitle.tid )
     LEFT OUTER JOIN foltia_program  on (foltia_tvrecord.tid       = foltia_program.tid )
@@ -133,14 +142,37 @@ if ($rowdata) {
     $reservedpid = array();
 } // end if
 
-$mode = getgetform('mode');
+$mode       = getgetform('mode');
+$receivOnly = getgetform('r');
+
+// 受信局のみを表示
+if ($receivOnly == "1") {
+    // 受信局 を取得
+    $query = "
+    SELECT
+      stationid,
+      stationname,
+      digitalch,
+      digitalstationband
+    FROM foltia_station
+    WHERE stationrecch > 0
+    ";
+    $receivChsq = sql_query($con, $query, "DBクエリに失敗しました");
+    $rowdata  = $receivChsq->fetchAll(PDO::FETCH_ASSOC);
+    $receivStationid = array();
+    foreach ($rowdata as $row) {
+        $receivStationid[] = $row['stationid'];
+    }
+}
 
 if ($mode == "new") {
     // 新番組表示モード
     $query = "
       SELECT
         foltia_program.tid,
-        stationname,
+        foltia_station.stationname,
+        foltia_station.digitalch,
+        foltia_station.stationid,
         foltia_program.title,
         foltia_subtitle.countno,
         foltia_subtitle.subtitle,
@@ -182,10 +214,17 @@ if ($mode == "new") {
     //レコード表示
     $query = "
       SELECT
-        foltia_program.tid, stationname, foltia_program.title,
-        foltia_subtitle.countno, foltia_subtitle.subtitle,
-        foltia_subtitle.startdatetime, foltia_subtitle.lengthmin,
-        foltia_subtitle.pid, foltia_subtitle.startoffset
+        foltia_program.tid,
+        foltia_station.stationname,
+        foltia_station.digitalch,
+        foltia_station.stationid,
+        foltia_program.title,
+        foltia_subtitle.countno,
+        foltia_subtitle.subtitle,
+        foltia_subtitle.startdatetime,
+        foltia_subtitle.lengthmin,
+        foltia_subtitle.pid,
+        foltia_subtitle.startoffset
       FROM foltia_subtitle, foltia_program, foltia_station
       WHERE foltia_program.tid          = foltia_subtitle.tid
         AND foltia_station.stationid    = foltia_subtitle.stationid
@@ -230,7 +269,11 @@ if ($mode == "new") {
 </font></p>
   <hr size="4">
 <p align="left">放映番組リストを表示します。</p>
-
+<?php if ($receivOnly == "1"): ?>
+<p align="left"><a href="index.php?mode=<?php echo $mode; ?>">全ての局を表示する</a></p>
+<?php else: ?>
+<p align="left"><a href="index.php?r=1&mode=<?php echo $mode; ?>">受信局のみを表示する</a></p>
+<?php endif ?>
 
 <?php
 page_display("", $p, $p2, $lim, $dtcnt, $mode);
@@ -273,6 +316,12 @@ do {
     $tid      = htmlspecialchars($rowdata['tid']);
     $title    = htmlspecialchars($rowdata['title']);
     $subtitle = htmlspecialchars($rowdata['subtitle']);
+
+    if ($receivOnly == "1") {
+        if (!in_array($rowdata['stationid'], $receivStationid, true)) {
+            continue;
+        }
+    }
 
     echo("<tr class=\"$rclass\">\n");
     // TID
