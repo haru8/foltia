@@ -244,12 +244,15 @@ while ($rowdata = $slistrs->fetch()) {
 
 // 時間と全順番のハッシュ作る
 $epgstart = $start;
+$epgend = calcendtime($start, ($endh * 60));
 
 $epgstart2 = strtotime($epgstart); // 予約検索用
+$epgend2   = strtotime($epgend); // 予約検索用
 // 番組表の開始時刻よりも先に番組が始まっている可能性があるので6時間分引く
 $epgstart2 = date('YmdHi', ($epgstart2 - (60 * 60 * 6)));
+// 番組表の終了時刻よりも後に番組が終わる可能性があるので6時間分足す
+$epgend2   = date('YmdHi', ($epgend2 + (60 * 60 * 6)));
 
-$epgend = calcendtime($start, ($endh * 60));
 
 // 番組毎の放送開始時間の一覧を抽出
 $query = "
@@ -287,7 +290,7 @@ if (! $rowdata) {
 //・局ごとに縦に配列入れていく
 foreach ($stationhash as $stationname) {
     $stationid = $stationinfo[$stationname]['stationid'];
-    $reserve = reserveCheck($con, $epgstart2, $epgend, $stationid);
+    $reserve = reserveCheck($con, $epgstart2, $epgend2, $stationid);
     $query = "
       SELECT
         startdatetime,
