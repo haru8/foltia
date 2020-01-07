@@ -276,7 +276,7 @@ if ($mode == "new") {
 <?php endif ?>
 
 <?php
-page_display("", $p, $p2, $lim, $dtcnt, $mode);
+page_display('r=' . $receivOnly, $p, $p2, $lim, $dtcnt, $mode);
 // フィールド数
 $maxcols = $rs->columnCount();
 
@@ -371,7 +371,7 @@ do {
 <?php
 /////////////////////////////////////////////////
 // Autopageing処理とページのリンクを表示
-page_display("", $p, $p2, $lim, $dtcnt, $mode);
+page_display('r=' . $receivOnly, $p, $p2, $lim, $dtcnt, $mode);
 /////////////////////////////////////////////////
 ?>
 
