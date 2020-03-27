@@ -145,14 +145,15 @@ if ($tid > 0) {
 } else {
     print htmlspecialchars($rowdata[4]) . " ";
 }
+print '<br>';
 print htmlspecialchars($rowdata[1]) . " ";
 print htmlspecialchars($rowdata[6]) . "分 ";
 print htmlspecialchars(foldate2print($rowdata[5]));
+print '<br>';
 
 $mp4filename = $rowdata[9];
-$serverfqdn = getserverfqdn();
 
-print "　　再生:<A HREF=\"$httpmediamappath/$tid.localized/mp4/$mp4filename\" target=\"_blank\">$mp4filename</A> / <script language=\"JavaScript\" type=\"text/javascript\">QT_WriteOBJECT_XHTML('http://g.hatena.ne.jp/images/podcasting.gif','16','16','','controller','FALSE','href','http://$serverfqdn/$httpmediamappath/$tid.localized/mp4/$mp4filename','target','QuickTimePlayer','type','video/mp4');</script> / ";
+print "再生:<A HREF=\"$httpmediamappath/$tid.localized/mp4/$mp4filename\" target=\"_blank\">$mp4filename</A> / ";
 
 if ($pid) {
     print "<a href=\"./mp4player.php?p=$pid\" target=\"_blank\">Player</a><br>";
@@ -167,7 +168,6 @@ list($tid, $countno, $date, $time)= explode("-", $m2pfilename );
 $tid       = $rowdata[0];
 $countno   = $rowdata[3] ;
 $path      = preg_replace("/\.m2p$|\.m2t$/", "", $m2pfilename);
-$serveruri = getserverfqdn ();
 
 exec ("ls -1F $recfolderpath/$tid.localized/img/$path/", $tids);
 foreach($tids as $filetid) {
@@ -175,12 +175,12 @@ foreach($tids as $filetid) {
         continue;
     }
     if (file_exists("./sb-edit.php") ) {
-        print "<a href=\"./sb-edit.php?pid=$pid&f=$filetid\"><img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid' alt='$tid:$countno:$filetid'></a>\n";
+        print "<a href=\"./sb-edit.php?pid=$pid&f=$filetid\"><img src='$httpmediamappath/$tid.localized/img/$path/$filetid' alt='$tid:$countno:$filetid'></a>\n";
     } else {
         if (file_exists("$recfolderpath/$tid.localized/img/$path/l/$filetid")) {
-            print "<a href='http://$serveruri$httpmediamappath/$tid.localized/img/$path/l/$filetid' target='_blank'><img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid'  alt='$tid:$countno:$filetid'></a>\n";
+            print "<a href='$httpmediamappath/$tid.localized/img/$path/l/$filetid' target='_blank'><img src='$httpmediamappath/$tid.localized/img/$path/$filetid'  alt='$tid:$countno:$filetid'></a>\n";
         } else {
-            print "<img src='http://$serveruri$httpmediamappath/$tid.localized/img/$path/$filetid'  alt='$tid:$countno:$filetid'>\n";
+            print "<img src='$httpmediamappath/$tid.localized/img/$path/$filetid'  alt='$tid:$countno:$filetid'>\n";
         }
     }
 } // foreach
