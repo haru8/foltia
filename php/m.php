@@ -209,10 +209,10 @@ if (($startdate == "") || ($starttime == "")) {
 
             exit();
         } else {
-            print "時刻が不正なために予約できませんでした。 <br>";
+            print "<span class=\"redText\">時刻が不正なために予約できませんでした。 </span><br>";
         }
     } else {
-        print "入力項目が正しくなさそうです。$errmsg<br />\n";
+        print "<span class=\"redText\">入力項目が正しくなさそうです。$errmsg</span><br />\n";
     }
 
 } // 初回表示かデータ処理か
