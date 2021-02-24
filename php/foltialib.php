@@ -839,15 +839,15 @@ function page_display($query_st, $p, $p2, $lim, $dtcnt, $mode) {
         ($query_st != '') ?  $query_st = '&' . $_SERVER['QUERY_STRING'] : '';
         $query_st   = preg_replace('/p=[0-9]+&/','',$query_st); //p=0～9&を空欄にする正規表現
         $showPage = 5;
-        echo '<div class="pagenation">';
+        echo "<div class=\"pagenation\">\n";
         // Prev, 1ページ を表示
         if ($p != 1) {
             $prev_p = $p - 1;
-            echo '<a href="' . $_SERVER['PHP_SELF'] . '?p=' . $prev_p . $query_st . '">Prev</a>';
+            echo '  <a href="' . $_SERVER['PHP_SELF'] . '?p=' . $prev_p . $query_st . '">Prev</a>' . "\n";
             if (1 < $p - $showPage) {
-                echo '<a href="' . $_SERVER['PHP_SELF'] . '?p=1' . $query_st . '">1</a>';
+                echo '  <a href="' . $_SERVER['PHP_SELF'] . '?p=1' . $query_st . '">1</a>' . "\n";
                 if (1 != $p - $showPage - 1) {
-                    echo '<span>..</span>';
+                    echo '  <span>..</span>' . "\n";
                 }
             }
         }
@@ -872,21 +872,21 @@ function page_display($query_st, $p, $p2, $lim, $dtcnt, $mode) {
             } else if ($i == $p + 1) {
                 $attribute .= ' rel="next"';
             }
-            echo '<a href="' . $_SERVER['PHP_SELF'] . "?p=$i" . $query_st . '"' . $attribute .'>' . $i . '</a>';
+            echo '  <a href="' . $_SERVER['PHP_SELF'] . "?p=$i" . $query_st . '"' . $attribute .'>' . $i . '</a>' . "\n";
         }
         // Next, 最終ページ を表示
         if ($p != $page) {
             if ($p < $page - $showPage) {
                 if ($p != $page - $showPage - 1) {
-                    echo '<span>..</span>';
+                    echo '  <span>..</span>' . "\n";
                 }
                 if (($i - 1) != $page) {
-                    echo '<a href="' . $_SERVER['PHP_SELF'] . "?p=$page" . $query_st . '">' . $page . '</a>';
+                    echo '  <a href="' . $_SERVER['PHP_SELF'] . "?p=$page" . $query_st . '">' . $page . '</a>' . "\n";
                 }
             }
-            echo '<a href="' . $_SERVER['PHP_SELF'] . "?p=$p2" . $query_st . '">Next</a>';
+            echo '  <a href="' . $_SERVER['PHP_SELF'] . "?p=$p2" . $query_st . '">Next</a>' . "\n";
         }
-        echo '</div>';
+        echo "</div>\n\n";
     }
     return array($p2, $page);
 } // end page_display
