@@ -78,7 +78,7 @@ sub slackSend {
     my $response = $user_agent->post(
         $slack_webhook_url,
         Content_Type => 'application/json; charset=UTF-8',
-        Content => $content);
+        Content      => $content);
     if(!$response->is_success) {
         #print($response->status_line, "\n");
         &writelog("[ERR]" . $response->status_line);
@@ -105,12 +105,16 @@ sub writelog {
     } else {
         open (DEBUGLOG , '>-') || die "Cant write log file.$! \n ";
     }
-    $messages =~ s/\n//gio;
     $_line = sprintf("%-4d", $_line);
     $_file = basename($_file);
     $_file = sprintf("%-21s", $_file);
     $messages = encode('utf-8', $messages);
-    print DEBUGLOG "$timestump $_processid: $_file:$_line $messages\n";
+
+    my @msglist = split(/[\n\r]/, $messages);
+    foreach my $msg(@msglist) {
+        print DEBUGLOG "$timestump $_processid: $_file:$_line $msg\n";
+    }
+
     close (DEBUGLOG);
 } #end writelog
 
