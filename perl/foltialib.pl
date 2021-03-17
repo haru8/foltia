@@ -267,6 +267,7 @@ sub calcatqparam {
 }
 
 
+# プロセス数チェック
 sub processfind {
     my @findprocess = @_;
     my @processes ;
@@ -285,6 +286,28 @@ sub processfind {
     }
     return ($chkflag);
 } #endsub
+
+# 空き容量
+sub disk_free_size {
+    my $free = "";
+    my $res_df = `df -k $recfolderpath`;
+
+    my @tmp = split(/\n/,$res_df);
+    my $tmp2 = $tmp[1];
+    @tmp = split(/\s+/,$tmp2);
+    $free = $tmp[3];
+
+    $free = $free / 1024 / 1024;
+
+    return $free;
+}
+
+# TSファイル削除
+sub tsrm {
+    &writelog("tsrm start.");
+    my $tsrm =  `$toolpath/perl/tool/tsrm.sh -m 10`;
+    return $tsrm;
+}
 
 sub get_load_average {
     open my $fh, '/proc/loadavg';

@@ -40,15 +40,13 @@ sleep 30;
 
 while ($counttranscodefiles >= 1) {
 
-    # 二重起動の確認!
-    $processes = &processfind("ipodtranscode.pl");
-    #$processes = &processfind("ipodtranscode.pl", "ffmpeg");
-    if ($processes > 1 ) {
-        &writelog("processes exist. exit: $processes");
-        exit;
-    } else {
-        &writelog("Normal launch.: $processes");
-        #slackSend("Normal launch.");
+    # 空き容量チェック
+    $disk_free_gb = &disk_free_size();
+    &writelog("DISK FREE = $disk_free_gb GB.");
+    if (100 > $disk_free_gb) {
+        &writelog("FREE SPACE IS BELOW THE THRESHOLD.");
+        $tsrm = &tsrm();
+        &writelog($tsrm);
     }
 
     # Load Average をチェック
@@ -59,6 +57,17 @@ while ($counttranscodefiles >= 1) {
         exit;
     } else {
         &writelog("Load Average OK.: $la");
+    }
+
+    # 二重起動の確認!
+    $processes = &processfind("ipodtranscode.pl");
+    #$processes = &processfind("ipodtranscode.pl", "ffmpeg");
+    if ($processes > 1 ) {
+        &writelog("processes exist. exit: $processes");
+        exit;
+    } else {
+        &writelog("Normal launch.: $processes");
+        #slackSend("Normal launch.");
     }
 
     # トラコンフラグがたっていてステータス50以上150未満のファイルを古い順にひとつ探す
@@ -226,6 +235,7 @@ while ($counttranscodefiles >= 1) {
                     $resolution = "-s 640x360";
                     $crf        = "-crf 22";
                 }
+
                 if ($tid != 0) {
                     $tune       = "-tune animation";
                     $crf        = "-crf 23";
