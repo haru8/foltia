@@ -258,11 +258,36 @@ while ($counttranscodefiles >= 1) {
                 #   system ("nice -n 15 /usr/local/bin/ffmpeg -y -i $trcnmpegfile $cropopt $ffmpegencopt");
                 # まずTsSplitする →ワンセグをソースにしてしまわないように
                 if (! -e "${filenamebody}.base.mp4") {
-                    $sp_start = time();
 
                     &changefilestatus($pid, $FILESTATUSTRANSCODETSSPLITTING);
                     unlink("${filenamebody}_tss.m2t");
                     unlink("${filenamebody}_HD.m2t");
+
+                    # b25 check
+                    &writelog("tsselect $inputmpeg2");
+                    $b25_start = time();
+                    system("$toolpath/perl/tool/tsselect $inputmpeg2 2> /dev/null | grep scrambling | grep -v scrambling=0 | grep -q scrambling");
+                    $scrambling = $? >> 8;
+                    &writelog("scrambling=$scrambling");
+                    if ($scrambling == 0) {
+                        $inputmpeg2_b25 = "${filenamebody}_b25.m2t";
+                        &writelog("b25 $inputmpeg2 $inputmpeg2_b25");
+                        system("$toolpath/perl/tool/b25 $inputmpeg2 $inputmpeg2_b25");
+                        if ( -f $inputmpeg2_b25) {
+                            $inputmpeg2_size     = -s $inputmpeg2;
+                            $inputmpeg2_b25_size = -s $inputmpeg2_b25;
+                            &writelog("ts  file size: $inputmpeg2_size");
+                            &writelog("b25 file size: $inputmpeg2_b25_size");
+                            if (($inputmpeg2_size * 0.9) < $inputmpeg2_b25_size) {
+                                &writelog("rename: mv $inputmpeg2_b25 $inputmpeg2");
+                                system("mv $inputmpeg2_b25 $inputmpeg2");
+                            }
+                        }
+                    }
+                    $b25_end = time();
+
+                    $sp_start = time();
+
                     #if (-e "$toolpath/perl/tool/tss.py") {
                     #    $ts_splitter = "tss.py";
 
@@ -764,6 +789,7 @@ while ($counttranscodefiles >= 1) {
     $fmpeg2_tm_process = sprintf("%00d:%02d:%02d", int($mpeg2_tm_process / 3600), int($mpeg2_tm_process % 3600 / 60), $mpeg2_tm_process % 60);
     &writelog("$mpeg2filename TS -> MP4 encode PROCESS TIME : $mpeg2_tm_process sec, $fmpeg2_tm_process");
 
+    $b25_sec    = $b25_end - $b25_start;
     $sp_sec     = $sp_end  - $sp_start;
     $cp_sec     = $cp_end  - $cp_start;
     $enc_sec    = $enc_end - $enc_start;
@@ -772,6 +798,7 @@ while ($counttranscodefiles >= 1) {
     $cp2_sec    = $cp2_end - $cp2_start;
     #$mux_sec    = $mux_end - $mux_start;
 
+    $b25_time   = sprintf("%00d:%02d:%02d", int($b25_sec / 3600), int($b25_sec % 3600 / 60), $b25_sec % 60);
     $sp_time    = sprintf("%00d:%02d:%02d", int($sp_sec / 3600), int($sp_sec % 3600 / 60), $sp_sec % 60);
     $cp_time    = sprintf("%00d:%02d:%02d", int($cp_sec / 3600), int($cp_sec % 3600 / 60), $cp_sec % 60);
     $enc_time   = sprintf("%00d:%02d:%02d", int($enc_sec / 3600), int($enc_sec % 3600 / 60), $enc_sec % 60);
@@ -816,15 +843,16 @@ while ($counttranscodefiles >= 1) {
     #&writelog("  AUDIO FILE      : $auFileSizeF : $filenamebody.aac");
     &writelog("  MP4   FILE      : $m4FileSizeF : ${mp4outdir}MAQ${mp4filenamestring}.MP4");
     &writelog("  THUMBNAIL DIR   : $thDireSizeF : $thCount files : $thumbnailDir");
-    &writelog("  REC DIR AVAIL   : @recDirAvailSp[3] @recDirAvailSp[4] @recDirAvailSp[5]");
     &writelog("  COMPRESSION RATE: $compRateF%");
     &writelog("  START   TIME    : $stDateF");
     &writelog("  END     TIME    : $edDateF");
     &writelog("  PROCESS TIME    : ${mpeg2_tm_process}sec $fmpeg2_tm_process");
+    &writelog("    B25 TIME      : $b25_time (scrambling = $scrambling)");
     &writelog("    SP TIME       : $sp_time ($ts_splitter)");
     &writelog("    CP TIME       : $cp_time");
     &writelog("    CP2 TIME      : $cp2_time");
     &writelog("    ENC TIME      : $enc_time");
+    &writelog("  REC DIR AVAIL   : @recDirAvailSp[3] @recDirAvailSp[4] @recDirAvailSp[5]");
     #&writelog("    WAV TIME      : $wav_time");
     #&writelog("    AAC TIME      : $aac_time");
     #&writelog("    MUX TIME      : $mux_time");
@@ -835,12 +863,14 @@ while ($counttranscodefiles >= 1) {
     print("=========================== TS to MP4 ENCODE RESULT Start =========================\n");
     print("  TS    FILE      : $tsFileSizeF : $inputmpeg2\n");
     print("  SPLIT FILE      : $spFileSizeF : $trcnmpegfile\n");
+    print("  ENC SRC FILE    : $srFileSizeF : $encsrcfile\n");
     print("  MP4   FILE      : $m4FileSizeF : ${mp4outdir}MAQ${mp4filenamestring}.MP4\n");
     print("  THUMBNAIL DIR   : $thDireSizeF : $thCount files : $thumbnailDir\n");
     print("  COMPRESSION RATE: $compRateF%\n");
     print("  START   TIME    : $stDateF\n");
     print("  END     TIME    : $edDateF\n");
     print("  PROCESS TIME    : ${mpeg2_tm_process}sec $fmpeg2_tm_process\n");
+    print("    B25 TIME      : $b25_time (scrambling = $scrambling)\n");
     print("    SP TIME       : $sp_time ($ts_splitter)\n");
     print("    CP TIME       : $cp_time\n");
     print("    ENC TIME      : $enc_time\n");
