@@ -25,7 +25,8 @@ if ($path ne "./") {
 }
 require "foltialib.pl";
 
-&writelog("starting up.");
+printf("\n");
+&writelog("starting up.", 1);
 
 #DB初期化
 $dbh = DBI->connect($DSN, $DBUser, $DBPass) || die $DBI::error;;
@@ -33,7 +34,7 @@ $dbh->{sqlite_unicode} = 1;
 
 $counttranscodefiles = &counttranscodefiles();
 if ($counttranscodefiles == 0) {
-    &writelog("No MPEG2 files to transcode.");
+    &writelog("No MPEG2 files to transcode.", 1);
     exit;
 }
 sleep 30;
@@ -42,18 +43,18 @@ while ($counttranscodefiles >= 1) {
 
     # 空き容量チェック
     $disk_free_gb = &disk_free_size();
-    &writelog("DISK FREE = $disk_free_gb GB.");
+    &writelog("DISK FREE = $disk_free_gb GB.", 1);
     if (100 > $disk_free_gb) {
-        &writelog("FREE SPACE IS BELOW THE THRESHOLD.");
+        &writelog("FREE SPACE IS BELOW THE THRESHOLD.", 1);
         $tsrm = &tsrm();
-        &writelog($tsrm);
+        &writelog($tsrm, 1);
     }
 
     # Load Average をチェック
     my $la;
     $la = &get_load_average();
     if ($la > 10) {
-        &writelog("Load Average over threshold! exit: $la");
+        &writelog("Load Average over threshold! exit: $la", 1);
         exit;
     } else {
         &writelog("Load Average OK.: $la");
@@ -63,7 +64,7 @@ while ($counttranscodefiles >= 1) {
     $processes = &processfind("ipodtranscode.pl");
     #$processes = &processfind("ipodtranscode.pl", "ffmpeg");
     if ($processes > 1 ) {
-        &writelog("processes exist. exit: $processes");
+        &writelog("processes exist. exit: $processes", 1);
         exit;
     } else {
         &writelog("Normal launch.: $processes");
@@ -205,6 +206,7 @@ while ($counttranscodefiles >= 1) {
                 $cropopt = "";
 
                 # クオリティごとに
+                $loglevel   = "-loglevel quiet";
                 $threads    = "-threads 0";
                 $resolution = "-s 640x360";
                 $aspect     = "-aspect 16:9";
@@ -245,7 +247,7 @@ while ($counttranscodefiles >= 1) {
                     $tune       = "-tune film";
                     $crf        = "-crf 26";
                 }
-                $ffmpegencopt = "$threads $resolution $aspect $framerate -f mp4 -vcodec libx264 $preset $crf $maxrate $refs $tune $qcomp $x264opts $vf -acodec libfdk_aac $aacopt $sync $bench ${filenamebody}.base.mp4";
+                $ffmpegencopt = "$loglevel $threads $resolution $aspect $framerate -f mp4 -vcodec libx264 $preset $crf $maxrate $refs $tune $qcomp $x264opts $vf -acodec libfdk_aac $aacopt $sync $bench ${filenamebody}.base.mp4";
 
                 $ts_splitter = "";
 
@@ -268,24 +270,23 @@ while ($counttranscodefiles >= 1) {
                     $b25_start = time();
                     system("$toolpath/perl/tool/tsselect $inputmpeg2 2> /dev/null | grep scrambling | grep -v scrambling=0 | grep -q scrambling");
                     $scrambling = $? >> 8;
-                    &writelog("scrambling=$scrambling");
+                    &writelog("scrambling=$scrambling", 1);
                     if ($scrambling == 0) {
                         $inputmpeg2_b25 = "${filenamebody}_b25.m2t";
-                        &writelog("b25 $inputmpeg2 $inputmpeg2_b25");
-                        system("$toolpath/perl/tool/b25 $inputmpeg2 $inputmpeg2_b25");
+                        &writelog("B25 decode: b25 $inputmpeg2 $inputmpeg2_b25", 1);
+                        system("$toolpath/perl/tool/b25 $inputmpeg2 $inputmpeg2_b25 2> /dev/null");
                         if ( -f $inputmpeg2_b25) {
                             $inputmpeg2_size     = -s $inputmpeg2;
                             $inputmpeg2_b25_size = -s $inputmpeg2_b25;
-                            &writelog("ts  file size: $inputmpeg2_size");
-                            &writelog("b25 file size: $inputmpeg2_b25_size");
+                            &writelog("ts  file size: $inputmpeg2_size", 1);
+                            &writelog("b25 file size: $inputmpeg2_b25_size", 1);
                             if (($inputmpeg2_size * 0.9) < $inputmpeg2_b25_size) {
-                                &writelog("rename: mv $inputmpeg2_b25 $inputmpeg2");
+                                &writelog("rename: mv $inputmpeg2_b25 $inputmpeg2", 1);
                                 system("mv $inputmpeg2_b25 $inputmpeg2");
                             }
                         }
                     }
                     $b25_end = time();
-
                     $sp_start = time();
 
                     #if (-e "$toolpath/perl/tool/tss.py") {
@@ -329,13 +330,13 @@ while ($counttranscodefiles >= 1) {
                         $ts_splitter = "TsSplitter.exe";
 
                         # TsSplit
-                        &writelog("WINE TsSplitter.exe -EIT -ECM  -EMM -SD -1SEG $inputmpeg2  :start.");
+                        &writelog("WINE TsSplitter.exe -EIT -ECM  -EMM -SD -1SEG $inputmpeg2  :start.", 1);
                         $tm_start = time();
-                        system("nice -n 15 wine $toolpath/perl/tool/TsSplitter.exe -EIT -ECM  -EMM -SD -1SEG $inputmpeg2");
+                        system("nice -n 15 wine $toolpath/perl/tool/TsSplitter.exe -EIT -ECM  -EMM -SD -1SEG $inputmpeg2 2> /dev/null");
                         $exit_value  = $? >> 8;
                         $signal_num  = $? & 127;
                         $dumped_core = $? & 128;
-                        &writelog("TsSplitter.exe  :$exit_value:$signal_num:$dumped_core:end.");
+                        &writelog("TsSplitter.exe  :$exit_value:$signal_num:$dumped_core: end.", 1);
                         $tm_end   = time();
                         $tm_process  = $tm_end - $tm_start;
                         $ftm_process = sprintf("%00d:%02d:%02d", int($tm_process / 3600), int($tm_process % 3600 / 60), $tm_process % 60);
@@ -361,7 +362,7 @@ while ($counttranscodefiles >= 1) {
                             #   &writelog("WINE TsSplit.exe fail");
                             #}
                         } else {
-                            &writelog("WINE TsSplitter.exe; Not exist ${filenamebody}_HD.m2t");
+                            &writelog("WINE TsSplitter.exe; Not exist ${filenamebody}_HD.m2t", 1);
                         } # endif -e ${filenamebody}_HD.m2t
 
                     } # endif $trcnmpegfile eq $inputmpeg2
@@ -369,13 +370,13 @@ while ($counttranscodefiles >= 1) {
                     # TsSplitter.exeでも失敗してたならSDファイルを抽出してみる。
                     if($trcnmpegfile eq $inputmpeg2) {
                         # TsSplit
-                        &writelog("WINE TsSplitter.exe -EIT -ECM -EMM -1SEG $inputmpeg2  :start.");
+                        &writelog("WINE TsSplitter.exe -EIT -ECM -EMM -1SEG $inputmpeg2  :start.", 1);
                         $tm_start = time();
-                        system("nice -n 15 wine $toolpath/perl/tool/TsSplitter.exe -EIT -ECM  -EMM -1SEG $inputmpeg2");
+                        system("nice -n 15 wine $toolpath/perl/tool/TsSplitter.exe -EIT -ECM  -EMM -1SEG $inputmpeg2 2> /dev/null");
                         $exit_value  = $? >> 8;
                         $signal_num  = $? & 127;
                         $dumped_core = $? & 128;
-                        &writelog("TsSplitter.exe  :$exit_value:$signal_num:$dumped_core:end.");
+                        &writelog("TsSplitter.exe  :$exit_value:$signal_num:$dumped_core: end.", 1);
                         $tm_end   = time();
                         $tm_process  = $tm_end - $tm_start;
                         $ftm_process = sprintf("%00d:%02d:%02d", int($tm_process / 3600), int($tm_process % 3600 / 60), $tm_process % 60);
@@ -421,13 +422,13 @@ while ($counttranscodefiles >= 1) {
                     $encsrcfile = $trcnmpegfile;
                     &changefilestatus($pid, $FILESTATUSTRANSCODEFFMPEG);
                     &writelog("ffmpeg ${filenamebody}.base.mp4  :start.");
-                    &writelog("CMD: $toolpath/perl/tool/ffmpeg -y -i $encsrcfile $cropopt $sstime $ffmpegencopt");
+                    &writelog("CMD: $toolpath/perl/tool/ffmpeg -y -i $encsrcfile $cropopt $sstime $ffmpegencopt", 1);
                     $tm_start = time();
-                    system ("nice -n 15 $toolpath/perl/tool/ffmpeg -y -i $encsrcfile $cropopt $sstime $ffmpegencopt");
+                    system ("nice -n 15 $toolpath/perl/tool/ffmpeg -y -i $encsrcfile $cropopt $sstime $ffmpegencopt 2> /dev/null");
                     $exit_value  = $? >> 8;
                     $signal_num  = $? & 127;
                     $dumped_core = $? & 128;
-                    &writelog("ffmpeg ts => mp4.  $encsrcfile :$exit_value:$signal_num:$dumped_core:end.");
+                    &writelog("ffmpeg ts => mp4.  $encsrcfile :$exit_value:$signal_num:$dumped_core: end.", 1);
                     $tm_end   = time();
                     $tm_process  = $tm_end - $tm_start;
                     $ftm_process = sprintf("%00d:%02d:%02d", int($tm_process / 3600), int($tm_process % 3600 / 60), $tm_process % 60);
@@ -440,13 +441,13 @@ while ($counttranscodefiles >= 1) {
                     $encsrcfile = $trcnmpegfile;
                     &changefilestatus($pid, $FILESTATUSTRANSCODEFFMPEG);
                     &writelog("ffmpeg retry no crop ${filenamebody}.base.mp4  :start.");
-                    &writelog("CMD: $toolpath/perl/tool/ffmpeg -y -i $encsrcfile $sstime $ffmpegencopt");
+                    &writelog("CMD: $toolpath/perl/tool/ffmpeg -y -i $encsrcfile $sstime $ffmpegencopt", 1);
                     $tm_start = time();
-                    system ("nice -n 15 $toolpath/perl/tool/ffmpeg -y -i $encsrcfile $sstime $ffmpegencopt");
+                    system ("nice -n 15 $toolpath/perl/tool/ffmpeg -y -i $encsrcfile $sstime $ffmpegencopt 2> /dev/null");
                     $exit_value  = $? >> 8;
                     $signal_num  = $? & 127;
                     $dumped_core = $? & 128;
-                    &writelog("ffmpeg retry no crop.  $encsrcfile :$exit_value:$signal_num:$dumped_core:end.");
+                    &writelog("ffmpeg retry no crop.  $encsrcfile :$exit_value:$signal_num:$dumped_core: end.", 1);
                     $tm_end   = time();
                     $tm_process  = $tm_end - $tm_start;
                     $ftm_process = sprintf("%00d:%02d:%02d", int($tm_process / 3600), int($tm_process % 3600 / 60), $tm_process % 60);
@@ -479,13 +480,13 @@ while ($counttranscodefiles >= 1) {
                     $encsrcfile = $inputmpeg2;
                     &changefilestatus($pid, $FILESTATUSTRANSCODEFFMPEG);
                     &writelog("ffmpeg retry No splited originalTS file ${filenamebody}.base.mp4  :start.");
-                    &writelog("CMD: $toolpath/perl/tool/ffmpeg -y -i $encsrcfile $sstime $ffmpegencopt");
+                    &writelog("CMD: $toolpath/perl/tool/ffmpeg -y -i $encsrcfile $sstime $ffmpegencopt", 1);
                     $tm_start = time();
-                    system ("nice -n 15 $toolpath/perl/tool/ffmpeg -y -i $encsrcfile $sstime $ffmpegencopt");
+                    system ("nice -n 15 $toolpath/perl/tool/ffmpeg -y -i $encsrcfile $sstime $ffmpegencopt 2> /dev/null");
                     $exit_value  = $? >> 8;
                     $signal_num  = $? & 127;
                     $dumped_core = $? & 128;
-                    &writelog("ffmpeg retry No splited.  $encsrcfile :$exit_value:$signal_num:$dumped_core:end.");
+                    &writelog("ffmpeg retry No splited.  $encsrcfile :$exit_value:$signal_num:$dumped_core: end.", 1);
                     $tm_end   = time();
                     $tm_process  = $tm_end - $tm_start;
                     $ftm_process = sprintf("%00d:%02d:%02d", int($tm_process / 3600), int($tm_process % 3600 / 60), $tm_process % 60);
@@ -493,7 +494,7 @@ while ($counttranscodefiles >= 1) {
                 }
                 $enc264size = -s "${filenamebody}.base.mp4";
                 $enc264size = $enc264size / 1024 / 1024;
-                &writelog("ffmpeg encode mp4 file : ${filenamebody}.base.mp4 size: $enc264size MB");
+                &writelog("ffmpeg encode mp4 file : ${filenamebody}.base.mp4 size: $enc264size MB", 1);
             }
 
             $enc_end    = time();
@@ -641,7 +642,7 @@ while ($counttranscodefiles >= 1) {
                     #} else {
                     #    &writelog("WARN; Pls. install $toolpath/perl/tool/MP4Box");
                     #}
-                    #$auFileSize  = `du -sh $filenamebody.aac | awk '{print \$1}'`;
+                    #$auFileSize  = `du -sh $filenamebody.aac | awk '{printf \$1}'`;
                     #unlink("$filenamebody.aac");
                 } # endif #デジタルラジオなら
                 &changefilestatus($pid, $FILESTATUSTRANSCODEMP4BOX);
@@ -694,15 +695,22 @@ while ($counttranscodefiles >= 1) {
                     &changefilestatus($pid, 999);
                     $tmpFileDel = 1;
                 }
-                $spFileSize   = `du -sh $trcnmpegfile  | awk '{print \$1}'`;
-                #$vdFileSize  = `du -sh $filenamebody.264        | awk '{print \$1}'`;
-                #$vdFileSize  = `du -sh ${filenamebody}.base.mp4 | awk '{print \$1}'`;
-                $srcFileSize  = `du -sh $encsrcfile    | awk '{print \$1}'`;
+                $spFileSize   = `du -sh $trcnmpegfile  | awk '{printf \$1}'`;
+                #$vdFileSize  = `du -sh $filenamebody.264        | awk '{printf \$1}'`;
+                #$vdFileSize  = `du -sh ${filenamebody}.base.mp4 | awk '{printf \$1}'`;
+                $srcFileSize  = `du -sh $encsrcfile    | awk '{printf \$1}'`;
 
                 if ($tmpFileDel == 0) {
-                    unlink("${filenamebody}_SD1.m2t");
-                    unlink("${filenamebody}_SD2.m2t");
-                    unlink("${filenamebody}_SD3.m2t");
+                    @delfiles = glob "${filenamebody}_SD*" ;
+                    foreach $file (@delfiles) {
+                        &writelog("delete tmpfile: $file");
+                        unlink($file);
+                    }
+                    @delfiles = glob "${filenamebody}_CS*" ;
+                    foreach $file (@delfiles) {
+                        &writelog("delete tmpfile: $file");
+                        unlink($file);
+                    }
                     unlink("${filenamebody}_HD.m2t");
                     # ConfigによってTSファイルは常にsplitした状態にするかどうか選択
                     # B25失敗したときにここが走るとファイルぶっ壊れるので検証を入れる
@@ -807,25 +815,25 @@ while ($counttranscodefiles >= 1) {
     $cp2_time   = sprintf("%00d:%02d:%02d", int($cp2_sec / 3600), int($cp2_sec % 3600 / 60), $cp2_sec % 60);
     #$mux_time   = sprintf("%00d:%02d:%02d", int($mux_sec / 3600), int($mux_sec % 3600 / 60), $mux_sec % 60);
 
-    $tsFileSize     = `du -sh $inputmpeg2 | awk '{print \$1}'`;
+    $tsFileSize     = `du -sh $inputmpeg2 | awk '{printf \$1}'`;
     $tsFileSizeF    = sprintf("%6s", $tsFileSize);
     $spFileSizeF    = sprintf("%6s", $spFileSize);
     $srFileSizeF    = sprintf("%6s", $srcFileSize);
     #$vdFileSizeF    = sprintf("%6s", $vdFileSize);
     $auFileSizeF    = sprintf("%6s", $auFileSize);
-    $m4FileSize     = `du -sh ${mp4outdir}MAQ${mp4filenamestring}.MP4 | awk '{print \$1}'`;
+    $m4FileSize     = `du -sh ${mp4outdir}MAQ${mp4filenamestring}.MP4 | awk '{printf \$1}'`;
     $m4FileSizeF    = sprintf("%6s", $m4FileSize);
     $tsFileSize2    = -s $inputmpeg2;
     $m4FileSize2    = -s "${mp4outdir}MAQ${mp4filenamestring}.MP4";
     $compRateF      = sprintf("%6s", int($m4FileSize2 / $tsFileSize2 * 100 * 100) / 100);
     ($sec,$min,$hour,$day,$month,$year,$wdy,$yday) = localtime($mpeg2_tm_start);
-    $stDateF        = sprintf("%02s/%02s/%02s %02s:%02s:%02s\n" ,$year+1900, $month+1, $day, $hour, $min, $sec);
+    $stDateF        = sprintf("%02s/%02s/%02s %02s:%02s:%02s" ,$year+1900, $month+1, $day, $hour, $min, $sec);
     ($sec,$min,$hour,$day,$month,$year,$wdy,$yday) = localtime($mpeg2_tm_end);
-    $edDateF        = sprintf("%02s/%02s/%02s %02s:%02s:%02s\n" ,$year+1900, $month+1, $day, $hour, $min, $sec);
+    $edDateF        = sprintf("%02s/%02s/%02s %02s:%02s:%02s" ,$year+1900, $month+1, $day, $hour, $min, $sec);
     $thumbnailDir   = $mp4filenamestring;
     $thumbnailDir   =~ s/^-//;
     $thumbnailDir   = "$recfolderpath/$tid.localized/img/$thumbnailDir";
-    $thDireSize     = `du -sh $thumbnailDir | awk '{print \$1}'`;
+    $thDireSize     = `du -sh $thumbnailDir | awk '{printf \$1}'`;
     $thDireSizeF    = sprintf("%6s", $thDireSize);
     $thCount        = `ls -1 $thumbnailDir | wc -l`;
 
@@ -834,7 +842,7 @@ while ($counttranscodefiles >= 1) {
     $recDirAvail =~ s/\s+/ /g;
     my @recDirAvailSp = split(/ /, $recDirAvail);
 
-    &writelog("");
+    &writelog(" ");
     &writelog("=========================== TS to MP4 ENCODE RESULT Start =========================");
     &writelog("  TS    FILE      : $tsFileSizeF : $inputmpeg2");
     &writelog("  SPLIT FILE      : $spFileSizeF : $trcnmpegfile");
@@ -857,8 +865,8 @@ while ($counttranscodefiles >= 1) {
     #&writelog("    AAC TIME      : $aac_time");
     #&writelog("    MUX TIME      : $mux_time");
     &writelog("=========================== TS to MP4 ENCODE RESULT End ===========================");
-    &writelog("");
-    &writelog("");
+    &writelog(" ");
+    &writelog(" ");
 
     print("=========================== TS to MP4 ENCODE RESULT Start =========================\n");
     print("  TS    FILE      : $tsFileSizeF : $inputmpeg2\n");
@@ -879,8 +887,8 @@ while ($counttranscodefiles >= 1) {
     print("\n");
     print("\n");
 
-    chomp($m4FileSize);
-    chomp($tsFileSize);
+    #chomp($m4FileSize);
+    #chomp($tsFileSize);
     $head  = "ts->mp4 エンコード完了";
     $mesg  = sprintf("pid          : %s\n", $pid);
     $mesg .= sprintf("tid          : %s\n", $tid);
@@ -927,7 +935,7 @@ sub makethumbnail() {
     my $thmfilename    = "MAQ${mp4filenamestring}.THM";
     &writelog("DEBUG makethumbnail() start. ffmpeg $thmfilename");
 
-    $cmd = "nice -n 15 $toolpath/perl/tool/ffmpeg -loglevel quiet -ss 00:01:20 -i $outputfilename -vframes 1 -s 160x90 -f image2 $pspdirname/$thmfilename";
+    $cmd = "nice -n 15 $toolpath/perl/tool/ffmpeg -loglevel quiet -ss 00:01:20 -i $outputfilename -vframes 1 -s 160x90 -f image2 $pspdirname/$thmfilename 2> /dev/null";
     &writelog($cmd);
     system ($cmd);
 

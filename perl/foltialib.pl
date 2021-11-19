@@ -90,12 +90,13 @@ sub slackSend {
 
 sub writelog {
     my $messages  = $_[0];
+    my $stdout    = $_[1];
 
     binmode(STDIN,  ':utf8');
     binmode(STDOUT, ':utf8');
     binmode(STDERR, ':utf8');
 
-    my $timestump = strftime("%Y/%m/%d_%H:%M:%S", localtime);
+    my $timestump = strftime("%Y/%m/%d %H:%M:%S", localtime);
     chomp($timestump);
     my ($_pkg, $_file, $_line) = caller;
     my $_processid  = sprintf("%06d", $$);
@@ -113,6 +114,9 @@ sub writelog {
     my @msglist = split(/[\n\r]/, $messages);
     foreach my $msg(@msglist) {
         print DEBUGLOG "$timestump $_processid: $_file:$_line $msg\n";
+        if ( $stdout == 1) {
+            print "$timestump $msg\n";
+        }
     }
 
     close (DEBUGLOG);
@@ -275,7 +279,7 @@ sub processfind {
 
     foreach my $find (@findprocess) {
         #@processes = `ps h -C "$find"`;
-        @processes = `ps -ef | grep "$find" | grep -Ev 'grep|vi|sudo|ffmpeg.*http'`;
+        @processes = `ps -ef | grep "$find" | grep -Ev 'grep|vi|diff|sudo|ffmpeg.*http'`;
 
         foreach my $psc (@processes) {
             if ($psc =~ /$find/i) {
