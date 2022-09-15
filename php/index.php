@@ -276,6 +276,7 @@ if ($mode == "new") {
 <?php endif ?>
 
 <?php
+$dtcnt = 0;
 page_display('r=' . $receivOnly, $p, $p2, $lim, $dtcnt, $mode);
 // フィールド数
 $maxcols = $rs->columnCount();

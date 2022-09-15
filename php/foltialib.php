@@ -66,7 +66,7 @@ function slackSend($head, $mesg='') {
 
 //GET用フォームデコード
 function getgetform($key) {
-    if ($_GET["{$key}"] != "") {
+    if (isset($_GET["{$key}"]) && $_GET["{$key}"] != "") {
         $value = $_GET["{$key}"];
         $value = escape_string($value);
         $value = htmlspecialchars($value);
@@ -289,7 +289,7 @@ function printhtmlpageheader() {
     global $useenvironmentpolicy;
 
     $serveruri = getserveruri();
-    $username = $_SERVER['PHP_AUTH_USER'];
+    $username = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '';
 
     print "
   <p align=\"left\">
@@ -507,7 +507,9 @@ function printtrcnprocesses() {
     print "<div style=\"text-align:left;\">";
     print "$uptime<br>\n";
     print "トラコン稼働数 : $ffmpegprocessesNum : ";
-    print "$m2tname[0]<br>\n";
+    if (isset($m2tname[0])) {
+      print "$m2tname[0]<br>\n";
+    }
     print "</div>";
 } //endsub
 
@@ -541,9 +543,9 @@ function warndiskfreearea() {
         print "<!-- demo mode -->";
     } else {
 
-        global $recfolderpath,$hdfreearea ;
+        global $recfolderpath, $hdfreearea ;
 
-        exec ( "df   $recfolderpath | grep $recfolderpath", $hdfreearea);
+        exec ( "df   $recfolderpath | tail -1", $hdfreearea);
         $freearea = preg_split ("/[\s,]+/", $hdfreearea[0]);
         $freebytes = $freearea[3];
         if ($freebytes == "" ){
@@ -698,7 +700,7 @@ function redirectlogin() {
 
 function getuserclass($con) {
     global $useenvironmentpolicy;
-    $username = $_SERVER['PHP_AUTH_USER'];
+    $username = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '';
 
     if ($useenvironmentpolicy == 1) {
         $query = "
@@ -730,7 +732,7 @@ function getuserclass($con) {
 
 function getmymemberid($con) {
     global $useenvironmentpolicy;
-    $username = $_SERVER['PHP_AUTH_USER'];
+    $username = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '';
 
     if ($useenvironmentpolicy == 1) {
         $query = "

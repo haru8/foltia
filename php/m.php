@@ -224,7 +224,7 @@ if (($startdate == "") || ($starttime == "")) {
     <dt><label for="starttime">録画開始時刻(時分 Ex.<?php print "$nowdate"; ?>):</label></dt>
       <dd><input name="starttime" type="text" id="starttime" size="5" value="<?php if (isset($starttime)): print "$starttime"; else: print "$nowdate"; endif ?>" /></dd>
     <dt><label for="lengthmin">録画尺(分(最長360分)):</label></dt>
-      <dd><input name="lengthmin" type="text" id="lengthmin" size="4" value="<?php print "$lengthmin"; ?>"/></dd>
+      <dd><input name="lengthmin" type="text" id="lengthmin" size="4" value="<?php if (isset($lengthmin)) print "$lengthmin"; ?>"/></dd>
     <dt>録画局:</dt>
 <?php
 $query = "
@@ -258,7 +258,7 @@ $rowdata = $stations->fetch();
 
 if ($rowdata) {
     do {
-        if ($recstid == $rowdata['x']) {
+        if (isset($recstid) && isset($rowdata['x']) && $recstid == $rowdata['x']) {
             print '      <dd class="stations"><input name="recstid" type="radio" value="' . $rowdata['x'] . '" checked />' . $rowdata['stationname'] . '(' . $rowdata['stationrecch'] . 'ch / ' . $rowdata['digitalch'] . 'ch)  </dd>' . "\n";
         } elseif( $rowdata[2] == -2) {
             print '      <dd class="stations"><input name="recstid" type="radio" value="'.$rowdata[0] . '" checked />' . $rowdata['stationname'] . '(<!-- ' . $rowdata['stationrecch'] . 'ch / '. $rowdata['digitalch'] . 'ch -->RADIKO)  </dd>' . "\n";

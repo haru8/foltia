@@ -190,6 +190,9 @@ if ($list == "raw") {
         } //if 話数あるかどうか
 
         $rall          = $rs->fetchAll(PDO::FETCH_ASSOC);
+        if (!isset($rall[0])) {
+          continue;
+        }
         $rowdata       = $rall[0];
         $tid           = htmlspecialchars($rowdata['tid']);
         $title         = htmlspecialchars($rowdata['title']);
@@ -353,6 +356,9 @@ if ($list == "raw") {
         }
 
         $rall          = $rs->fetchAll(PDO::FETCH_ASSOC);
+        if (!isset($rall[0])) {
+          continue;
+        }
         $rowdata       = $rall[0];
         $title         = htmlspecialchars($rowdata['title']);
         $count         = htmlspecialchars($rowdata['countno']);
@@ -545,7 +551,7 @@ if ($rowdata) {
         $fName         = htmlspecialchars($rowdata['m2pfilename']);
         $pid           = htmlspecialchars($rowdata['pid']);
         $mp4filename   = htmlspecialchars($rowdata['PSPfilename']);
-        $lengthmin     = htmlspecialchars($rowdata['lengthmin']);
+        $lengthmin     = isset($rowdata['lengthmin']) ? htmlspecialchars($rowdata['lengthmin']) : '';
         $startdatetime = htmlspecialchars($rowdata['startdatetime']);
         $stationname   = htmlspecialchars($rowdata['stationname']);
 

@@ -147,9 +147,14 @@ $words = array('EPG録画');
   </p>
 
   <?php if ($word): ?>
-    <?php  echo implode(', ', $row_sum), ', (', $rowMax, ')' ?> 件ヒットしました
+    <?php echo implode(', ', $row_sum), ', (', $rowMax, ')' ?> 件ヒットしました
   <?php endif ?>
-  <?php if(@array_sum($row_sum) > 0): ?>
+  <?php
+    if (!isset($row_sum)) {
+      return;
+    }
+  ?>
+  <?php if (@array_sum($row_sum) > 0): ?>
     <?php page_display($word, $p, $p2, $lim, $rowMax, ""); ?>
     <table border="0" cellpadding="0" cellspacing="2" width="100%" style="table-layout: fixed;">
       <tr>
@@ -205,7 +210,7 @@ $words = array('EPG録画');
             $nodata[$pid]['tid'] = $tid;
         }
     ?>
-      <tr <?php echo $reservedClass ?>>
+      <tr>
         <td rowspan='1'><?php echo foldate2print($startdatetime) ?></td>
       <?php if ($tid > 0): ?>
         <td rowspan='2'><a href="http://cal.syoboi.jp/tid/<?php echo $tid ?>" target="_blank"><?php echo $title ?></a><br><a href="./showlibc.php?tid=<?php echo $tid ?>">[ライブラリ]</a></td>

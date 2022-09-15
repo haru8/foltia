@@ -128,6 +128,7 @@ foreach($searc_words as $val) {
   }
   $words[$n][] = $val;
 }
+$nowDateTIme = date('Ymd');
 ?>
   <?php $currentsearchhit = false; ?>
   <?php foreach($words as $wordsVal1): ?>
@@ -142,7 +143,7 @@ foreach($searc_words as $val) {
       $currentsearchhit = true;
     }
     ?>
-      <div class="<?php echo $searchhit ?>" id="<?php echo $currentsearch; ?>"><a href="./searchepg.php?word=<?php echo urlencode($wordsVal2)?>#currenttr"><?php echo $wordsVal2 ?></a></div>
+      <div class="<?php echo $searchhit ?>" id="<?php echo $currentsearch; ?>"><a href="./searchepg.php?word=<?php echo urlencode($wordsVal2)?>&date=<?php echo $nowDateTIme ?>#currenttr"><?php echo $wordsVal2 ?></a></div>
     <?php endforeach ?>
     </div>
   <?php endforeach ?>
@@ -156,7 +157,7 @@ foreach($searc_words as $val) {
       <a href="./searchepg.php?word=<?php echo urlencode($word)?><?php if ($currentsearchhit): ?>#currentsearch<?php else: ?>#word<?php endif ?>">上に戻る△</a>
     </div>
   <?php endif ?>
-  <?php if($row > 0): ?>
+  <?php if (isset($row) && $row > 0): ?>
     <table style="margin-bottom:10px; table-layout: fixed;">
       <tr>
         <th style="width:95px;" rowspan="2">epgid</th>
@@ -194,7 +195,7 @@ foreach($searc_words as $val) {
                 $epg['epgdesc']  = str_replace($split_word, '<span class="searchhit">' . $split_word . '</span>', $epg['epgdesc']);
             }
     ?>
-      <tr <?php echo $reserved['class']; ?> id="<?php echo $currenttr; ?>">
+      <tr <?php if (isset($reserved['class'])) echo $reserved['class']; ?> id="<?php echo $currenttr; ?>">
         <td rowspan="2" style="text-align: center; vertical-align: middle;"><a href="./reserveepg.php?epgid=<?php echo $epg['epgid'] ?>"><?php echo $epg['epgid'] ?></a></td>
         <td rowspan="2" style="text-align: center; vertical-align: middle;"><?php echo $epg['stationname'] ?>(<?php echo $epg['stationid'] ?>)</td>
         <td><?php echo foldate2print($epg['startdatetime']) ?></td>
@@ -202,7 +203,7 @@ foreach($searc_words as $val) {
         <td rowspan="2"><?php echo $epg['epgtitle'] ?><br><?php if (isset($reserved['pid'])): ?><a href="./mp4player.php?p=<?php echo $reserved['pid']?>" target="_blank">[Player]</a> <a href="./selectcaptureimage.php?pid=<?php echo $reserved['pid']?>">[キャプ]</a><?php endif ?><a href="./searchplaylist.php?word=<?php echo urlencode($word)?>#result">[録画一覧検索]</a></td>
         <td rowspan="2"><?php echo $epg['epgdesc'] ?></td>
       </tr>
-      <tr <?php echo $reserved['class'] ?>>
+      <tr <?php if (isset($reserved['class'])) echo $reserved['class'] ?>>
         <td><?php echo foldate2print($epg['enddatetime']) ?></td>
       </tr>
     <?php endwhile ?>

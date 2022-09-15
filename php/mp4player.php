@@ -99,12 +99,15 @@ if ($filename == "") {
 
 print "<!DOCTYPE html>\n<html>\n<head><meta charset=\"UTF-8\" />\n\n
 <title>foltia HTML5 Video Player / $title $countno $subtitle</title>\n";
-$mp4videofileurl =  "http://". getserverfqdn() ."$httpmediamappath/$tid.localized/mp4/$filename";
+//$mp4videofileurl =  "https://". getserverfqdn() ."$httpmediamappath/$tid.localized/mp4/$filename";
+$mp4videofileurl = "$httpmediamappath/$tid.localized/mp4/$filename";
 
 ?>
 
   <!-- Include the VideoJS Library -->
+  <!--
   <script src="./video-js/video.js" type="text/javascript" charset="UTF-8"></script>
+  -->
 
   <script type="text/javascript" charset="UTF-8">
     // Run the script on page load.
@@ -120,41 +123,25 @@ $mp4videofileurl =  "http://". getserverfqdn() ."$httpmediamappath/$tid.localize
     // });
 
     // If not using a JS library
-    window.onload = function(){
-      VideoJS.setup();
-    }
+    //window.onload = function(){
+    //  VideoJS.setup();
+    //}
 
   </script>
   <!-- Include the VideoJS Stylesheet -->
+  <!--
   <link rel="stylesheet" href="./video-js/video-js.css" type="text/css" media="screen" title="Video JS" charset="UTF-8">
+  -->
 </head>
 <body>
 
 <?php
 print "
-  <!-- Begin VideoJS -->
   <div class=\"video-js-box\">
-    <!-- Using the Video for Everybody Embed Code http://camendesign.com/code/video_for_everybody -->
     <video class=\"video-js\" width=\"640\" height=\"360\" poster=\"./img/videoplayer.png\" controls preload>
       <source src=\"$mp4videofileurl\" type='video/mp4; codecs=\"avc1.42E01E, mp4a.40.2\"'>
-      <!-- Flash Fallback. Use any flash video player here. Make sure to keep the vjs-flash-fallback class. -->
-      <object class=\"vjs-flash-fallback\" width=\"640\" height=\"360\" type=\"application/x-shockwave-flash\"
-        data=\"http://releases.flowplayer.org/swf/flowplayer-3.2.5.swf\">
-        <param name=\"movie\" value=\"http://releases.flowplayer.org/swf/flowplayer-3.2.5.swf\" />
-        <param name=\"allowfullscreen\" value=\"true\" />
-        <param name=\"flashvars\" value='config={\"clip\":{\"url\":\"$mp4videofileurl\",\"autoPlay\":false,\"autoBuffering\":true}}' />
-        <!-- Image Fallback -->
-        <img src=\"./img/videoplayer.png\" width=\"640\" height=\"264\" alt=\"Poster Image\"
-          title=\"No video playback capabilities.\" />
-      </object>
     </video>
-    <!-- Download links provided for devices that can't play video in the browser. -->
-    <p class=\"vjs-no-video\"><strong>Download Video:</strong>
-      <!-- Support VideoJS by keeping this link. -->
-      <a href=\"http://videojs.com\">HTML5 Video Player</a> by <a href=\"http://videojs.com\">VideoJS</a>
-    </p>
   </div>
-  <!-- End VideoJS -->
 "
 ?>
 </body>

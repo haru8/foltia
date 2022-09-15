@@ -284,10 +284,12 @@ if ($rowdataAll) {
         } else {
             print "
                 <tr >
-                    <td rowspan=\"4\" width=\"170\" style=\"border-bottom-color: #222;\"><a href=\"./mp4player.php?p=$pid\" target=\"_blank\"><img src = \"$imgsrcuri\" width=\"160\" height=\"90\"></a></td>
-                    <td>$count</td>
-                </tr>
-                <tr>";
+                    <td rowspan=\"3\" style=\"border-bottom-color: #222; width:170px;\">
+                        <a href=\"./mp4player.php?p=$pid\" target=\"_blank\">
+                            <img src = \"$imgsrcuri\" width=\"160\" height=\"90\">
+                        </a>
+                    </td>
+                    <td style=\"width:160px;\">$count</td> ";
                 if ($tid == 0) {
                     print "\n    <td>$subtitle</td>";
                 } else {
@@ -298,10 +300,12 @@ if ($rowdataAll) {
                 </tr>
                 <tr>
                     <td>$onairdate</td>
+                    <td> </td>
                 </tr>
                 <tr>
-                    <td style=\"border-bottom-color: #222;\"><input type='checkbox' name='delete[]' value='$fName'>削除 /
-                    <a href =\"$httpmediamappath/$tid.localized/mp4/$fName\" target=\"_blank\">$fName</A> / ";
+                    <td style=\"border-bottom-color: #222;\" colspan=\"2\">
+                      <input type='checkbox' name='delete[]' value='$fName'>削除 /
+                      <a href =\"$httpmediamappath/$tid.localized/mp4/$fName\" target=\"_blank\">$fName</a> / ";
 
             if ($mp4Exists) {
                 if ($pid) {
@@ -312,7 +316,8 @@ if ($rowdataAll) {
             } else {
             }
             print "
-                <script language=\"JavaScript\" type=\"text/javascript\">QT_WriteOBJECT_XHTML('http://g.hatena.ne.jp/images/podcasting.gif','16','16','','controller','FALSE','href','http://$serverfqdn/$httpmediamappath/$tid.localized/mp4/$fName','target','QuickTimePlayer','type','video/mp4');</script> $caplink</td>
+                <script language=\"JavaScript\" type=\"text/javascript\">QT_WriteOBJECT_XHTML('http://g.hatena.ne.jp/images/podcasting.gif','16','16','','controller','FALSE','href','http://$serverfqdn/$httpmediamappath/$tid.localized/mp4/$fName','target','QuickTimePlayer','type','video/mp4');</script> $caplink
+                    </td>
                 </tr>";
 
         } //endif iPhone

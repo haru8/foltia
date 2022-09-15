@@ -345,7 +345,7 @@ foreach ($stationhash as $stationname) {
             }
             $reservedClass = '';
             $reserveSearch = searchStartEndTime2($reserve, $startdatetime, $enddatetime);
-            if ($reserve[$reserveSearch[1]]['tid'] != 0) {
+            if (isset($reserve[$reserveSearch[1]]['tid']) && $reserve[$reserveSearch[1]]['tid'] != 0) {
               // 番組予約
               if ($reserveSearch[0] == 1) {
                   // 予約済み
